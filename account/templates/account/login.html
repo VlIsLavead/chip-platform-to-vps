@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Зайти в систему{% endblock %}
+
+{% block content %}
+    <h1>Зайти в систему</h1>
+    {% if form.errors %}
+        <p>
+            Неверные логин и/или пароль.
+            Попробуйте снова.
+        </p>
+    {% else %}
+        <p>
+            Используйте форму для захода в систему.
+            Если у вас нет профиля, <a href="{% url "register" %}">зарегистрируйте</a> новый.
+        </p>
+    {% endif %}
+    <div class="login-form">
+        <form action="{% url 'login' %}" method="post">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}"/>
+            <p><input type="submit" value="Вход"></p>
+        </form>
+        <p>
+            <a href="{% url "password_reset" %}">
+                Забыли пароль?
+            </a>
+        </p>
+    </div>
+{% endblock %}

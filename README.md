@@ -4,5 +4,5 @@
 3. activate venv
 4. `python manage.py migrate`
 5. `python manage.py init-dev`
-6. `python manage.py startserver`
+6. `python manage.py runserver localhost:8000`
 7. http://localhost:8000

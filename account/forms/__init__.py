@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from ..models import Profile
+from ..models import Profile, Order
 
 
 class LoginForm(forms.Form):
@@ -38,8 +38,8 @@ class UserEditForm(forms.ModelForm):
 
     def clean_email(self):
         data = self.cleaned_data['email']
-        qs = User.objects.exclude(id=self.instance.id)\
-                         .filter(email=data)
+        qs = User.objects.exclude(id=self.instance.id) \
+            .filter(email=data)
         if qs.exists():
             raise forms.ValidationError('Email already in use.')
         return data
@@ -49,3 +49,20 @@ class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['date_of_birth', 'photo']
+
+
+class OrderEditForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['platform_code', 'order_type', 'order_date',
+                  'runtime',
+                  'payment_status',
+                  'order_status'
+
+                  ]
+
+
+class NDASignature(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['NDA_signature']

@@ -3,9 +3,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
-from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
-from ..models import Profile
+from django.forms import formset_factory
+from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm
+from ..models import Profile, Order
 
 
 def user_login(request):
@@ -46,10 +46,94 @@ def dashboard(request):
 
 
 def _dashboard_client(request):
+
+    order_get = list(Order.objects.filter().values())
+    print(order_get)
+
+    OrderFormSet = formset_factory(OrderEditForm, max_num=len(order_get)-1)
+
+    empty = """<div>
+    <label for="id_form-__prefix__-platform_code">Код площадки:</label>
+
+
+
+<select name="form-__prefix__-platform_code" id="id_form-__prefix__-platform_code">
+  <option value="" selected></option>
+
+</select>
+
+</div>
+
+  <div>
+    <label for="id_form-__prefix__-order_type">Тип заказа:</label>
+
+
+
+<select name="form-__prefix__-order_type" id="id_form-__prefix__-order_type">
+  <option value="">""</option>
+
+
+</select>
+
+</div>
+
+  <div>
+    <label for="id_form-__prefix__-order_date">""</label>
+
+
+
+<input type="text" name="form-__prefix__-order_date" id="id_form-__prefix__-order_date">
+
+</div>
+
+  <div>
+    <label for="id_form-__prefix__-runtime">Срок выполнения по договору:</label>
+
+
+
+<input type="text" name="form-__prefix__-runtime" id="id_form-__prefix__-runtime">
+
+</div>
+
+  <div>
+    <label for="id_form-__prefix__-payment_status">Статус оплаты:</label>
+
+
+
+<input type="checkbox" name="form-__prefix__-payment_status" id="id_form-__prefix__-payment_status">
+
+</div>
+
+  <div>
+    <label for="id_form-__prefix__-order_status">Статус заказа:</label>
+
+
+
+<select name="form-__prefix__-order_status" id="id_form-__prefix__-order_status">
+  <option value="CTP" selected>Проверка топологии</option>
+
+  <option value="PSF">Формирование запуска</option>
+
+  <option value="PRD">Производство</option>
+
+  <option value="SHP">Отгрузка</option>
+
+  <option value="SHD">Отгружен</option>
+
+</select>
+
+
+
+</div>
+"""
+    OrderFormSet.empty_form = empty
+    order_formset = OrderFormSet(initial=list(order_get))
+    print(order_formset.empty_form)
+
     return render(
         request,
         'account/dashboard_client.html',
-        {'section': 'dashboard', 'data': 'sample client data'},
+        {'section': 'dashboard', 'data': order_formset},
     )
 
 

@@ -7,6 +7,8 @@
       "date_of_birth": null,
       "photo": "",
       "role": 1,
+      "company_name": "IPK",
+      "nda_signature": true,
       "created_at": "2024-07-18T11:44:39.861Z",
       "deleted_at": null
     }
@@ -18,7 +20,9 @@
       "user": 2,
       "date_of_birth": null,
       "photo": "",
-      "role": 2,
+      "role": 1,
+      "company_name": "IPK",
+      "nda_signature": true,
       "created_at": "2024-07-18T11:44:39.862Z",
       "deleted_at": null
     }
@@ -30,8 +34,24 @@
       "user": 3,
       "date_of_birth": null,
       "photo": "",
-      "role": 3,
+      "role": 2,
+      "company_name": "IPK",
+      "nda_signature": true,
       "created_at": "2024-07-18T11:44:39.863Z",
+      "deleted_at": null
+    }
+  },
+  {
+    "model": "account.profile",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "date_of_birth": null,
+      "photo": "",
+      "role": 3,
+      "company_name": "IPK",
+      "nda_signature": true,
+      "created_at": "2024-07-26T08:06:02.685Z",
       "deleted_at": null
     }
   }

@@ -1,0 +1,32 @@
+[
+  {
+    "model": "account.order",
+    "pk": 1,
+    "fields": {
+      "user_creator": 2,
+      "platform_code": "MT",
+      "order_type": "MT",
+      "order_date": "2024-08-11T00:00:00Z",
+      "runtime": "2024-08-19T00:00:00Z",
+      "payment_status": true,
+      "order_status": "Отгружен",
+      "created_at": "2024-08-11T00:00:00Z",
+      "deleted_at": null
+    }
+  },
+  {
+    "model": "account.order",
+    "pk": 2,
+    "fields": {
+      "user_creator": 2,
+      "platform_code": "GT",
+      "order_type": "MT",
+      "order_date": "2024-08-11T00:00:00Z",
+      "runtime": "2024-08-19T00:00:00Z",
+      "payment_status": true,
+      "order_status": "Отгружен",
+      "created_at": "2024-08-11T00:00:00Z",
+      "deleted_at": null
+    }
+  }
+]

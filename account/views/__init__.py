@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.forms import formset_factory
 from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm
 from ..models import Profile, Order
 
@@ -36,25 +35,55 @@ def user_logout(request):
 
 
 @login_required
-def dashboard(request):
+def dashboard(request, message=''):
     profile = request.user.profile
     return {
         1: _dashboard_client,
         2: _dashboard_curator,
         3: _dashboard_executor,
-    }[profile.role_id](request)
+    }[profile.role_id](request, message)
 
 
-def _dashboard_client(request):
-    orders = Order.objects.all()
+def _dashboard_client(request, message=''):
+    orders = Order.objects.filter(creator_id=request.user.id)
     return render(
         request,
-        'account/dashboard_client.html',
-        {'section': 'dashboard', 'data': orders},
+        'account/client/dashboard_client.html',
+        {
+            'section': 'dashboard',
+            'data': {
+                'orders': orders,
+                'profile': {'company': 'рога и копыта'},
+            }
+        },
     )
 
 
-def _dashboard_curator(request):
+@login_required
+def new_order(request):
+    if request.method == 'POST':
+        order_form = OrderEditForm(data=request.POST)
+        if order_form.is_valid():
+            order_form.instance.creator = request.user.profile
+            order_form.save()
+            return render(
+                request,
+                'account/client/new_order_success.html',
+            )
+        else:
+            messages.error(request, 'Ошибка в заполнении данных для заказа')
+    else:
+        order_form = OrderEditForm()
+    return render(
+        request,
+        'account/client/new_order.html',
+        {
+            'order_form': order_form,
+        }
+    )
+
+
+def _dashboard_curator(request, message=''):
     return render(
         request,
         'account/dashboard_curator.html',
@@ -62,7 +91,7 @@ def _dashboard_curator(request):
     )
 
 
-def _dashboard_executor(request):
+def _dashboard_executor(request, message=''):
     return render(
         request,
         'account/dashboard_executor.html',
@@ -112,7 +141,8 @@ def edit(request):
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileEditForm(
-            instance=request.user.profile)
+            instance=request.user.profile
+        )
     return render(request,
                   'account/edit.html',
                   {'user_form': user_form,

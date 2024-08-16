@@ -44,7 +44,7 @@ class Order(models.Model):
         SHP = 'SHP', 'Отгрузка'
         SHD = 'SHD', 'Отгружен'
 
-    user_creator = models.ForeignKey(Profile, on_delete=models.CASCADE, null=False, )
+    creator = models.ForeignKey(Profile, on_delete=models.CASCADE, null=False, )
     platform_code = models.CharField('Код площадки', choices=PlatformCode.choices, default=PlatformCode.MT,
                                      blank=False, null=False, max_length=200)
     order_type = models.CharField('Тип заказа', choices=OrderType.choices, default=OrderType.ENG, blank=False,

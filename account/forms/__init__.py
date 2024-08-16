@@ -55,12 +55,12 @@ class OrderEditForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = [
+            'deadline_date',
             'order_date',
             'order_status',
             'order_type',
             'payment_status',
             'platform_code',
-            'runtime',
         ]
 
 

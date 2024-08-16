@@ -49,8 +49,8 @@ class Order(models.Model):
                                      blank=False, null=False, max_length=200)
     order_type = models.CharField('Тип заказа', choices=OrderType.choices, default=OrderType.ENG, blank=False,
                                   null=False, max_length=200)
-    order_date = models.DateTimeField('Дата заказа(оплаты)', blank=False, null=False)
-    runtime = models.DateTimeField('Срок выполнения по договору', blank=False, null=False)
+    order_date = models.DateTimeField('Дата заказа (оплаты)', blank=False, null=False)
+    deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=False)
     payment_status = models.BooleanField('Статус оплаты', blank=False, null=False, )
     order_status = models.CharField('Статус заказа', choices=OrderStatus.choices, default=OrderStatus.CTP,
                                     blank=False, null=False, max_length=200)

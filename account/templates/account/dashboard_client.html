@@ -11,29 +11,27 @@
         ваш профиль, <a href="{% url "password_change" %}">поменять</a>
         ваш пароль.
     </p>
-    <p>
-        Заглушка для других инструментов.<br>
 
-    </p>
+    <table border="1" width="600">
+        <tr>
+            <th scope="col">Код площадки</th>
+            <th scope="col">Тип заказа</th>
+            <th scope="col">Дата заказа (оплаты)</th>
+            <th scope="col">Срок выполнения по договору</th>
+            <th scope="col">Статус оплаты</th>
+            <th scope="col">Статус заказа</th>
+        </tr>
 
-  <table  border="1" width="600">
-    <tr>
-
-      <th scope="col">Код площадки</th>
-      <th scope="col">Тип заказа</th>
-      <th scope="col">Дата заказа(оплаты)</th>
-      <th scope="col">Срок выполнения по договору</th>
-      <th scope="col">Статус оплаты</th>
-      <th scope="col">Статус заказа</th>
-    </tr>
-      {% for line in data %}
-          <tr>
-        {% for column in line %}
-            <th scope="col">{{column.value}}</th>
-
-    {% endfor %}
-          </tr>
-    {% endfor %}
-
-  </table>
+        {% for order in data %}
+            <tr>
+                <td>{{ order.platform_code }}</td>
+                <td>{{ order.order_type }}</td>
+                <td>{{ order.order_date }}</td>
+                <td>{{ order.deadline_date }}</td>
+                <td>{{ order.payment_status }}</td>
+                <td>{{ order.order_status }}</td>
+            </tr>
+        {% endfor %}
+    
+    </table>
 {% endblock %}

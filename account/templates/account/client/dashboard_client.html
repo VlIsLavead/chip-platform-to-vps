@@ -42,14 +42,14 @@
                     <td>{{ order.get_order_status_display }}</td>
                     <td>
                         {% if order.contract_file %}
-                            <a href="{{ order.contract_file.url }}">скачать</a>
+                            <a href="{{ order.contract_file.url }}" download>скачать</a>
                         {% else %}
                             <span>отсутствует</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if order.invoice_file %}
-                            <a href="{{ order.invoice_file.url }}">скачать</a>
+                            <a href="{{ order.invoice_file.url }}" download>скачать</a>
                         {% else %}
                             <span>отсутствует</span>
                         {% endif %}

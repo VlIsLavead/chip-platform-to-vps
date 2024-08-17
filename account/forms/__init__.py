@@ -55,16 +55,12 @@ class OrderEditForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = [
-            'deadline_date',
             'order_date',
+            'deadline_date',
+            'is_paid',
             'order_status',
             'order_type',
-            'payment_status',
             'platform_code',
+            'contract_file',
+            'invoice_file',
         ]
-
-
-class NDASignature(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['nda_signature']

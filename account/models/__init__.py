@@ -18,7 +18,7 @@ class Profile(models.Model):
     photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     company_name = models.CharField('Наименование компании заказчика', blank=False, null=False, max_length=200)
-    nda_signature = models.BooleanField('Подписанное NDA', blank=False, null=False, default=False)
+    is_nda_signed = models.BooleanField('NDA подписано?', blank=False, null=False, default=False)
 
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
@@ -51,9 +51,11 @@ class Order(models.Model):
                                   null=False, max_length=200)
     order_date = models.DateTimeField('Дата заказа (оплаты)', blank=False, null=False)
     deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=False)
-    payment_status = models.BooleanField('Статус оплаты', blank=False, null=False, )
+    is_paid = models.BooleanField('Заказ оплачен?', blank=False, null=False, )
     order_status = models.CharField('Статус заказа', choices=OrderStatus.choices, default=OrderStatus.CTP,
                                     blank=False, null=False, max_length=200)
+    invoice_file = models.FileField('Файл счета', upload_to='uploads/invoices/%Y/%m/%d/', blank=True, null=False, default='')
+    contract_file = models.FileField('Файл договора', upload_to='uploads/contracts/%Y/%m/%d/', blank=True, null=False, default='')
 
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)

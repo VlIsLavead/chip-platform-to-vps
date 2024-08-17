@@ -8,7 +8,7 @@
       "photo": "",
       "role": 1,
       "company_name": "IPK",
-      "nda_signature": true,
+      "is_nda_signed": true,
       "created_at": "2024-07-18T11:44:39.861Z",
       "deleted_at": null
     }
@@ -22,7 +22,7 @@
       "photo": "",
       "role": 1,
       "company_name": "IPK",
-      "nda_signature": true,
+      "is_nda_signed": true,
       "created_at": "2024-07-18T11:44:39.862Z",
       "deleted_at": null
     }
@@ -36,7 +36,7 @@
       "photo": "",
       "role": 2,
       "company_name": "IPK",
-      "nda_signature": true,
+      "is_nda_signed": true,
       "created_at": "2024-07-18T11:44:39.863Z",
       "deleted_at": null
     }
@@ -50,7 +50,7 @@
       "photo": "",
       "role": 3,
       "company_name": "IPK",
-      "nda_signature": true,
+      "is_nda_signed": true,
       "created_at": "2024-07-26T08:06:02.685Z",
       "deleted_at": null
     }

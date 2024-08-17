@@ -1,8 +1,11 @@
-from django.http import HttpResponse
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.urls import reverse
+
 from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm
 from ..models import Profile, Order
 
@@ -62,10 +65,10 @@ def _dashboard_client(request, message=''):
 @login_required
 def new_order(request):
     if request.method == 'POST':
-        order_form = OrderEditForm(data=request.POST)
+        order_form = OrderEditForm(request.POST, request.FILES)
         if order_form.is_valid():
             order_form.instance.creator = request.user.profile
-            order_form.save()
+            order_form.save(commit=True)
             return render(
                 request,
                 'account/client/new_order_success.html',

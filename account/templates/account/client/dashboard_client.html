@@ -38,10 +38,22 @@
                     <td>{{ order.get_order_type_display }}</td>
                     <td>{{ order.order_date.date }}</td>
                     <td>{{ order.deadline_date.date }}</td>
-                    <td>{{ order.payment_status }}</td>
+                    <td>{{ order.is_paid }}</td>
                     <td>{{ order.get_order_status_display }}</td>
-                    <td><a href="/file1">скачать</a></td>
-                    <td><a href="/file2">скачать</a></td>
+                    <td>
+                        {% if order.contract_file %}
+                            <a href="{{ order.contract_file.url }}">скачать</a>
+                        {% else %}
+                            <span>отсутствует</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.invoice_file %}
+                            <a href="{{ order.invoice_file.url }}">скачать</a>
+                        {% else %}
+                            <span>отсутствует</span>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
 

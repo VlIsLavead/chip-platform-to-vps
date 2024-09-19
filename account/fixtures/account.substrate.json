@@ -1,0 +1,29 @@
+[
+  {
+    "model": "account.substrate",
+    "pk": 1,
+    "fields": {
+      "thikness": 100,
+      "diameter": 100,
+      "tech_proces": 1
+    }
+  },
+  {
+    "model": "account.substrate",
+    "pk": 2,
+    "fields": {
+      "thikness": 100,
+      "diameter": 75,
+      "tech_proces": 1
+    }
+  },
+    {
+    "model": "account.substrate",
+    "pk": 3,
+    "fields": {
+      "thikness": 100,
+      "diameter": 100,
+      "tech_proces": 2
+    }
+  }
+]

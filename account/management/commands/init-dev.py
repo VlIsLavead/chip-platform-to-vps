@@ -5,6 +5,11 @@ fixtures = [
     'account.role.json',
     'auth.user.json',
     'account.profile.json',
+
+    'account.platform.json',
+
+    'account.technicalprocess.json',
+    'account.substrate.json',
     'account.order.json',
 ]
 

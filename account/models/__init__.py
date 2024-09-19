@@ -27,11 +27,24 @@ class Profile(models.Model):
         return f'Профиль {self.user.username}'
 
 
-class Order(models.Model):
-    class PlatformCode(models.TextChoices):
-        MT = 'MT', 'MT',
-        KI = 'KI', 'KI',
+class Platform(models.Model):
+    platform_name = models.CharField('Название платформы', blank=False, null=False, max_length=200)
+    platform_code = models.CharField('Код платформы', blank=False, null=False, max_length=5)
 
+
+class TechnicalProcess(models.Model):
+    name_process = models.CharField('Название технического процесса', blank=False, null=False, max_length=50)
+    PDK_file = models.FileField('Файл КИП', upload_to='uploads/PDK/%Y/%m/%d/', blank=True, null=False, default='')
+    platform = models.ForeignKey(Platform, on_delete=models.CASCADE, null=False, )
+
+
+class Substrate(models.Model):
+    thikness = models.IntegerField('Толщина подложки', blank=False, null=True)
+    diameter = models.IntegerField('Диаметр подложки', blank=False, null=True)
+    tech_proces = models.ForeignKey(TechnicalProcess, on_delete=models.CASCADE, null=False, )
+
+
+class Order(models.Model):
     class OrderType(models.TextChoices):
         MPW = 'MPW', 'MPW',
         REP = 'REP', 'Повтор',
@@ -44,18 +57,64 @@ class Order(models.Model):
         SHP = 'SHP', 'Отгрузка'
         SHD = 'SHD', 'Отгружен'
 
+    class DCRFProbingEMap(models.TextChoices):
+        DC = 'DC Probing', 'DC проверка',
+        RF = 'RF Probing', 'RF проверка',
+        NO = 'No', 'Без проверки'
+
+    class DicingMethod(models.TextChoices):
+        SAW = 'SAW', 'Пила',
+
+    class WaferDeliverFormat(models.TextChoices):
+        NotCut = 'Пластина (без резки)', 'Пластина (без резки)',
+        Cut = 'Пластина резанная', 'Пластина резанная',
+        GelPack = 'Гельпак', 'Гельпак',
+    # repeat = models.BooleanField('Повтор',  blank=False, null=False,)
+
+    # Номер заказа имеет формат FYYYYMMDD{№} где № это число из 5 символов начиная с 00001
+    order_number = models.CharField('Номер заказа', blank=False, null=False, max_length=14)
     creator = models.ForeignKey(Profile, on_delete=models.CASCADE, null=False, )
-    platform_code = models.CharField('Код площадки', choices=PlatformCode.choices, default=PlatformCode.MT,
-                                     blank=False, null=False, max_length=200)
-    order_type = models.CharField('Тип заказа', choices=OrderType.choices, default=OrderType.ENG, blank=False,
+    customer_product_name = models.CharField('Имя запуска', blank=False, null=False, max_length=200)
+    mask_name = models.CharField('Номер шаблона', blank=False, null=True, max_length=200)
+    technical_process = models.ForeignKey(TechnicalProcess, on_delete=models.CASCADE, null=False, )
+    platform_code = models.ForeignKey(Platform, on_delete=models.CASCADE, null=False, )
+    order_type = models.CharField('Тип запуска', choices=OrderType.choices, default=OrderType.ENG, blank=False,
                                   null=False, max_length=200)
+    product_count = models.IntegerField('Число проектов в кадре', blank=False, null=True)
+    substrate = models.ForeignKey(Substrate, on_delete=models.CASCADE, null=False, )
+
+    dc_rf_probing_e_map = models.CharField('E-map проверка', choices=DCRFProbingEMap.choices, default=DCRFProbingEMap.NO, blank=False,
+                                  null=False, max_length=200)
+    dc_rf_probing_inking = models.BooleanField('Inking проверка',  blank=False,
+                                  null=False,)
+    visual_inspection_inking = models.BooleanField('Визуальная проверка',  blank=False,
+                                  null=False,)
+    dicing_method = models.CharField('Метод резки', choices=DicingMethod.choices, default=DicingMethod.SAW, blank=False,
+                                  null=False, max_length=200)
+    tape_uv_support = models.BooleanField('УФ засветка',  blank=False,
+                                  null=False,)
+    wafer_deliver_format = models.CharField('Вариант упаковки', choices=WaferDeliverFormat.choices, default=WaferDeliverFormat.NotCut, blank=False,
+                                  null=False, max_length=200)
+    multiplan_dicing_plan = models.BooleanField("Сложная резка", blank=False, null=False,)
+    package_servce = models.BooleanField("Корпусирование", blank=False, null=False,)
+    delivery_premium_template = models.BooleanField("Ускоренный запуск шаблона", blank=False, null=False,)
+    delivery_premium_plate = models.BooleanField("Ускоренный запуск пластины", blank=False, null=False,)
+    special_note = models.CharField('Заметка', choices=WaferDeliverFormat.choices, default=WaferDeliverFormat.NotCut, blank=False,
+                                  null=False, max_length=2000)
+
+
+
+
     order_date = models.DateTimeField('Дата заказа (оплаты)', blank=False, null=False)
     deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=False)
-    is_paid = models.BooleanField('Заказ оплачен?', blank=False, null=False, )
+    is_paid = models.BooleanField('Заказ оплачен?', blank=True, null=True, )
     order_status = models.CharField('Статус заказа', choices=OrderStatus.choices, default=OrderStatus.CTP,
                                     blank=False, null=False, max_length=200)
-    invoice_file = models.FileField('Файл счета', upload_to='uploads/invoices/%Y/%m/%d/', blank=True, null=False, default='')
-    contract_file = models.FileField('Файл договора', upload_to='uploads/contracts/%Y/%m/%d/', blank=True, null=False, default='')
+    invoice_file = models.FileField('Файл счета', upload_to='uploads/invoices/%Y/%m/%d/', blank=True, null=False,
+                                    default='')
+    contract_file = models.FileField('Файл договора', upload_to='uploads/contracts/%Y/%m/%d/', blank=True, null=False,
+                                     default='')
+    GDS_file = models.FileField('Файл GDS', upload_to='uploads/GDS/%Y/%m/%d/', blank=True, null=False, default='')
 
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)

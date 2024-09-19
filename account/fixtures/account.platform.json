@@ -1,0 +1,18 @@
+[
+  {
+    "model": "account.platform",
+    "pk": 1,
+    "fields": {
+      "platform_name": "Курчатов",
+      "platform_code": "KI"
+    }
+  },
+    {
+    "model": "account.platform",
+    "pk": 2,
+    "fields": {
+      "platform_name": "МИЭТ",
+      "platform_code": "MT"
+    }
+  }
+]

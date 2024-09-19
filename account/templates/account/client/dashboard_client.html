@@ -34,7 +34,7 @@
 
             {% for order in data.orders %}
                 <tr>
-                    <td>{{ order.get_platform_code_display }}</td>
+                    <td>{{ order.platform_code.platform_code }}</td>
                     <td>{{ order.get_order_type_display }}</td>
                     <td>{{ order.order_date.date }}</td>
                     <td>{{ order.deadline_date.date }}</td>
@@ -58,9 +58,11 @@
             {% endfor %}
 
         </table>
+
     </div>
     <br/>
     <div>
         <a href="{% url "new_order" %}" class="button">Добавить заказ...</a>
     </div>
+
 {% endblock %}

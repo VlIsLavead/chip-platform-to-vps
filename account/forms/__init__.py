@@ -54,7 +54,8 @@ class ProfileEditForm(forms.ModelForm):
 class OrderEditForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = [
+
+        exclude = [
             'order_date',
             'deadline_date',
             'is_paid',
@@ -63,4 +64,5 @@ class OrderEditForm(forms.ModelForm):
             'platform_code',
             'contract_file',
             'invoice_file',
+            'deleted_at',
         ]

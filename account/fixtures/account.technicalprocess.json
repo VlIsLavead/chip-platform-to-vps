@@ -1,0 +1,20 @@
+[
+  {
+    "model": "account.technicalprocess",
+    "pk": 1,
+    "fields": {
+      "name_process": "GSi025",
+      "PDK_file": "",
+      "platform": 1
+    }
+  },
+  {
+    "model": "account.technicalprocess",
+    "pk": 2,
+    "fields": {
+      "name_process": "GSi025",
+      "PDK_file": "",
+      "platform": 2
+    }
+  }
+]

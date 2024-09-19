@@ -3,34 +3,37 @@
     "model": "account.order",
     "pk": 1,
     "fields": {
-      "creator": 2,
-      "platform_code": "MT",
-      "order_type": "MPW",
-      "order_date": "2024-08-11T00:00:00Z",
-      "deadline_date": "2024-08-19T00:00:00Z",
-      "is_paid": true,
-      "order_status": "SHD",
-      "invoice_file": "",
-      "contract_file": "",
-      "created_at": "2024-08-11T00:00:00Z",
-      "deleted_at": null
-    }
-  },
-  {
-    "model": "account.order",
-    "pk": 2,
-    "fields": {
-      "creator": 2,
-      "platform_code": "GT",
-      "order_type": "ENG",
-      "order_date": "2024-08-11T00:00:00Z",
-      "deadline_date": "2024-08-19T00:00:00Z",
-      "is_paid": true,
-      "order_status": "SHD",
-      "invoice_file": "",
-      "contract_file": "",
-      "created_at": "2024-08-11T00:00:00Z",
-      "deleted_at": null
+"order_number"				:	"F2024091900001"		,
+"customer_product_name"		:	"KIGSi025"			,
+"mask_name"					:	null				,
+"order_type"				:	"ENG"					,
+"product_count"				:	2,
+"dc_rf_probing_e_map"		:	"DC",
+"dc_rf_probing_inking"		:	false,
+"visual_inspection_inking"	:	false	,
+"dicing_method"				:	"SAW"	,
+"tape_uv_support"			:	true,
+"wafer_deliver_format"		:	"GelPack"	,
+"multiplan_dicing_plan"		:	false	,
+"package_servce"			:	false	,
+"delivery_premium_template"	:	true	,
+"delivery_premium_plate"	:	true	,
+"special_note"				:	"Хочу всего и побыстрее"	,
+"order_date"				:	"2024-09-19 00:00:00"						,
+"deadline_date"				:	"2024-12-27 00:00:00"			,
+"is_paid"					:	null			,
+"order_status"				:	"CTP"	,
+"invoice_file"				:	"",
+"contract_file"				:	"",
+"GDS_file"					:	"",
+"created_at"				:	"2024-09-19 00:00:00",
+"deleted_at"				:	null				,
+"creator_id"				:	5,
+"platform_code_id"			:	1,
+"substrate_id"				:	1,
+"technical_process_id"		:	1
+
     }
   }
+
 ]

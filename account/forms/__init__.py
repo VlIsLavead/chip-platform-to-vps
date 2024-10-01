@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from ..models import Profile, Order
+from ..models import Profile, Order, Platform, TechnicalProcess, Substrate
 
 
 class LoginForm(forms.Form):
@@ -56,13 +56,49 @@ class OrderEditForm(forms.ModelForm):
         model = Order
 
         exclude = [
+            'order_number',
+            'creator',
             'order_date',
             'deadline_date',
             'is_paid',
             'order_status',
+            # 'technical_process',
             'order_type',
-            'platform_code',
             'contract_file',
             'invoice_file',
             'deleted_at',
         ]
+
+    diameter = forms.ModelChoiceField(queryset=Substrate.objects.filter())
+    field_order = ['customer_product_name', 'mask_name', 'technical_process', 'platform_code', 'product_count', 'substrate', 'diameter' ,'dc_rf_probing_e_map', 'dc_rf_probing_inking', 'visual_inspection_inking', 'dicing_method', 'tape_uv_support',
+                   'wafer_deliver_format', 'multiplan_dicing_plan', 'package_servce', 'delivery_premium_template', 'delivery_premium_plate', 'special_note', 'GDS_file']
+
+    def __init__(self, *args, **kwargs):
+        forms.Form.__init__(self,*args,**kwargs)
+        # print( self.fields.keys())
+        # self.fields.insert(0,'diameter',forms.CharField(label="Димаетр подложки", max_length=100))
+
+
+        super().__init__(*args, **kwargs)
+        self.fields["technical_process"].queryset = TechnicalProcess.objects.none()
+        self.fields["substrate"].queryset = Substrate.objects.none()
+        self.fields["diameter"].queryset = Substrate.objects.none()
+        if 'platform_code' in self.data:
+            try:
+                platform_id = int(self.data.get('platform_code'))
+                self.fields['technical_process'].queryset = TechnicalProcess.objects.filter(platform_id=platform_id)
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
+        if 'technical_process' in self.data:
+            try:
+                technical_process_id = int(self.data.get('technical_process'))
+                self.fields['substrate'].queryset = Substrate.objects.filter(tech_proces_id=technical_process_id)
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
+        if 'substrate' in self.data:
+            try:
+                substrate_id = int(self.data.get('substrate'))
+                thikness = Substrate.objects.get(id=substrate_id).thikness
+                self.fields['diameter'].queryset = Substrate.objects.filter(thikness=thikness)
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset

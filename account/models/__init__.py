@@ -82,7 +82,6 @@ class Order(models.Model):
                                   null=False, max_length=200)
     product_count = models.IntegerField('Число проектов в кадре', blank=False, null=True)
     substrate = models.ForeignKey(Substrate, on_delete=models.CASCADE, null=False, )
-
     dc_rf_probing_e_map = models.CharField('E-map проверка', choices=DCRFProbingEMap.choices, default=DCRFProbingEMap.NO, blank=False,
                                   null=False, max_length=200)
     dc_rf_probing_inking = models.BooleanField('Inking проверка',  blank=False,
@@ -105,8 +104,8 @@ class Order(models.Model):
 
 
 
-    order_date = models.DateTimeField('Дата заказа (оплаты)', blank=False, null=False)
-    deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=False)
+    order_date = models.DateTimeField('Дата заказа (оплаты)', blank=False, null=True)
+    deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=True)
     is_paid = models.BooleanField('Заказ оплачен?', blank=True, null=True, )
     order_status = models.CharField('Статус заказа', choices=OrderStatus.choices, default=OrderStatus.CTP,
                                     blank=False, null=False, max_length=200)

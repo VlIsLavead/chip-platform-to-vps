@@ -1,5 +1,7 @@
+import datetime
+
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -7,7 +9,7 @@ from django.contrib import messages
 from django.urls import reverse
 
 from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm
-from ..models import Profile, Order
+from ..models import Profile, Order, TechnicalProcess, Platform, Substrate
 
 
 def user_login(request):
@@ -49,6 +51,7 @@ def dashboard(request, message=''):
 
 def _dashboard_client(request, message=''):
     orders = Order.objects.filter(creator_id=request.user.id)
+
     return render(
         request,
         'account/client/dashboard_client.html',
@@ -64,9 +67,21 @@ def _dashboard_client(request, message=''):
 
 @login_required
 def new_order(request):
+    last_order = Order.objects.latest("created_at")
+    date_last_order, number_last_order = last_order.order_number[1:9], last_order.order_number[9:]
+    # print(date_last_order,str(datetime.datetime.today().strftime("%Y%m%d")))
+    if (date_last_order == str(datetime.datetime.today().strftime("%Y%m%d"))):
+        order_number = 'F' + date_last_order + str(((int(number_last_order) / 10000 +0.0001))).replace('.','')
+
+    else:
+        order_number = 'F' + str(datetime.datetime.today().strftime("%y%m%d")) + '00001'
+
     if request.method == 'POST':
         order_form = OrderEditForm(request.POST, request.FILES)
+
+        # order_form.instance.technical_process = TechnicalProcess.objects.get(id=)
         if order_form.is_valid():
+            order_form.order_number = order_number
             order_form.instance.creator = request.user.profile
             order_form.save(commit=True)
             return render(
@@ -82,6 +97,7 @@ def new_order(request):
         'account/client/new_order.html',
         {
             'order_form': order_form,
+            'order_number': order_number,
         }
     )
 
@@ -150,3 +166,44 @@ def edit(request):
                   'account/edit.html',
                   {'user_form': user_form,
                    'profile_form': profile_form})
+
+
+def load_data(request):
+    values = [(key, request.GET.getlist(key)) for key in request.GET]
+    fields_from_html = {}
+
+    for i in range(len(values)):
+        fields_from_html[values[i][0]] = values[i][1][0]
+    if "thikness_substate_id" in fields_from_html.keys():
+        thikness_substate_id = request.GET.get('thikness_substate_id')
+        print('-' * 30)
+        print(thikness_substate_id)
+        if thikness_substate_id != '':
+            thikness = Substrate.objects.get(id=thikness_substate_id).thikness
+            tech_proces = Substrate.objects.get(id=thikness_substate_id).tech_proces
+            diameter = Substrate.objects.filter(thikness=thikness, tech_proces=tech_proces)
+            # return render(request, 'accoust/client/new_order.html', {'technical_process': technical_process})
+            return JsonResponse(list(diameter.values('id', 'diameter')), safe=False)
+
+    if "technical_process_id" in fields_from_html.keys():
+        technical_process_id = request.GET.get('technical_process_id')
+        if technical_process_id != '':
+
+            substrate = Substrate.objects.filter(tech_proces_id=technical_process_id).values("thikness").distinct()
+            # return render(request, 'accoust/client/new_order.html', {'technical_process': technical_process})
+            d = {}
+            res=[]
+            print(list(substrate.values('id','thikness').distinct()))
+            for i in list(substrate.values('id','thikness').distinct()):
+                if i['thikness'] not in d.values():
+                    d['id'] = i['id']
+                    d['thikness'] = i['thikness']
+                    res.append(d)
+            substrate = res
+
+            return JsonResponse(substrate, safe=False)
+
+    platform_code_id = request.GET.get('platform_code_id')
+    technical_process = TechnicalProcess.objects.filter(platform_id=platform_code_id).distinct()
+
+    return JsonResponse(list(technical_process.values('id', 'name_process')), safe=False)

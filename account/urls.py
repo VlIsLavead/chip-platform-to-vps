@@ -11,4 +11,6 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('edit/', views.edit, name='edit'),
     path('new_order/', views.new_order, name='new_order'),
+
+    path('load-data/', views.load_data, name='load_data'),  # AJAX
 ]

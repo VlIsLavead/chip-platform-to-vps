@@ -5,9 +5,104 @@
 {% block content %}
     <h1>Создать новый заказ</h1>
     <p>Заполните форму и прикрепите документы</p>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" id="orderForm" data-url="{% url 'load_data' %}">
+        <p>Номер заказа {{order_number}}</p>
+        <p>Creator {{ request.user.first_name|default:request.user.username }}</p>
+
         {{ order_form.as_p }}
         {% csrf_token %}
         <p><input type="submit" value="Сохранить"></p>
     </form>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    $("#id_platform_code").change(function () {
+        const url = $("#orderForm").attr("data-url");  // get the url of the `load_cities` view
+        const platform_code_id = $(this).val();  // get the selected country ID from the HTML input
+
+        $.ajax({                       // initialize an AJAX request
+            url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+            data: {
+                'platform_code_id': platform_code_id       // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+<!--                console.log(data);-->
+                $("#id_technical_process").html(data);  // replace the contents of the city input with the data that came from the server
+
+
+                let html_data = '<option value="">---------</option>';
+                data.forEach(function (technical_process) {
+                    html_data += `<option value="${technical_process.id}">${technical_process.name_process}</option>`
+                });
+                console.log(html_data);
+                $("#id_technical_process").html(html_data);
+
+
+            }
+        });
+
+    });
+</script>
+<script>
+    $("#id_technical_process").change(function () {
+<!--        console.log(data);-->
+        const url = $("#orderForm").attr("data-url");  // get the url of the `load_cities` view
+        const technical_process_id = $(this).val();  // get the selected country ID from the HTML input
+
+        $.ajax({                       // initialize an AJAX request
+            url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+            data: {
+                'technical_process_id': technical_process_id       // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+
+                $("#id_substrate").html(data);  // replace the contents of the city input with the data that came from the server
+
+
+<!--                let html_data1 = '<option value="">-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>';-->
+<!--                data.forEach(function (substrate) {-->
+<!--                    html_data1 += `<option value="${substrate.id}">${substrate.diameter}</option>`-->
+<!--                });-->
+<!--                console.log(html_data1);-->
+<!--                $("#id_substrate").html(html_data1);-->
+
+				let html_data2 = '<option value="">---------</option>';
+                data.forEach(function (substrate) {
+                    html_data2 += `<option value="${substrate.id}">${substrate.thikness}</option>`
+                });
+                console.log(html_data2);
+                $("#id_substrate").html(html_data2);
+
+            }
+        });
+
+    });
+</script>
+<script>
+    $("#id_substrate").change(function () {
+<!--        console.log(data);-->
+        const url = $("#orderForm").attr("data-url");  // get the url of the `load_cities` view
+        const substate_id = $(this).val();  // get the selected country ID from the HTML input
+
+        $.ajax({                       // initialize an AJAX request
+            url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+            data: {
+                'thikness_substate_id': substate_id       // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+
+                $("#id_diameter").html(data);  // replace the contents of the city input with the data that came from the server
+
+
+                let html_data1 = '<option value="">---------</option>';
+                data.forEach(function (diameter) {
+                    html_data1 += `<option value="${diameter.id}">${diameter.diameter}</option>`
+                });
+                console.log(html_data1);
+                $("#id_diameter").html(html_data1);
+
+            }
+        });
+
+    });
+</script>
 {% endblock %}

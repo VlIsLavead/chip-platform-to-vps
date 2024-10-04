@@ -70,19 +70,22 @@ class OrderEditForm(forms.ModelForm):
         ]
 
     diameter = forms.ModelChoiceField(queryset=Substrate.objects.filter())
-    field_order = ['customer_product_name', 'mask_name', 'technical_process', 'platform_code', 'product_count', 'substrate', 'diameter' ,'dc_rf_probing_e_map', 'dc_rf_probing_inking', 'visual_inspection_inking', 'dicing_method', 'tape_uv_support',
-                   'wafer_deliver_format', 'multiplan_dicing_plan', 'package_servce', 'delivery_premium_template', 'delivery_premium_plate', 'special_note', 'GDS_file']
+    field_order = ['customer_product_name', 'mask_name', 'platform_code', 'technical_process', 'substrate', 'diameter',
+                   'product_count', 'dc_rf_probing_e_map', 'dc_rf_probing_inking', 'visual_inspection_inking',
+                   'dicing_method', 'tape_uv_support',
+                   'wafer_deliver_format', 'multiplan_dicing_plan', 'package_servce', 'delivery_premium_template',
+                   'delivery_premium_plate', 'special_note', 'GDS_file']
 
     def __init__(self, *args, **kwargs):
-        forms.Form.__init__(self,*args,**kwargs)
+        forms.Form.__init__(self, *args, **kwargs)
         # print( self.fields.keys())
         # self.fields.insert(0,'diameter',forms.CharField(label="Димаетр подложки", max_length=100))
-
 
         super().__init__(*args, **kwargs)
         self.fields["technical_process"].queryset = TechnicalProcess.objects.none()
         self.fields["substrate"].queryset = Substrate.objects.none()
         self.fields["diameter"].queryset = Substrate.objects.none()
+        self.fields["platform_code"].queryset = Platform.objects.all()
         if 'platform_code' in self.data:
             try:
                 platform_id = int(self.data.get('platform_code'))

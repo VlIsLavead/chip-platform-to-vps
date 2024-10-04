@@ -70,18 +70,22 @@ def new_order(request):
     last_order = Order.objects.latest("created_at")
     date_last_order, number_last_order = last_order.order_number[1:9], last_order.order_number[9:]
     # print(date_last_order,str(datetime.datetime.today().strftime("%Y%m%d")))
+    # print(date_last_order)
+    # print(last_order.order_number)
+    # print(str(datetime.datetime.today().strftime("%Y%m%d")))
     if (date_last_order == str(datetime.datetime.today().strftime("%Y%m%d"))):
-        order_number = 'F' + date_last_order + str(((int(number_last_order) / 10000 +0.0001))).replace('.','')
+
+        order_number = 'F' + str(datetime.datetime.today().strftime("%Y%m%d")) + str(((int(number_last_order) / 10000 +0.0001))).replace('.','')
 
     else:
-        order_number = 'F' + str(datetime.datetime.today().strftime("%y%m%d")) + '00001'
+        order_number = 'F' + str(datetime.datetime.today().strftime("%Y%m%d")) + '00001'
 
     if request.method == 'POST':
         order_form = OrderEditForm(request.POST, request.FILES)
 
         # order_form.instance.technical_process = TechnicalProcess.objects.get(id=)
         if order_form.is_valid():
-            order_form.order_number = order_number
+            order_form.instance.order_number = order_number
             order_form.instance.creator = request.user.profile
             order_form.save(commit=True)
             return render(

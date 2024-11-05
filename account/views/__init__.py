@@ -1,5 +1,8 @@
-import datetime
+import datetime, openpyxl, json
 
+from urllib.parse import quote #Для названия excel файла
+from django.forms.models import model_to_dict
+from openpyxl.styles import Font, Border, Side, Alignment
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
@@ -10,6 +13,7 @@ from django.urls import reverse
 
 from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate
+from ..export_excel import generate_excel_file
 
 
 def user_login(request):
@@ -68,34 +72,42 @@ def _dashboard_client(request, message=''):
 @login_required
 def new_order(request):
     last_order = Order.objects.latest("created_at")
-    date_last_order, number_last_order = last_order.order_number[1:9], last_order.order_number[9:]
-    # print(date_last_order,str(datetime.datetime.today().strftime("%Y%m%d")))
-    # print(date_last_order)
-    # print(last_order.order_number)
-    # print(str(datetime.datetime.today().strftime("%Y%m%d")))
-    if (date_last_order == str(datetime.datetime.today().strftime("%Y%m%d"))):
-
-        order_number = 'F' + str(datetime.datetime.today().strftime("%Y%m%d")) + str(((int(number_last_order) / 10000 +0.0001))).replace('.','')
-
+    
+    
+    # date_last_order, number_last_order = last_order.order_number[1:9], last_order.order_number[9:]
+    
+    # if date_last_order == str(datetime.datetime.today().strftime("%Y%m%d")):
+    #     order_number = 'F' + str(datetime.datetime.today().strftime("%Y%m%d")) + str(((int(number_last_order) / 10000 + 0.0001))).replace('.', '')
+    # else:
+    #     order_number = 'F' + str(datetime.datetime.today().strftime("%Y%m%d")) + '00001' 
+        
+        
+    date_last_order, number_last_order = last_order.order_number[1:9], int(last_order.order_number[9:])
+    if date_last_order == datetime.datetime.today().strftime("%Y%m%d"):
+        new_number = str(number_last_order + 1).zfill(5)
     else:
-        order_number = 'F' + str(datetime.datetime.today().strftime("%Y%m%d")) + '00001'
-
+        new_number = '00001'
+    order_number = str('F' + datetime.datetime.today().strftime("%Y%m%d") + new_number)
     if request.method == 'POST':
         order_form = OrderEditForm(request.POST, request.FILES)
 
-        # order_form.instance.technical_process = TechnicalProcess.objects.get(id=)
         if order_form.is_valid():
             order_form.instance.order_number = order_number
             order_form.instance.creator = request.user.profile
             order_form.save(commit=True)
-            return render(
-                request,
-                'account/client/new_order_success.html',
-            )
+            order_in_progress = Order.objects.latest("created_at")
+            order_data = model_to_dict(order_in_progress)
+            excluded_fields = ['invoice_file', 'contract_file', 'GDS_file']  
+            for field in excluded_fields:
+                order_data.pop(field, None)  
+            request.session['form_data'] = order_data
+            
+            return render(request, 'account/client/new_order_success.html')
         else:
             messages.error(request, 'Ошибка в заполнении данных для заказа')
     else:
         order_form = OrderEditForm()
+
     return render(
         request,
         'account/client/new_order.html',
@@ -211,3 +223,23 @@ def load_data(request):
     technical_process = TechnicalProcess.objects.filter(platform_id=platform_code_id).distinct()
 
     return JsonResponse(list(technical_process.values('id', 'name_process')), safe=False)
+
+
+def new_order_success_view(request):
+    return render(request, 'new_order_success.html')
+
+
+def download_excel_file(request):
+    session_data = request.session.get('form_data', {})
+    wb = generate_excel_file(session_data)
+    
+    filename = 'Отчет заказа.xlsx'
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="{quote(filename)}"; filename=*UTF-8\'\'{quote(filename)}'
+    wb.save(response)
+    
+    return response
+
+
+        

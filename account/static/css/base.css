@@ -136,6 +136,11 @@ input.search-button {
     float:left;
     font-size:13px;
 }
+.bb{
+    border-bottom:1px solid #bbb;
+    padding:0 0 10px 0;
+    margin:10px 0 20px 0;
+}
 /* messages */
 ul.messages {
     margin:10px 100px;

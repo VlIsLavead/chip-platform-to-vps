@@ -5,7 +5,7 @@
 {% block content %}
     <h1>Создать новый заказ</h1>
     <p>Заполните форму и прикрепите документы</p>
-    <form method="post" id="orderForm" data-url="{% url 'load_data' %}">
+    <form method="post" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
         <p>Номер заказа {{order_number}}</p>
         <p>Creator {{ request.user.first_name|default:request.user.username }}</p>
         {{ order_form.as_p }}

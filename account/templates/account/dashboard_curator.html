@@ -5,13 +5,65 @@
 {% block content %}
 
     <h1>Личный кабинет куратора</h1>
+    <h2>Компания {{ data.profile.company }}</h2>
     <p>
         Это ваш личный кабинет. Здесь вы можете
         <a href="{% url "edit" %}">отредактировать</a>
         ваш профиль, <a href="{% url "password_change" %}">поменять</a>
         ваш пароль.
     </p>
-    <p>
-        Заглушка для других инструментов.<br>{{ data }}
-    </p>
+    <div>
+        <form method="GET" action="">
+            <input type="search" name="search"/>&nbsp;
+            <button class="search-button" type="submit">Поиск</button>
+        </form>
+    </div>
+    <div>
+        <table border="1">
+            <tr>
+                <th scope="col">ID заказа</th>
+                <th scope="col">Код площадки</th>
+                <th scope="col">Тип заказа</th>
+                <th scope="col">Дата заказа (оплаты)</th>
+                <th scope="col">Срок выполнения по договору</th>
+                <th scope="col">Статус оплаты</th>
+                <th scope="col">Статус заказа</th>
+                <th scope="col">Договор</th>
+                <th scope="col">Счет</th>
+            </tr>
+
+            {% for order in data.orders_all %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.platform_code.platform_code }}</td>
+                    <td>{{ order.get_order_type_display }}</td>
+                    <td>{{ order.order_date.date }}</td>
+                    <td>{{ order.deadline_date.date }}</td>
+                    <td>{{ order.is_paid }}</td>
+                    <td>{{ order.get_order_status_display }}</td>
+                    <td>
+                        {% if order.contract_file %}
+                            <a href="{{ order.contract_file.url }}" download>скачать</a>
+                        {% else %}
+                            <span>отсутствует</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.invoice_file %}
+                            <a href="{{ order.invoice_file.url }}" download>скачать</a>
+                        {% else %}
+                            <span>отсутствует</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'edit_order' order.id %}">Редактировать</a>
+                    </td>
+                </tr>
+            {% endfor %}       
+
+
+        </table>
+
+    </div>
+    <br/>
 {% endblock %}

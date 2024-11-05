@@ -77,7 +77,7 @@ class OrderEditForm(forms.ModelForm):
                    'delivery_premium_plate', 'special_note', 'GDS_file']
 
     def __init__(self, *args, **kwargs):
-        forms.Form.__init__(self, *args, **kwargs)
+        super(OrderEditForm, self).__init__(*args, **kwargs)
         # print( self.fields.keys())
         # self.fields.insert(0,'diameter',forms.CharField(label="Димаетр подложки", max_length=100))
 
@@ -105,3 +105,10 @@ class OrderEditForm(forms.ModelForm):
                 self.fields['diameter'].queryset = Substrate.objects.filter(thikness=thikness)
             except (ValueError, TypeError):
                 pass  # invalid input from the client; ignore and fallback to empty City queryset
+
+
+class OrderEditingForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        
+        fields = ['order_status', 'contract_file', 'invoice_file']

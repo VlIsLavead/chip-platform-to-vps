@@ -5,13 +5,13 @@ from django.forms.models import model_to_dict
 from openpyxl.styles import Font, Border, Side, Alignment
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 
-from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm
+from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate
 from ..export_excel import generate_excel_file
 
@@ -119,11 +119,43 @@ def new_order(request):
 
 
 def _dashboard_curator(request, message=''):
+    orders = Order.objects.all()
+    
     return render(
         request,
         'account/dashboard_curator.html',
-        {'section': 'dashboard', 'data': 'sample curator data'},
+        {
+            'section': 'dashboard', 
+            'data': {
+                'orders_all': orders,
+                'profile': {'company': 'рога и копыта'},
+                },
+        }
     )
+    
+     
+@login_required
+def edit_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)  
+    creator_name = order.creator.user.username
+    print(order.__dict__)
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+    
+    if request.method == 'POST':
+        form = OrderEditingForm(request.POST, request.FILES, instance=order) 
+        if form.is_valid():
+            form.save()
+            return render(request, 'account/edit_order_success.html')
+    else:
+        form = OrderEditingForm(instance=order) 
+
+    return render(request, 'account/edit_order.html', {
+        'form': form,
+        'order_number': order.id,
+        'creator_name': creator_name,
+        'order': order_dict,
+        })
+
 
 
 def _dashboard_executor(request, message=''):
@@ -132,7 +164,8 @@ def _dashboard_executor(request, message=''):
         'account/dashboard_executor.html',
         {'section': 'dashboard', 'data': 'sample executor data'},
     )
-
+    
+    
 
 def register(request):
     if request.method == 'POST':

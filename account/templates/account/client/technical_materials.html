@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Личный кабинет клиента{% endblock %}
+
+{% block content %}
+<h1>Технические материалы</h1>
+<br>
+<form method="GET" action="">
+    <div>
+        <label for="technical_process">Название техпроцесса:</label>
+        <select id="technical_process" name="technical_process" onchange="this.form.submit()">
+            <option value="">Выберите техпроцесс</option>
+            {% for process in techprocess %}
+                <option value="{{ process.name_process }}" {% if selected_process and selected_process.name_process == process.name_process %}selected{% endif %}>
+                    {{ process.name_process }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <br>
+</form>
+
+{% if selected_process %}
+    {% if selected_process.PDK_file %}
+        <a href="{{ selected_process.PDK_file.url }}" download class="button">Скачать файл КИП для {{ selected_process.name_process }}</a>
+    {% else %}
+        <span>Файл КИП отсутствует для {{ selected_process.name_process }}</span>
+    {% endif %}
+{% endif %}
+{% endblock %}

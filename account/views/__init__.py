@@ -116,6 +116,20 @@ def new_order(request):
             'order_number': order_number,
         }
     )
+    
+def technical_materials(request):
+    techprocess = TechnicalProcess.objects.values('name_process').distinct()
+    selected_process_name = request.GET.get('technical_process')
+    selected_process = None
+
+    if selected_process_name:
+        selected_process = TechnicalProcess.objects.filter(name_process=selected_process_name).first()
+
+    
+    return render(request, 'account/client/technical_materials.html',{
+                    'techprocess': techprocess,
+                    'selected_process': selected_process,
+                    })
 
 
 def _dashboard_curator(request, message=''):

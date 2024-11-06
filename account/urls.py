@@ -14,10 +14,12 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('edit/', views.edit, name='edit'),
     path('new_order/', views.new_order, name='new_order'),
+    path('technical_materials/', views.technical_materials, name='technical_materials'),
     path('new_order_success/', views.new_order_success_view, name='new_order_success'),
     path('download_excel/', views.download_excel_file, name='download_excel'), 
     path('edit_order/<int:order_id>', views.edit_order, name='edit_order'),  # Страница редактирования заказа
     
   
   path('load-data/', views.load_data, name='load_data'),  # AJAX
+
 

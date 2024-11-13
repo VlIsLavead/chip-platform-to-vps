@@ -156,9 +156,11 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-\.idea/
+.idea/
 
-venv/
+# gigaide
+
+.gigaide/
 
 ref/
 

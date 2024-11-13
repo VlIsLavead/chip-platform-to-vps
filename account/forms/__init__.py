@@ -112,3 +112,10 @@ class OrderEditingForm(forms.ModelForm):
         model = Order
         
         fields = ['order_status', 'contract_file', 'invoice_file']
+
+
+class EditPlatform(forms.ModelForm):
+    class Meta:
+        model = Platform
+        
+        fields = ['platform_name', 'platform_code']

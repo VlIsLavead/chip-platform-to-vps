@@ -1,17 +1,74 @@
 {% extends "base.html" %}
 
-{% block title %}Личный кабинет{% endblock %}
+{% block tabs %}
+    <li {% if section == "dashboard" %}class="selected"{% endif %}>
+        <a href="{% url "dashboard" %}">Заказы</a>
+    </li>
+    <li {% if section == "feedback" %}class="selected"{% endif %}>
+        <a href="{% url "edit_platform" %}">Работа с техпроцессами</a>
+    </li>
+    <li {% if section == "feedback" %}class="selected"{% endif %}>
+        <a href="#">Обратная связь</a>
+    </li>
+{% endblock %}
+
+{% block title %}Личный кабинет исполнителя{% endblock %}
 
 {% block content %}
-
     <h1>Личный кабинет исполнителя</h1>
+    <h2>Компания: {{ data.profile.company }}</h2>
     <p>
         Это ваш личный кабинет. Здесь вы можете
         <a href="{% url "edit" %}">отредактировать</a>
         ваш профиль, <a href="{% url "password_change" %}">поменять</a>
         ваш пароль.
     </p>
-    <p>
-        Заглушка для других инструментов.<br>{{ data }}
-    </p>
+    <h2>Заказы для компании: {{ data.name_platform }}</h2>
+    <h3>Код платформы: {{ data.code_company }}</h3>
+    <div>
+        <form method="GET" action="">
+            <input type="search" name="search"/>&nbsp;
+            <button class="search-button" type="submit">Поиск</button>
+        </form>
+    </div>
+    <div>
+        <table border="1">
+            <tr>
+                <th scope="col">ID заказа</th>
+                <th scope="col">Тип заказа</th>
+                <th scope="col">Дата заказа (оплаты)</th>
+                <th scope="col">Срок выполнения по договору</th>
+                <th scope="col">Статус оплаты</th>
+                <th scope="col">Статус заказа</th>
+                <th scope="col">Договор</th>
+                <th scope="col">Счет</th>
+            </tr>
+
+            {% for order in data.orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.get_order_type_display }}</td>
+                    <td>{{ order.order_date.date }}</td>
+                    <td>{{ order.deadline_date.date }}</td>
+                    <td>{{ order.is_paid }}</td>
+                    <td>{{ order.get_order_status_display }}</td>
+                    <td>
+                        {% if order.contract_file %}
+                            <a href="{{ order.contract_file.url }}" download>скачать</a>
+                        {% else %}
+                            <span>отсутствует</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.invoice_file %}
+                            <a href="{{ order.invoice_file.url }}" download>скачать</a>
+                        {% else %}
+                            <span>отсутствует</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}       
+        </table>
+    </div>
+    <br>
 {% endblock %}

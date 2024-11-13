@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Добавление новой платформы</h1>
+<p>Здесь вы можете добавить новую платформу, заполнив форму ниже.</p>
+<form method="post">
+    {% csrf_token %}
+    {{ editing_form.as_p }}
+    <br>
+    <input type="submit" value="Добавить платформу"></input>
+
+{% endblock %}

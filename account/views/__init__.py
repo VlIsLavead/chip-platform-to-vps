@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 
-from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm
+from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate
 from ..export_excel import generate_excel_file
 
@@ -147,7 +147,7 @@ def _dashboard_curator(request, message=''):
         }
     )
     
-     
+    
 @login_required
 def edit_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)  
@@ -171,15 +171,46 @@ def edit_order(request, order_id):
         })
 
 
-
+@login_required
 def _dashboard_executor(request, message=''):
+    profile = request.user.profile
+    code_company = Platform.objects.get(platform_code=profile.company_name)
+    orders = Order.objects.filter(platform_code_id=code_company)
+    name_platform = Platform.objects.filter(platform_code=code_company).values_list('platform_name', flat=True).first()
+
     return render(
-        request,
-        'account/dashboard_executor.html',
-        {'section': 'dashboard', 'data': 'sample executor data'},
-    )
+        request, 
+        'account/dashboard_executor.html', 
+        {
+            'section': 'dashboard',
+            'data': {
+                'orders': orders,
+                'name_platform': name_platform,
+                'code_company': code_company,
+                'profile': {'company': 'рога и копыта'},
+        }
+    })
     
     
+@login_required
+def edit_platform(request):
+    if request.method == 'POST':
+        editing_form = EditPlatform(request.POST)
+        if editing_form.is_valid():
+            editing_form.save()
+            return redirect('edit_platform_success')
+    else:
+        editing_form = EditPlatform()
+        
+    return render(request,
+                  'account/edit_platform.html',
+                  {'editing_form': editing_form})
+
+
+@login_required
+def edit_platform_success(request):
+    return render(request, 'account/edit_platform_success.html')
+
 
 def register(request):
     if request.method == 'POST':

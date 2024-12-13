@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Успех{% endblock %}
+
+{% block content %}
+    <h1>Подтверждение оплаты исполнителем</h1>
+
+    {% if action == "success" %}
+        <p>Оплата подтверждена</p>
+    {% elif action == "cancelled" %}
+        <p>Оплата не подтверждена</p>
+    {% else %}
+        <p>Произошла неизвестная ошибка. Пожалуйста, попробуйте снова.</p>
+    {% endif %}
+
+    <p><a href="{% url 'dashboard' %}">Вернуться к заказу</a></p>
+{% endblock %}

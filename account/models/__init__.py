@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from datetime import datetime
+from django.utils import timezone
 
 
 class Role(models.Model):
@@ -54,11 +56,17 @@ class Order(models.Model):
         ENG = 'ENG', 'Инженерный'
 
     class OrderStatus(models.TextChoices):
-        CTP = 'CTP', 'Проверка топологии',
-        PSF = 'PSF', 'Формирование запуска',
-        PRD = 'PRD', 'Производство'
-        SHP = 'SHP', 'Отгрузка'
-        SHD = 'SHD', 'Отгружен'
+        NFW = 'NFW', 'Необходима доработка',
+        OVK = 'OVK', 'На проверке у куратора',
+        OVC = 'OVC', 'На проверке у исполнителя',
+        OA = 'OA', 'Принят'
+        OGDS = 'OGDS', 'Согласование'
+        PO = 'PO', 'Оплата'
+        POK = 'POK', 'Подтверждение оплаты куратором'
+        POC = 'POC', 'Подтверждение оплаты исполнителем'
+        MPO = 'MPO', 'Производство' 
+        SO = 'SO', 'Отгрузка'
+        EO = 'EO', 'Завершен'
 
     class DCRFProbingEMap(models.TextChoices):
         DC = 'DC Probing', 'DC проверка',
@@ -110,8 +118,8 @@ class Order(models.Model):
 
     order_date = models.DateTimeField('Дата заказа (оплаты)', blank=False, null=True)
     deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=True)
-    is_paid = models.BooleanField('Заказ оплачен?', blank=True, null=True, )
-    order_status = models.CharField('Статус заказа', choices=OrderStatus.choices, default=OrderStatus.CTP,
+    is_paid = models.BooleanField('Заказ оплачен?', blank=True, null=True, default=False)
+    order_status = models.CharField('Статус заказа', choices=OrderStatus.choices, default=OrderStatus.OVK,
                                     blank=False, null=False, max_length=200)
     invoice_file = models.FileField('Файл счета', upload_to='uploads/invoices/%Y/%m/%d/', blank=True, null=False,
                                     default='')

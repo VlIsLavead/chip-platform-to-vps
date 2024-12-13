@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Успех{% endblock %}
+
+{% block content %}
+    <h1>Результат оплаты заказа</h1>
+
+    {% if action == "success" %}
+        <p>Заказ успешно оплачен!</p>
+    {% elif action == "cancelled" %}
+        <p>Вы отменили оплату</p>
+    {% else %}
+        <p>Заказ не оплачен. Попробуйте снова</p>
+    {% endif %}
+
+    <p><a href="{% url 'dashboard' %}">Вернуться к заказу</a></p>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Проверка GDS файла</h1>
+
+    <form method="post" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
+        {% csrf_token %}
+        <a href="{{ data.order.GDS_file.url }}" class="button" download>Скачать GDS файл</a> 
+        <p>
+            <input type="submit" name="success_gds" value="Подтвердить GDS файл">
+            <input type="submit" name="cansel_gds" value="Отменить подтверждение">
+        <p>
+    </form>
+{% endblock %}

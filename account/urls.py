@@ -2,26 +2,30 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
 
-# from .views import new_order
-
 urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
-
-
     path('', include('django.contrib.auth.urls')),
     path('', views.dashboard, name='dashboard'),
-    path('register/', views.register, name='register'),
     path('edit/', views.edit, name='edit'),
     path('new_order/', views.new_order, name='new_order'),
     path('technical_materials/', views.technical_materials, name='technical_materials'),
     path('new_order_success/', views.new_order_success_view, name='new_order_success'),
     path('download_excel/', views.download_excel_file, name='download_excel'), 
     path('edit_order/<int:order_id>', views.edit_order, name='edit_order'),
-    path('edit-platform', views.edit_platform, name='edit_platform'),
-    path('edit-platform-success', views.edit_platform_success, name='edit_platform_success'),
-    
-  
+    path('edit_platform', views.edit_platform, name='edit_platform'),
+    path('edit_platform-success', views.edit_platform_success, name='edit_platform_success'),
+    path('changes_in_order/<int:order_id>', views.changes_in_order, name='changes_in_order'),
+    path('order_view/<int:order_id>', views.order_view, name='order_view'),
+    path('order_view/success/', views.order_view_success, name='order_view_success'),
+    path('add_gds/<int:order_id>/', views.add_gds, name='add_gds'),
+    path('check_gds_file/<int:order_id>/', views.check_gds_file, name='check_gds_file'),
+    path('order_paid/<int:order_id>/', views.order_paid, name='is_paid'),
+    path('view_is_paid/<int:order_id>/', views.view_is_paid, name='view_is_paid'),
+    path('view_is_paid_exec/<int:order_id>/', views.view_is_paid_exec, name='view_is_paid_exec'),
+    path('plates_in_stock/<int:order_id>/', views.plates_in_stock, name='plates_in_stock'),
+    path('shipping_is_confirm/<int:order_id>/', views.shipping_is_confirm, name='shipping_is_confirm'),
+
   path('load-data/', views.load_data, name='load_data')   # AJAX
 ]
 

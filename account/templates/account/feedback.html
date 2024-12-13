@@ -1,0 +1,49 @@
+{% comment %} {% extends "base.html" %}
+
+{% block sub_tabs %}
+<div id="header">
+    <ul class="menu">
+        <li {% if sub_section == "general_questions" %}class="selected"{% endif %}>
+            <a href="{% url "feedback" %}?tab=general">Общие вопросы</a>
+        </li>
+        <li {% if sub_section == "other_questions" %}class="selected"{% endif %}>
+            <a href="{% url "feedback" %}?tab=support">Вопросы по заказам</a>
+        </li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Обратная связь</h1>
+<!-- Содержимое страницы -->
+<table border="1" style="width: 50%; border-collapse: collapse; text-align: left;">
+    <thead>
+        <tr>
+            <th>Общие вопросы</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <a href="{% url 'room' room=room_details.name %}?user={{ username }}">
+                    Общий вопрос 1
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="{% url 'room' room='Room2' %}?username={{ username }}">
+                    Общий вопрос 2
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="{% url 'room' room='Room3' %}?username={{ username }}">
+                    Общий вопрос 3
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %} {% endcomment %}

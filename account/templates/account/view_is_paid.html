@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Подтверждение оплаты куратором</h1>
+
+    <div>
+        <table border="1">
+            <tr>
+                <th scope="col">ID заказа</th>
+                <th scope="col">Код площадки</th>
+                <th scope="col">Статус оплаты</th>
+            </tr>
+            <tr>
+                <td>{{ order.order_number }}</td>
+                <td>{{ order.platform_code.platform_code }}</td>
+                <td>{{ order.is_paid }}</td>
+            </tr>     
+        </table>
+    </div>
+    <form method="post" action="{% url 'view_is_paid' order.id %}">
+        {% csrf_token %}
+        <p>
+            <input type="submit" name="paid_confirmation" value="Подтвердить оплату">
+            <input type="submit" name="paid_cansel" value="Отменить подтверждение">
+        <p>
+    </form>
+{% endblock %}

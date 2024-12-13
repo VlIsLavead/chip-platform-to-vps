@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}Успех{% endblock %}
+
+{% block content %}
+    <h2>{{ message }}</h2>
+    <p><a href="{% url 'dashboard' %}">Вернуться к заказу</a></p>
+{% endblock %}

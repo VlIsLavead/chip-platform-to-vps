@@ -1,17 +1,17 @@
-import datetime, openpyxl, json
+import datetime
 
 from urllib.parse import quote #Для названия excel файла
 from django.forms.models import model_to_dict
-from openpyxl.styles import Font, Border, Side, Alignment
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.utils import timezone
 
-from ..forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform
+
+from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate
 from ..export_excel import generate_excel_file
 
@@ -131,6 +131,82 @@ def technical_materials(request):
                     'selected_process': selected_process,
                     })
 
+def changes_in_order(request, order_id):
+    order = Order.objects.get(id=order_id)
+    if request.method == 'POST':
+        order_form = OrderEditForm(request.POST, request.FILES, instance=order)
+        if order_form.is_valid():
+            order.order_status = "OVK"
+            order_form.save()
+            return render(request, 'account/client/changes_in_order_success.html')
+        else:
+            messages.error(request, 'Ошибка в заполнении данных для заказа')
+    else:
+        order_form = OrderEditForm(instance=order)
+    return render(request, 'account/client/changes_in_order.html', {
+        'order': order,
+        'order_form': order_form,
+    })
+    
+def add_gds(request, order_id):
+    order = Order.objects.get(id=order_id)
+    creator_name = order.creator.user.username
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+    
+    if request.method == 'POST':
+        form = AddGDSFile(request.POST, request.FILES, instance=order)
+        if form.is_valid():
+            order.order_status = "OGDS"
+            form.save()
+            return render(request, 'account/client/add_gds_success.html', )
+    else:
+        form = AddGDSFile(instance=order)
+        
+    return render(
+        request,
+        'account/client/add_gds.html',
+        {
+            'form': form,
+            'data': {
+                'order': order,
+                'order_dict': order_dict,
+                'creator_name': creator_name,
+            }
+        }
+    )
+    
+    
+@login_required
+def order_paid(request, order_id):
+    order = Order.objects.get(id=order_id)  
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+
+    if request.method == 'POST':
+        action = None
+        if 'paid_success' in request.POST:
+            order.is_paid = True
+            order.order_status = "POK"
+            action = 'success'
+        elif 'paid_cansel' in request.POST:
+            order.is_paid = False
+            order.order_status = "PO"
+            action = 'cancelled'
+        order.save()
+
+        return render(
+            request,
+            'account/client/order_paid_success.html',
+            {'order': order, 'action': action}
+        )
+
+    return render(request, 'account/client/order_paid.html', { 
+        'order': order,
+        'data': {
+            'order_dict': order_dict,
+        }
+    })
+
+
 
 def _dashboard_curator(request, message=''):
     orders = Order.objects.all()
@@ -152,14 +228,20 @@ def _dashboard_curator(request, message=''):
 def edit_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)  
     creator_name = order.creator.user.username
-    print(order.__dict__)
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     
     if request.method == 'POST':
         form = OrderEditingForm(request.POST, request.FILES, instance=order) 
         if form.is_valid():
-            form.save()
-            return render(request, 'account/edit_order_success.html')
+            action = None
+            if 'success' in request.POST:
+                order.order_status = "OVC"
+                action = 'success'
+            elif 'canselled' in request.POST:
+                order.order_status = "NFW"
+                action = 'cancelled'
+            order.save()
+            return render(request, 'account/edit_order_success.html', {'order': order, 'action': action})
     else:
         form = OrderEditingForm(instance=order) 
 
@@ -169,7 +251,67 @@ def edit_order(request, order_id):
         'creator_name': creator_name,
         'order': order_dict,
         })
+    
+    
+@login_required
+def view_is_paid(request, order_id):
+    order = Order.objects.get(id=order_id)
+    
+    if request.method == 'POST':
+        action = None
+        if 'paid_confirmation' in request.POST:
+            order.is_paid = True
+            order.order_status = "POC"
+            action = 'success'
+        elif 'paid_cansel' in request.POST:
+            order.is_paid = False
+            order.order_status = "PO"
+            action = 'cancelled'
+        order.save()
 
+        return render(
+            request,
+            'account/view_is_paid_success.html',
+            {'order': order, 'action': action}
+        )
+    
+    return render(
+        request,
+        'account/view_is_paid.html',
+        {
+            'order': order,
+        }
+    )
+
+
+@login_required
+def shipping_is_confirm(request, order_id):
+    order = Order.objects.get(id=order_id)
+    
+    if request.method == 'POST':
+        action = None  
+        if 'success_shipping' in request.POST: 
+            order.order_status = "EO" 
+            action = 'success'
+        elif 'cansel_shipping' in request.POST:  
+            order.order_status = "SO"  
+            action = 'cancelled'
+        order.save()  
+
+        return render(
+            request, 
+            'account/shipping_is_confirm_success.html',
+            {'order': order, 'action': action}
+        )
+    
+    return render(
+        request, 
+        'account/shipping_is_confirm.html',
+        {  
+            'order': order,
+        }
+    )
+    
 
 @login_required
 def _dashboard_executor(request, message=''):
@@ -190,6 +332,54 @@ def _dashboard_executor(request, message=''):
                 'profile': {'company': 'рога и копыта'},
         }
     })
+    
+@login_required
+def order_view(request, order_id):
+    order = Order.objects.get(id=order_id)
+    creator_name = order.creator.user.username
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+    print(creator_name)
+    
+    if request.method == "POST":
+        if 'save_changes' in request.POST:
+            order.order_status = "OA" 
+            order.save()
+            return redirect(reverse('order_view_success') + '?success_type=saved')
+        elif 'cancel_changes' in request.POST:
+            pass
+        return redirect(reverse('order_view_success') + '?success_type=canceled')
+    
+    return render(
+        request,
+        'account/order_view.html',
+        {
+            'section': dashboard,
+            'data': {
+                'order': order,
+                'order_dict': order_dict,
+                'creator_name': creator_name,
+            }
+        }
+    )
+   
+@login_required
+def order_view_success(request):
+    success_type = request.GET.get('success_type', '')
+    
+    if success_type == 'saved':
+        message = "Изменения успешно сохранены!"
+    elif success_type == 'canceled':
+        message = "Изменения были отменены."
+    else:
+        message = "Нет информации о действии."
+
+    return render(
+        request,
+        'account/order_view_success.html',
+        {
+            'message': message
+        }
+    )   
     
     
 @login_required
@@ -212,27 +402,95 @@ def edit_platform_success(request):
     return render(request, 'account/edit_platform_success.html')
 
 
-def register(request):
+@login_required
+def check_gds_file(request, order_id):
+    order = Order.objects.get(id=order_id)
+    creator_name = order.creator.user.username
+    
     if request.method == 'POST':
-        user_form = UserRegistrationForm(request.POST)
-        if user_form.is_valid():
-            new_user = user_form.save(commit=False)
-            new_user.set_password(user_form.cleaned_data['password'])
-            new_user.save()
+        action = None  
+        if 'success_gds' in request.POST: 
+            order.order_status = "PO" 
+            action = 'confirmed'
+        elif 'cansel_gds' in request.POST:  
+            order.order_status = "OA"  
+            action = 'cancelled'
+        order.save()  
 
-            Profile.objects.create(user=new_user, role_id=1)
+        return render(
+            request, 
+            'account/check_gds_file_success.html',
+            {'order': order, 'action': action}
+        )
+    
+    return render(request, 'account/check_gds_file.html',{
+            'data': {
+                'order': order,
+                'creator_name': creator_name,
+            }
+        }
+    )
+    
+    
+@login_required
+def view_is_paid_exec(request, order_id):
+    order = Order.objects.get(id=order_id)
+    
+    if request.method == 'POST':
+        action = None
+        if 'paid_confirmation' in request.POST:
+            order.is_paid = True
+            order.order_status = "MPO"
+            action = 'success'
+        elif 'paid_cansel' in request.POST:
+            order.is_paid = False
+            order.order_status = "POK"
+            action = 'cancelled'
+        order.save()
 
-            return render(
-                request,
-                'account/register_done.html',
-                {'new_user': new_user}
-            )
-    else:
-        user_form = UserRegistrationForm()
+        return render(
+            request,
+            'account/view_is_paid_exec_success.html',
+            {'order': order, 'action': action}
+        )
+    
     return render(
         request,
-        'account/register.html',
-        {'user_form': user_form}
+        'account/view_is_paid_exec.html',
+        {
+            'order': order,
+        }
+    )
+
+
+@login_required
+def plates_in_stock(request, order_id):
+    order = Order.objects.get(id=order_id)
+    
+    if request.method == 'POST':
+        action = None
+        if 'success_confirmation' in request.POST:
+            order.is_paid = True
+            order.order_status = "SO"
+            action = 'success'
+        elif 'cansel_confirmation' in request.POST:
+            order.is_paid = False
+            order.order_status = "MPO"
+            action = 'cancelled'
+        order.save()
+
+        return render(
+            request,
+            'account/plates_in_stock_success.html',
+            {'order': order, 'action': action}
+        )
+        
+    return render(
+        request,
+        'account/plates_in_stock.html',
+        {
+            'order': order,
+        }
     )
 
 
@@ -318,6 +576,3 @@ def download_excel_file(request):
     wb.save(response)
     
     return response
-
-
-        

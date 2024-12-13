@@ -66,7 +66,15 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href="{% url 'edit_order' order.id %}">Редактировать</a>
+                        {% if order.get_order_status_display == "На проверке у куратора" %}
+                            <a href="{% url 'edit_order' order.id %}">Редактировать</a>
+                        {% elif order.get_order_status_display == "Подтверждение оплаты куратором" %}
+                            <a href="{% url 'view_is_paid' order.id %}">Подтверждение оплаты</a>
+                        {% elif order.get_order_status_display == "Отгрузка" %}
+                            <a href="{% url 'shipping_is_confirm' order.id %}">Подтверждение отгрузки</a>
+                        {% else %}
+                            <span>Недоступно</span>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}       

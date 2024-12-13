@@ -1,16 +1,16 @@
-{% extends "base.html" %}
-
-{% block title %}Редактировать заказ{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-    <h1>Редактировать заказ</h1>
-    <p>Отредактируйте форму и прикрепите документы, если нужно</p>
-    <form method="post" action="{% url 'edit_order' order.id %}" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
-        <p>Номер заказа: {{ order_number }}</p>
-        <p>Создатель: {{ creator_name }}</p>
-        {{ form.as_p }}
+    <h1>Оплата заказа</h1>
+    <form method="post" action="{% url 'is_paid' order.id %}">
         {% csrf_token %}
-        <p class='bb'>Подробная информация о заказе:</p>
+        <p>
+            <input type="submit" name="paid_success" value="Оплатить заказ">
+            <input type="submit" name="paid_cansel" value="Отменить оплату">
+        <p>
+    </form>
+
+    <h1>Подробная информация о заказе:</h1>
         <div>
             <table border="1">
                 <thead>
@@ -35,6 +35,9 @@
                         <th>Delivery Premium Template</th>
                         <th>Delivery Premium Plate</th>
                         <th>Special Note</th>
+                        <th>Invoice file</th>
+                        <th>Contract file</th>
+                        <th>GDS file</th>
                         <th>Order Status</th>
                         <th>Created At</th>
                     </tr>
@@ -61,15 +64,13 @@
                         <td>{{ order.delivery_premium_template }}</td>
                         <td>{{ order.delivery_premium_plate }}</td>
                         <td>{{ order.special_note }}</td>
+                        <td>{{ order.invoice_file }}</td>
+                        <td>{{ order.contract_file }}</td>
+                        <td>{{ order.GDS_file }}</td>
                         <td>{{ order.order_status }}</td>
                         <td>{{ order.created_at }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <p>
-            <input type="submit" name="success" value="Подтвердить заказ">
-            <input type="submit" name="canselled" value="Вернуть заказ на доработку">
-        <p>
-    </form>
 {% endblock %}

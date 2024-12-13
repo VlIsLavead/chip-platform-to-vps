@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Успех{% endblock %}
+
+{% block content %}
+    <h1>Подтверждение окончания производства заказа</h1>
+
+    {% if action == "success" %}
+        <p>Заказ изготовлен. Заказ на стадии отгрузки</p>
+    {% elif action == "cancelled" %}
+        <p>Заказ не подтвержден</p>
+    {% else %}
+        <p>Произошла неизвестная ошибка. Пожалуйста, попробуйте снова.</p>
+    {% endif %}
+
+    <p><a href="{% url 'dashboard' %}">Вернуться к заказу</a></p>
+{% endblock %}

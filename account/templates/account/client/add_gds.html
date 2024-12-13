@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Просмотр заказа{% endblock %}
+
+{% block content %}
+        <h1>Загрузить DGS файл</h1>
+        <p>Номер заказа: {{ data.order.order_number }}</p>
+        <form method="post" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <p><input type="submit" value="Сохранить изменения"></p>
+        </form>
+        <div>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Creator ID</th>
+                        <th>Customer Product Name</th>
+                        <th>Mask Name</th>
+                        <th>Technical Process ID</th>
+                        <th>Platform Code ID</th>
+                        <th>Order Type</th>
+                        <th>Product Count</th>
+                        <th>Substrate ID</th>
+                        <th>DC RF Probing E-Map</th>
+                        <th>DC RF Probing Inking</th>
+                        <th>Visual Inspection Inking</th>
+                        <th>Dicing Method</th>
+                        <th>Tape UV Support</th>
+                        <th>Wafer Deliver Format</th>
+                        <th>Multiplan Dicing Plan</th>
+                        <th>Package Service</th>
+                        <th>Delivery Premium Template</th>
+                        <th>Delivery Premium Plate</th>
+                        <th>Special Note</th>
+                        <th>Invoice file</th>
+                        <th>Contract file</th>
+                        <th>GDS file</th>
+                        <th>Order Status</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ data.order.order_number }}</td>
+                        <td>{{ data.order.creator_id }}</td>
+                        <td>{{ data.order.customer_product_name }}</td>
+                        <td>{{ data.order.mask_name }}</td>
+                        <td>{{ data.order.technical_process_id }}</td>
+                        <td>{{ data.order.platform_code_id }}</td>
+                        <td>{{ data.order.order_type }}</td>
+                        <td>{{ data.order.product_count }}</td>
+                        <td>{{ data.order.substrate_id }}</td>
+                        <td>{{ data.order.dc_rf_probing_e_map }}</td>
+                        <td>{{ data.order.dc_rf_probing_inking }}</td>
+                        <td>{{ data.order.visual_inspection_inking }}</td>
+                        <td>{{ data.order.dicing_method }}</td>
+                        <td>{{ data.order.tape_uv_support }}</td>
+                        <td>{{ data.order.wafer_deliver_format }}</td>
+                        <td>{{ data.order.multiplan_dicing_plan }}</td>
+                        <td>{{ data.order.package_servce }}</td>
+                        <td>{{ data.order.delivery_premium_template }}</td>
+                        <td>{{ data.order.delivery_premium_plate }}</td>
+                        <td>{{ data.order.special_note }}</td>
+                        <td>{{ data.order.invoice_file }}</td>
+                        <td>{{ data.order.contract_file }}</td>
+                        <td>{{ data.order.GDS_file }}</td>
+                        <td>{{ data.order.order_status }}</td>
+                        <td>{{ data.order.created_at }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+{% endblock %}

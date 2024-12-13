@@ -3,6 +3,12 @@
 {% block title %}Успех{% endblock %}
 
 {% block content %}
-    <h1>Заказ успешно изменен</h1>
+    {% if action == "success" %}
+    <h1>Заказ подтвержден</h1>
+    {% elif action == "cancelled" %}
+    <h1>Заказ не подтвержден</h1>
+    {% else %}
+    <h1>Произошла неизвестная ошибка. Пожалуйста, попробуйте снова.</h1>
+    {% endif %}
     <p><a href="{% url "dashboard" %}">Вернуться</a> в личный кабинет</p>
 {% endblock %}

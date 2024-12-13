@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Успех{% endblock %}
+
+{% block content %}
+    <h1>Заказ добавлен успешно</h1>
+
+        <a href="{% url 'download_excel'%}">
+            <button type="button">Скачать Excel файл</button>
+        </a>
+
+    <p><a href="{% url "dashboard" %}">Вернуться</a> в личный кабинет</p>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Успех{% endblock %}
+
+{% block content %}
+    <h1>Результат проверки GDS файла</h1>
+
+    {% if action == "confirmed" %}
+        <p>GDS файл успешно подтвержден!</p>
+    {% elif action == "cancelled" %}
+        <p>Подтверждение GDS файла отменено.</p>
+    {% else %}
+        <p>Произошла неизвестная ошибка. Пожалуйста, попробуйте снова.</p>
+    {% endif %}
+
+    <p><a href="{% url 'dashboard' %}">Вернуться к заказу</a></p>
+{% endblock %}

@@ -66,6 +66,17 @@
                             <span>отсутствует</span>
                         {% endif %}
                     </td>
+                    <td>
+                        {% if order.get_order_status_display == "На проверке у исполнителя" %}
+                            <a href="{% url 'order_view' order.id %}">Просмотр заказа</a>
+                        {% elif order.get_order_status_display == "Согласование" %}
+                            <a href="{% url 'check_gds_file' order.id %}">Проверка GDS файла</a>
+                        {% elif order.get_order_status_display == "Подтверждение оплаты исполнителем" %}
+                            <a href="{% url 'view_is_paid_exec' order.id %}">Проверка оплаты</a>
+                        {% elif order.get_order_status_display == "Производство" %}
+                            <a href="{% url 'plates_in_stock' order.id %}">Пластины на складе</a>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}       
         </table>

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Подтверждение окончания отгрузки заказа</h1>
+    <h2>При подтверждении окончания отгрузки, заказ будет закрыт</h2>
+    <div>
+        <table border="1">
+            <tr>
+                <th scope="col">Номер заказа</th>
+                <th scope="col">Код площадки</th>
+                <th scope="col">Статус оплаты</th>
+                <th scope="col">Статус заказа</th>
+            </tr>
+            <tr>
+                <td>{{ order.order_number }}</td>
+                <td>{{ order.platform_code.platform_code }}</td>
+                <td>{{ order.is_paid }}</td>
+                <td>{{ order.get_order_status_display }}</td>
+            </tr>     
+        </table>
+    </div>
+    <form method="post" action="{% url 'shipping_is_confirm' order.id %}">
+        {% csrf_token %}
+        <p>
+            <input type="submit" name="success_shipping" value="Подтвердить окончание отгрузки">
+            <input type="submit" name="cansel_shipping" value="Отменить подтверждение">
+        <p>
+    </form>
+{% endblock %}

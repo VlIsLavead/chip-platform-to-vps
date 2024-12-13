@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать профиль{% endblock %}
+
+{% block content %}
+    <h1>Редактирование заказа</h1>
+    <p>Заполните форму и прикрепите документы</p>
+    <form method="post" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
+        <p>Номер заказа {{order.order_number}}</p>
+        <p>Creator {{ request.user.first_name|default:request.user.username }}</p>
+        {{ order_form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Сохранить"></p>
+    </form>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        function updateTechnicalProcess(platform_code_id) {
+            const url = $("#orderForm").attr("data-url"); 
+            if (platform_code_id) {
+                $.ajax({
+                    url: url,
+                    data: { 'platform_code_id': platform_code_id },
+                    success: function (data) {
+                        let html_data = '<option value="">---------</option>';
+                        data.forEach(function (technical_process) {
+                            html_data += `<option value="${technical_process.id}">${technical_process.name_process}</option>`;
+                        });
+                        $("#id_technical_process").html(html_data);
+
+                        const selectedTechnicalProcess = $("#id_technical_process").data("selected");
+                        if (selectedTechnicalProcess) {
+                            $("#id_technical_process").val(selectedTechnicalProcess);
+                            $("#id_technical_process").trigger("change"); 
+                        }
+                    }
+                });
+            }
+        }
+
+        const platform_code_id = $("#id_platform_code").val();
+        if (platform_code_id) {
+            updateTechnicalProcess(platform_code_id);
+        }
+
+        $("#id_platform_code").change(function () {
+            updateTechnicalProcess($(this).val());
+        });
+
+        $("#id_technical_process").change(function () {
+            const url = $("#orderForm").attr("data-url");
+            const technical_process_id = $(this).val();
+
+            if (technical_process_id) {
+                $.ajax({
+                    url: url,
+                    data: { 'technical_process_id': technical_process_id },
+                    success: function (data) {
+                        let html_data = '<option value="">---------</option>';
+                        data.forEach(function (substrate) {
+                            html_data += `<option value="${substrate.id}">${substrate.thikness}</option>`;
+                        });
+                        $("#id_substrate").html(html_data);
+                    }
+                });
+            }
+        });
+
+        $("#id_substrate").change(function () {
+            const url = $("#orderForm").attr("data-url");
+            const substrate_id = $(this).val();
+
+            if (substrate_id) {
+                $.ajax({
+                    url: url,
+                    data: { 'thikness_substate_id': substrate_id },
+                    success: function (data) {
+                        let html_data = '<option value="">---------</option>';
+                        data.forEach(function (diameter) {
+                            html_data += `<option value="${diameter.id}">${diameter.diameter}</option>`;
+                        });
+                        $("#id_diameter").html(html_data);
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+{% endblock %}
+

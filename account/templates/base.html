@@ -4,44 +4,66 @@
 <head>
     <title>{% block title %}{% endblock %}</title>
     <link href="{% static "css/base.css" %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
 </head>
 <body>
-<div id="header">
-    <span class="logo">
-        <a href="{% url "dashboard" %}">Платформа</a>
-    </span>
-    {% if request.user.is_authenticated %}
-        <ul class="menu">
-            {% block tabs %}
-            <li {% if section == "dashboard" %}class="selected"{% endif %}>
-                <a href="{% url "dashboard" %}">Заказы</a>
-            </li>
-            <li {% if section == "technical_materials" %}class="selected"{% endif %}>
-                <a href="{% url "technical_materials" %}">Технические материалы</a>
-            </li>
-            <li {% if section == "feedback" %}class="selected"{% endif %}>
-                <a href="#">Обратная связь</a>
-            </li>
+    <div class="page">
+        <div id="header">
+            <span class="logo">
+                <a href="{% url "dashboard" %}">Платформа</a>
+            </span>
+            {% if request.user.is_authenticated %}
+                <ul class="menu">
+                    {% block tabs %}
+                    <li {% if section == "dashboard" %}class="selected"{% endif %}>
+                        <a href="{% url "dashboard" %}">Заказы</a>
+                    </li>
+                    <li {% if section == "technical_materials" %}class="selected"{% endif %}>
+                        <a href="{% url "technical_materials" %}">Технические материалы</a>
+                    </li>
+                    <li {% if section == "feedback" %}class="selected"{% endif %}>
+                        <a href="{% url "feedback" %}">Обратная связь</a>
+                    </li>
+                    {% endblock %}
+                </ul>
+            {% endif %}
+
+            {% comment %} Доабвить список {% endcomment %}
+            <span class="user">
+            {% if request.user.is_authenticated %}
+                Привет, {{ request.user.first_name|default:request.user.username }}!
+                <a href="{% url "logout" %}">Выйти</a>
+            {% else %}
+                <a href="{% url "login" %}">Войти</a>
+            {% endif %}
+            </span>
+        </div>
+        {% block sub_tabs %}
+        {% endblock %}
+        <div id="content">
+            {% block content %}
             {% endblock %}
-        </ul>
-    {% endif %}
-    <span class="user">
-      {% if request.user.is_authenticated %}
-          Привет, {{ request.user.first_name|default:request.user.username }}!
-          <a href="{% url "logout" %}">Выйти</a>
-      {% else %}
-          <a href="{% url "login" %}">Войти</a>
-      {% endif %}
-    </span>
-</div>
-{% block sub_tabs %}
-{% endblock %}
-<div id="content">
-    {% block content %}
-    {% endblock %}
-</div>
-<div id="footer">
-    <span>footer</span>
-</div>
+        </div>
+        <div id="footer">
+            <div class="footer_logo">
+                <span class="logo">
+                    <a href="{% url "dashboard" %}">Платформа</a>
+                </span>
+            </div>
+            <ul class="footer_list">
+                <li class="footer_list-element">
+                    <a href="{% url "edit" %}">
+                        Редактировать профиль
+                    </a>
+                </li>
+                <li class="footer_list-element">
+                    <a href="{% url "password_change" %}">
+                        Сменить пароль
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>

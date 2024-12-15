@@ -1,13 +1,13 @@
-{% comment %} {% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block sub_tabs %}
 <div id="header">
     <ul class="menu">
-        <li {% if sub_section == "general_questions" %}class="selected"{% endif %}>
-            <a href="{% url "feedback" %}?tab=general">Общие вопросы</a>
+        <li {% if sub_section == "general" %}class="selected"{% endif %}>
+            <a href="{% url 'feedback' %}?tab=general">Общие вопросы</a>
         </li>
-        <li {% if sub_section == "other_questions" %}class="selected"{% endif %}>
-            <a href="{% url "feedback" %}?tab=support">Вопросы по заказам</a>
+        <li {% if sub_section == "support" %}class="selected"{% endif %}>
+            <a href="{% url 'feedback' %}?tab=support">Вопросы по заказам</a>
         </li>
     </ul>
 </div>
@@ -15,35 +15,46 @@
 
 {% block content %}
 <h1>Обратная связь</h1>
-<!-- Содержимое страницы -->
-<table border="1" style="width: 50%; border-collapse: collapse; text-align: left;">
-    <thead>
-        <tr>
-            <th>Общие вопросы</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                <a href="{% url 'room' room=room_details.name %}?user={{ username }}">
-                    Общий вопрос 1
-                </a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href="{% url 'room' room='Room2' %}?username={{ username }}">
-                    Общий вопрос 2
-                </a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href="{% url 'room' room='Room3' %}?username={{ username }}">
-                    Общий вопрос 3
-                </a>
-            </td>
-        </tr>
-    </tbody>
-</table>
-{% endblock %} {% endcomment %}
+
+{% if sub_section == "general" %}
+    <h2>Общие вопросы</h2>
+    <table border="1" style="width: 50%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr>
+                <th>Тема</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for topic in general_topics %}
+                <tr>
+                    <td><a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td>Нет общих тем</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% elif sub_section == "support" %}
+    <h2>Вопросы по заказам</h2>
+    <table border="1" style="width: 50%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr>
+                <th>Тема</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for topic in private_topics %}
+                <tr>
+                    <td><a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td>Нет доступных частных чатов</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}

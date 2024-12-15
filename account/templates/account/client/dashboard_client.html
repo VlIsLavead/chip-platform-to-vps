@@ -4,89 +4,107 @@
 
 {% block content %}
 
-    <h1>Личный кабинет заказчика</h1>
-    <h2>Компания {{ data.profile.company }}</h2>
-    <div>
-        Это ваш личный кабинет. Здесь вы можете
-        <a href="{% url "edit" %}">отредактировать</a>
-        ваш профиль, <a href="{% url "password_change" %}">поменять</a>
-        ваш пароль.
-    </div>
-    <br>
-    <div>
-        <form method="GET" action="">
-            <input type="search" name="search"/>&nbsp;
-            <button class="search-button" type="submit">Поиск</button>
-        </form>
-    </div>
-    <div>
-        <table border="1">
-            <tr>
-                <th scope="col">Код площадки</th>
-                <th scope="col">Тип заказа</th>
-                <th scope="col">Дата заказа (оплаты)</th>
-                <th scope="col">Срок выполнения по договору</th>
-                <th scope="col">Статус оплаты</th>
-                <th scope="col">Статус заказа</th>
-                <th scope="col">Договор</th>
-                <th scope="col">Счет</th>
-                <th scope="col">GDS файл</th>
-                <th scope="col">Оплата</th> 
-            </tr>
+<h1>Личный кабинет заказчика</h1>
+<h2>Компания {{ data.profile.company }}</h2>
 
-            {% for order in data.orders %}
-                <tr>
-                    <td>{{ order.platform_code.platform_code }}</td>
-                    <td>{{ order.get_order_type_display }}</td>
-                    <td>{{ order.order_date.date }}</td>
-                    <td>{{ order.deadline_date.date }}</td>
-                    <td>{{ order.is_paid }}</td>
-                    <td>{{ order.get_order_status_display }}</td>
-                    <td>
-                        {% if order.contract_file %}
-                            <a href="{{ order.contract_file.url }}" download>скачать</a>
+<div class="header_content">
+    <p>
+        Это ваш личный кабинет. Здесь вы 
+        сможете просмотреть список ваших заказов
+    </p>
+</div>
+<br>
+
+<div class="block_search">
+    <form method="GET" action="">
+        <input type="search" name="search" placeholder="Поиск заказов..." />&nbsp;
+        <button class="search-button" type="submit">Поиск</button>
+    </form>
+</div>
+
+<div class="order-table-wrapper">
+    <table border="1" class="order-table">
+        <tr>
+            <th>Код площадки</th>
+            <th>Тип заказа</th>
+            <th>Дата заказа (оплаты)</th>
+            <th>Срок выполнения по договору</th>
+            <th>Статус оплаты</th>
+            <th>Статус заказа</th>
+            <th>Договор</th>
+            <th>Счет</th>
+            <th>GDS файл</th>
+            <th>Оплата</th> 
+            <th>Действия</th> <!-- Добавили колонку для чата -->
+        </tr>
+
+        {% for order in data.orders %}
+            <tr class="order-row">
+                <td>{{ order.platform_code.platform_code }}</td>
+                <td>{{ order.get_order_type_display }}</td>
+                <td>{{ order.order_date.date }}</td>
+                <td>{{ order.deadline_date.date }}</td>
+                <td>{{ order.is_paid }}</td>
+                <td>{{ order.get_order_status_display }}</td>
+
+                <td>
+                    {% if order.contract_file %}
+                        <a href="{{ order.contract_file.url }}" download>Скачать</a>
+                    {% else %}
+                        <span>Отсутствует</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if order.invoice_file %}
+                        <a href="{{ order.invoice_file.url }}" download>Скачать</a>
+                    {% else %}
+                        <span>Отсутствует</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if order.get_order_status_display == "Принят" %}
+                        <a href="{% url 'add_gds' order.id %}">Загрузить GDS файл</a>
+                    {% else %}
+                        {% if order.GDS_file %}
+                            <a href="{{ order.GDS_file.url }}" download>Скачать</a>
                         {% else %}
-                            <span>отсутствует</span>
+                            <span>GDS файла нет</span>
                         {% endif %}
-                    </td>
-                    <td>
-                        {% if order.invoice_file %}
-                            <a href="{{ order.invoice_file.url }}" download>скачать</a>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if order.get_order_status_display == "Оплата" %}
+                        <a href="{% url 'is_paid' order.id %}">Оплатить</a>  
+                    {% elif order.get_order_status_display == "Необходима доработка" %}
+                        <a href="{% url 'changes_in_order' order.id %}">Внести изменения</a>  
+                    {% else %}
+                        {% if order.is_paid == False %}
+                            <span>Оплата пока недоступна</span>
                         {% else %}
-                            <span>отсутствует</span>
+                            <span>Заказ оплачен</span>
                         {% endif %}
-                    </td>
-                    <td>
-                        {% if order.get_order_status_display == "Принят" %}
-                            <a href="{% url 'add_gds' order.id %}">Загрузить GDS файл</a>
-                        {% else %}
-                            {% if order.GDS_file %}
-                                <a href="{{ order.GDS_file.url }}" download>скачать</a>
-                            {% else %}
-                                <span>GDS файла нет</span>
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if order.get_order_status_display == "Оплата"%}
-                            <a href="{% url 'is_paid' order.id %}">Оплатить</a>  
-                        {% elif order.get_order_status_display == "Необходима доработка"%}
-                            <a href="{% url 'changes_in_order' order.id %}">Внести изменения</a>  
-                        {% else %}
-                            {% if order.is_paid == False %}
-                                <span>Оплата пока недоступна</span>
-                            {% else%}
-                                <span>Заказ оплачен</span>
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
-    <br/>
-    <div>
-        <a href="{% url "new_order" %}" class="button">Добавить заказ...</a>
-    </div>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
+                        Перейти в чат
+                    </a>
+                    <a href="{% url 'download_excel'%}" class="button chat-button">
+                        Скачать Excel файл
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<br/>
+<div>
+    <a href="{% url "new_order" %}" class="button">Добавить заказ...</a>
+</div>
 
 {% endblock %}

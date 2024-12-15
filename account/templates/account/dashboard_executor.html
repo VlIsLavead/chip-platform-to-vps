@@ -8,7 +8,7 @@
         <a href="{% url "edit_platform" %}">Работа с техпроцессами</a>
     </li>
     <li {% if section == "feedback" %}class="selected"{% endif %}>
-        <a href="#">Обратная связь</a>
+        <a href="{% url "feedback" %}">Обратная связь</a>
     </li>
 {% endblock %}
 
@@ -17,22 +17,23 @@
 {% block content %}
     <h1>Личный кабинет исполнителя</h1>
     <h2>Компания: {{ data.profile.company }}</h2>
-    <p>
-        Это ваш личный кабинет. Здесь вы можете
-        <a href="{% url "edit" %}">отредактировать</a>
-        ваш профиль, <a href="{% url "password_change" %}">поменять</a>
-        ваш пароль.
-    </p>
+    <div class="header_content">
+        <p>
+            Это ваш личный кабинет. Здесь вы 
+            сможете просмотреть список ваших заказов
+        </p>
+    </div>
+    <br>
     <h2>Заказы для компании: {{ data.name_platform }}</h2>
-    <h3>Код платформы: {{ data.code_company }}</h3>
-    <div>
+    <h3 class="platform_name">Код платформы: {{ data.code_company }}</h3>
+    <div class="block_search">
         <form method="GET" action="">
             <input type="search" name="search"/>&nbsp;
             <button class="search-button" type="submit">Поиск</button>
         </form>
     </div>
     <div>
-        <table border="1">
+        <table border="1" class="order-table">
             <tr>
                 <th scope="col">ID заказа</th>
                 <th scope="col">Тип заказа</th>

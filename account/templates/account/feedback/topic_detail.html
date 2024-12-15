@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% load custom_filters %}
+
+{% block content %}
+<h2 class="topic_name">{{ topic.name }}</h2>
+
+<div class="chat-container">
+    <h3>Сообщения</h3>
+    <div id="messages-container">
+        {% for message in messages %}
+            <div class="message" id="message-{{ message.id }}">
+                <p><strong>{{ message.user }}</strong> ({{ message.created_at }}): {{ message.text }}</p>
+                {% for file in message.files.all %}
+                    <a href="{{ file.file.url }}" download class="file-download-btn">{{ file.file.name|filename }}</a>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <h3>Оставить сообщение</h3>
+    <form method="post" enctype="multipart/form-data" class="message-form">
+        {% csrf_token %}
+        
+        <textarea name="text" class="message-input" placeholder="Введите ваше сообщение..."></textarea>
+
+        <div class="file-upload-container">
+            <input type="file" name="file" multiple class="file-input" />
+            <button type="submit" class="submit-btn">Отправить</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+

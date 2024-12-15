@@ -1,6 +1,7 @@
 from django import forms
+from django.forms import modelformset_factory
 from django.contrib.auth.models import User
-from ..models import Profile, Order, Platform, TechnicalProcess, Substrate
+from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, Message, Topic, File
 
 
 class LoginForm(forms.Form):
@@ -101,3 +102,29 @@ class AddGDSFile(forms.ModelForm):
         model = Order
         
         fields = ['GDS_file']
+        
+        
+class MessageForm(forms.ModelForm):
+    text = forms.CharField(widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Введите ваше сообщение...'}))
+
+    class Meta:
+        model = Message
+        fields = ['text']
+
+class FileForm(forms.ModelForm):
+    file = forms.FileField(required=False)
+
+    class Meta:
+        model = File
+        fields = ['file']
+
+     
+class TopicForm(forms.ModelForm):
+    class Meta:
+        model = Topic
+        fields = ['name', 'is_private', 'related_order']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Введите название темы'}),
+            'is_private': forms.CheckboxInput(),
+            'related_order': forms.Select(),
+        }

@@ -129,3 +129,41 @@ class Order(models.Model):
 
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
+    
+    
+class Topic(models.Model):
+    name = models.CharField(max_length=255)
+    is_private = models.BooleanField(default=False)
+    related_order = models.ForeignKey('Order', null=True, blank=True, on_delete=models.CASCADE) 
+
+    def __str__(self):
+        return self.name
+
+
+class Message(models.Model):
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE) 
+    topic = models.ForeignKey(Topic, related_name="messages", on_delete=models.CASCADE)  
+    text = models.TextField() 
+    created_at = models.DateTimeField(auto_now_add=True)  
+
+    def __str__(self):
+        return f"Message by {self.user.username} in {self.topic.name}"
+
+
+class File(models.Model):
+    message = models.ForeignKey(Message, related_name="files", on_delete=models.CASCADE)  
+    file = models.FileField(upload_to='topic_files/')  
+
+    def __str__(self):
+        return f"File attached to {self.message.id}"
+
+
+class UserTopic(models.Model):
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'topic')
+
+    def __str__(self):
+        return f"{self.user.username} in topic {self.topic.name}"

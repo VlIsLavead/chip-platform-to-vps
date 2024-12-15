@@ -1,8 +1,9 @@
 import datetime
 
+from django.forms import modelformset_factory
 from urllib.parse import quote #Для названия excel файла
 from django.forms.models import model_to_dict
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -10,9 +11,8 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
 
-
-from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile
-from ..models import Profile, Order, TechnicalProcess, Platform, Substrate
+from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, TopicForm, FileForm, MessageForm
+from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Topic, UserTopic, Message, File, Role
 from ..export_excel import generate_excel_file
 
 
@@ -226,7 +226,7 @@ def _dashboard_curator(request, message=''):
     
 @login_required
 def edit_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)  
+    order = get_object_or_404(Order, id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     
@@ -576,3 +576,88 @@ def download_excel_file(request):
     wb.save(response)
     
     return response
+
+
+def feedback(request):
+    user = request.user
+    profile = user.profile
+    general_topics = Topic.objects.filter(is_private=False)
+    private_topics = Topic.objects.filter(
+        is_private=True, 
+        usertopic__user=profile
+    )
+    tab = request.GET.get('tab', 'general')
+    
+    return render(request, 'account/feedback.html', {
+        'general_topics': general_topics,
+        'private_topics': private_topics,
+        'sub_section': tab,
+    })
+    
+
+def topic_detail(request, topic_id):
+    topic = Topic.objects.get(id=topic_id)
+    messages = Message.objects.filter(topic=topic)
+
+    if request.method == 'POST':
+        message_form = MessageForm(request.POST)
+        files = request.FILES.getlist('file')
+
+        if message_form.is_valid():
+            message = message_form.save(commit=False)
+            message.topic = topic
+            message.user = request.user.profile
+            message.save()
+
+            for file in files:
+                File.objects.create(message=message, file=file)
+
+            return redirect('topic_detail', topic_id=topic.id)
+    else:
+        message_form = MessageForm()
+
+    return render(request, 'account/feedback/topic_detail.html', {
+        'topic': topic,
+        'messages': messages,
+        'message_form': message_form,
+    })
+
+    
+
+def create_or_open_chat(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    topic, created = Topic.objects.get_or_create(
+        related_order=order,
+        defaults={
+            'name': f'Чат для заказа {order.platform_code}', 
+            'is_private': True
+        }
+    )
+
+    if request.user.is_authenticated:
+        UserTopic.objects.get_or_create(user=request.user.profile, topic=topic)
+
+    curator = Profile.objects.filter(role__name='Куратор', company_name=order.platform_code).first()
+    if curator:
+        UserTopic.objects.get_or_create(user=curator, topic=topic)
+
+    executor = Profile.objects.filter(role__name='Исполнитель').first()
+    if executor:
+        UserTopic.objects.get_or_create(user=executor, topic=topic)
+
+    return redirect('topic_detail', topic_id=topic.id)
+
+
+def upload_files(request):
+    if request.method == 'POST' and request.FILES:
+        files = request.FILES.getlist('file')
+        file_urls = []
+
+        for file in files:
+            file_instance = File.objects.create(file=file)
+            file_urls.append(file_instance.file.url)
+
+        return JsonResponse({'message': 'Файлы успешно загружены!', 'file_urls': file_urls})
+    
+    return JsonResponse({'error': 'Ошибка при загрузке файлов.'})

@@ -25,7 +25,10 @@ urlpatterns = [
     path('view_is_paid_exec/<int:order_id>/', views.view_is_paid_exec, name='view_is_paid_exec'),
     path('plates_in_stock/<int:order_id>/', views.plates_in_stock, name='plates_in_stock'),
     path('shipping_is_confirm/<int:order_id>/', views.shipping_is_confirm, name='shipping_is_confirm'),
-
+    path('feedback/', views.feedback, name='feedback'),
+    path('topic/<int:topic_id>/', views.topic_detail, name='topic_detail'),
+    path('create_or_open_chat/<int:order_id>/', views.create_or_open_chat, name='create_or_open_chat'),
+    path('upload/', views.upload_files, name='upload_files'),
+    
   path('load-data/', views.load_data, name='load_data')   # AJAX
 ]
-

@@ -11,66 +11,52 @@
     </form>
 
     <h1>Подробная информация о заказе:</h1>
-        <div>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Order Number</th>
-                        <th>Creator ID</th>
-                        <th>Customer Product Name</th>
-                        <th>Mask Name</th>
-                        <th>Technical Process ID</th>
-                        <th>Platform Code ID</th>
-                        <th>Order Type</th>
-                        <th>Product Count</th>
-                        <th>Substrate ID</th>
-                        <th>DC RF Probing E-Map</th>
-                        <th>DC RF Probing Inking</th>
-                        <th>Visual Inspection Inking</th>
-                        <th>Dicing Method</th>
-                        <th>Tape UV Support</th>
-                        <th>Wafer Deliver Format</th>
-                        <th>Multiplan Dicing Plan</th>
-                        <th>Package Service</th>
-                        <th>Delivery Premium Template</th>
-                        <th>Delivery Premium Plate</th>
-                        <th>Special Note</th>
-                        <th>Invoice file</th>
-                        <th>Contract file</th>
-                        <th>GDS file</th>
-                        <th>Order Status</th>
-                        <th>Created At</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ order.order_number }}</td>
-                        <td>{{ order.creator_id }}</td>
-                        <td>{{ order.customer_product_name }}</td>
-                        <td>{{ order.mask_name }}</td>
-                        <td>{{ order.technical_process_id }}</td>
-                        <td>{{ order.platform_code_id }}</td>
-                        <td>{{ order.order_type }}</td>
-                        <td>{{ order.product_count }}</td>
-                        <td>{{ order.substrate_id }}</td>
-                        <td>{{ order.dc_rf_probing_e_map }}</td>
-                        <td>{{ order.dc_rf_probing_inking }}</td>
-                        <td>{{ order.visual_inspection_inking }}</td>
-                        <td>{{ order.dicing_method }}</td>
-                        <td>{{ order.tape_uv_support }}</td>
-                        <td>{{ order.wafer_deliver_format }}</td>
-                        <td>{{ order.multiplan_dicing_plan }}</td>
-                        <td>{{ order.package_servce }}</td>
-                        <td>{{ order.delivery_premium_template }}</td>
-                        <td>{{ order.delivery_premium_plate }}</td>
-                        <td>{{ order.special_note }}</td>
-                        <td>{{ order.invoice_file }}</td>
-                        <td>{{ order.contract_file }}</td>
-                        <td>{{ order.GDS_file }}</td>
-                        <td>{{ order.order_status }}</td>
-                        <td>{{ order.created_at }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="order-table-wrapper">
+        <table border="1" class="order-table">
+            <thead>
+                <tr>
+                    <th>Код заказа</th>
+                    <th>Номер заказчика</th>
+                    <th>Имя запуска</th>
+                    <th>Номер шаблона</th>
+                    <th>Номер техпроцесса</th>
+                    <th>Номер производственной площадки</th>
+                    <th>Тип запуска</th>
+                    <th>Число проектов в кадре</th>
+                    <th>Контроль электрических параметров на пластине</th>
+                    <th>Визуальный контроль и маркировка брака</th>
+                    <th>Метод резки</th>
+                    <th>УФ Засветка</th>
+                    <th>Вариант упаковки</th>
+                    <th>Сложная резка</th>
+                    <th>Корпусирование</th>
+                    <th>Ускоренный запуск шаблона</th>
+                    <th>Ускоренный запуск пластины</th>
+                    <th>Дата создания заказа</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ order.order_number }}</td>
+                    <td>{{ order.creator_id }}</td>
+                    <td>{{ order.customer_product_name }}</td>
+                    <td>{{ order.mask_name }}</td>
+                    <td>{{ order.technical_process_id }}</td>
+                    <td>{{ order.platform_code_id }}</td>
+                    <td>{{ order.order_type }}</td>
+                    <td>{{ order.product_count }}</td>
+                    <td>{{ order.dc_rf_probing_e_map|yesno:"Да,Нет" }}</td>
+                    <td>{{ order.visual_inspection_inking|yesno:"Да,Нет" }}</td>
+                    <td>{{ order.dicing_method }}</td>
+                    <td>{{ order.tape_uv_support|yesno:"Да,Нет" }}</td>
+                    <td>{{ order.wafer_deliver_format }}</td>
+                    <td>{{ order.multiplan_dicing_plan|yesno:"Да,Нет" }}</td>
+                    <td>{{ order.package_servce|yesno:"Да,Нет" }}</td>
+                    <td>{{ order.delivery_premium_template|yesno:"Да,Нет" }}</td>
+                    <td>{{ order.delivery_premium_plate|yesno:"Да,Нет" }}</td>
+                    <td>{{ order.created_at }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

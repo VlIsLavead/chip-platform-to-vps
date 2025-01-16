@@ -14,6 +14,29 @@ body {
     justify-content: space-between;
 }
 
+:root {
+    --main-search-color: #007bff;
+    --main-bg-color: #5680E9;
+    --main-page-color: #e3e8e6;
+    --main-text-color: #000000;
+    --main-block-hover: #C0C0C0;
+    --main-block-color: #FDE7DA;
+    --main-other-bg: #4f0070;
+    --main-other-bg-copy: #7851a9;
+    --main-color-for: #C1C8E4;
+    --main-color: #e7e8e6;
+
+    --main-bg-button: #007bff;
+    --main-bg-hover: #0056b3;
+}
+
+.page{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 
 :root {
     --main-search-color: #007bff;
@@ -62,6 +85,10 @@ a:hover {
     color: var(--main-other-bg-copy);
 }
 
+a:visited {
+    color: #000000;
+}
+
 h1, h2, h3, h4, h5 , h6 { 
     font-family: 'Muli', sans-serif; 
     font-weight:normal; 
@@ -71,7 +98,6 @@ h1, h2, h3, h4, h5 , h6 {
 h1 {
     display: flex;
     justify-content: center;
-    /* border-bottom: 1px solid var(--main-bg-color); */
     padding: 0 0 10px 0;
 }
 
@@ -161,6 +187,41 @@ label {
     color:#333;
     margin-bottom:4px;
 }
+
+#id_first_name,
+#id_last_name,
+#id_email {
+    /* width: 100%; */
+    border: 1px solid red;
+    position: relative;
+
+}
+
+.info_first_name {
+    position: absolute;
+    width: 200px;
+    top: 258px;
+    left: 335px;
+    color: red;
+}
+
+.info_last_name {
+    position: absolute;
+    width: 200px;
+    top: 315px;
+    left: 375px;
+    color: red;
+}
+
+.email {
+    position: absolute;
+    width: 200px;
+    top: 372px;
+    left: 500px;
+    color: red;
+}
+
+
 input, textarea {
     clear:both;
     margin:0 0 10px;
@@ -169,6 +230,7 @@ input, textarea {
     padding:6px 10px;
     font-size:14px;
 }
+
 input[type=submit], a.button {
     font-weight:bold;
     background:var(--main-bg-button);
@@ -274,10 +336,6 @@ ul.messages li a.close {
     border:0;
     box-shadow:none;
     text-shadow:none;
-}
-
-.login-form {
-    /*float:left;*/
 }
 
 /* images */
@@ -411,15 +469,14 @@ img.user-detail {
     border-collapse: collapse;
 }
 
-.order-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
 .order-table th, 
 .order-table td {
     padding: 10px;
     text-align: center;
+}
+
+.no-center th, td{
+    padding: 10px 10px 10px 30px;
 }
 
 .chat-button {
@@ -547,4 +604,19 @@ img.user-detail {
     border-radius: 5px;
     width: auto;
     cursor: pointer;
+}
+
+select#technical_process {
+    appearance: none; /* Убирает стандартный стиль браузера */ 
+    width: 200px;
+    max-width: 200px;
+    padding: 10px 10px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
 }

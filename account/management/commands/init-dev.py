@@ -11,6 +11,7 @@ fixtures = [
     'account.technicalprocess.json',
     'account.substrate.json',
     'account.order.json',
+    'account.topic.json',
 ]
 
 

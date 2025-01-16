@@ -1,0 +1,47 @@
+[
+    {
+        "model": "account.topic",
+        "pk": 1,
+        "fields": {
+            "name": "Возможножные ошибки с заказом",
+            "is_private": 0,
+            "related_order": null
+        }
+    },
+    {
+        "model": "account.topic",
+        "pk": 2,
+        "fields": {
+            "name": "Рекомендации перед заказом",
+            "is_private": 0,
+            "related_order": null
+        }
+    },
+    {
+        "model": "account.topic",
+        "pk": 3,
+        "fields": {
+            "name": "Обсуждение деталей заказа",
+            "is_private": 0,
+            "related_order": null
+        }
+    },
+    {
+        "model": "account.topic",
+        "pk": 4,
+        "fields": {
+            "name": "Как работать с заказом?",
+            "is_private": 0,
+            "related_order": null
+        }
+    },
+    {
+        "model": "account.topic",
+        "pk": 5,
+        "fields": {
+            "name": "Помощь в заказе",
+            "is_private": 0,
+            "related_order": null
+        }
+    }
+]

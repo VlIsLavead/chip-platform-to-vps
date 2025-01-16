@@ -10,5 +10,8 @@
         {{ profile_form.as_p }}
         {% csrf_token %}
         <p><input type="submit" value="Save changes"></p>
+        <p class="info_first_name">*Обязательное поле</p>
+        <p class="info_last_name">*Обязательное поле</p>
+        <p class="email">*Обязательное поле</p>
     </form>
 {% endblock %}

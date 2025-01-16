@@ -1,29 +1,31 @@
 [
   {
-    "model": "account.substrate",
-    "pk": 1,
-    "fields": {
-      "thikness": 100,
-      "diameter": 100,
-      "tech_proces": 1
-    }
+      "model": "account.substrate",
+      "pk": 1,
+      "fields": {
+          "thikness_type": "standard",
+          "thikness": 100,
+          "diameter": 50,
+          "tech_proces": 1
+      }
+  },
+  {
+      "model": "account.substrate",
+      "pk": 2,
+      "fields": {
+          "thikness_type": "non_standard",
+          "thikness": 75,
+          "diameter": 60,
+          "tech_proces": 1
+      }
   },
   {
     "model": "account.substrate",
-    "pk": 2,
-    "fields": {
-      "thikness": 100,
-      "diameter": 75,
-      "tech_proces": 1
-    }
-  },
-    {
-    "model": "account.substrate",
     "pk": 3,
     "fields": {
-      "thikness": 100,
-      "diameter": 100,
-      "tech_proces": 2
+        "thikness_type": "non_standard",
+        "thikness": 85,
+        "diameter": 70,
+        "tech_proces": 1
     }
-  }
-]
+}]

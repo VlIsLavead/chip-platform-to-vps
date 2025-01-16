@@ -18,43 +18,43 @@
 
 {% if sub_section == "general" %}
     <h2>Общие вопросы</h2>
-    <table border="1" style="width: 50%; border-collapse: collapse; text-align: left;">
-        <thead>
-            <tr>
-                <th>Тема</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for topic in general_topics %}
+        <table border="1" class="no-center" style="width: 50%; border-collapse: collapse; text-align: left;">
+            <thead>
                 <tr>
-                    <td><a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a></td>
+                    <th>Тема</th>
                 </tr>
-            {% empty %}
+            </thead>
+            <tbody>
+                {% for topic in general_topics %}
+                    <tr>
+                        <td><a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td>Нет общих тем</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif sub_section == "support" %}
+        <h2>Вопросы по заказам</h2>
+        <table border="1" style="width: 50%; border-collapse: collapse; text-align: left;">
+            <thead>
                 <tr>
-                    <td>Нет общих тем</td>
+                    <th>Тема</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% elif sub_section == "support" %}
-    <h2>Вопросы по заказам</h2>
-    <table border="1" style="width: 50%; border-collapse: collapse; text-align: left;">
-        <thead>
-            <tr>
-                <th>Тема</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for topic in private_topics %}
-                <tr>
-                    <td><a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a></td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td>Нет доступных частных чатов</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for topic in private_topics %}
+                    <tr>
+                        <td><a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td>Нет доступных частных чатов</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 {% endif %}
 {% endblock %}

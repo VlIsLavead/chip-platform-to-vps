@@ -1,4 +1,4 @@
 Django
-django-admin
+# django-admin
 Pillow
 openpyxl

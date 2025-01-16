@@ -3,20 +3,15 @@
 {% block content %}
     <h1>Подтверждение окончания отгрузки заказа</h1>
     <h2>При подтверждении окончания отгрузки, заказ будет закрыт</h2>
-    <div>
-        <table border="1">
-            <tr>
-                <th scope="col">Номер заказа</th>
-                <th scope="col">Код площадки</th>
-                <th scope="col">Статус оплаты</th>
-                <th scope="col">Статус заказа</th>
-            </tr>
-            <tr>
-                <td>{{ order.order_number }}</td>
-                <td>{{ order.platform_code.platform_code }}</td>
-                <td>{{ order.is_paid }}</td>
-                <td>{{ order.get_order_status_display }}</td>
-            </tr>     
+    <p class='bb'>Подробная информация о заказе:</p>
+    <div class="order-table-wrapper">
+        <table border="1" class="order-table">
+            {% for key, value in order.items %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
         </table>
     </div>
     <form method="post" action="{% url 'shipping_is_confirm' order.id %}">

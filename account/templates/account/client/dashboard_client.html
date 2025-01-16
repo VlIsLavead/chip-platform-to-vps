@@ -20,31 +20,31 @@
         <input type="search" name="search" placeholder="Поиск заказов..." />&nbsp;
         <button class="search-button" type="submit">Поиск</button>
     </form>
-</div>
+</div> 
 
 <div class="order-table-wrapper">
     <table border="1" class="order-table">
         <tr>
+            <th>Номер заказа</th>
             <th>Код площадки</th>
             <th>Тип заказа</th>
-            <th>Дата заказа (оплаты)</th>
+            <th>Дата формирования заявки</th>
             <th>Срок выполнения по договору</th>
-            <th>Статус оплаты</th>
             <th>Статус заказа</th>
             <th>Договор</th>
             <th>Счет</th>
             <th>GDS файл</th>
-            <th>Оплата</th> 
-            <th>Действия</th> <!-- Добавили колонку для чата -->
+            <th>Дата оплаты</th> 
+            <th>Действия</th>
         </tr>
 
         {% for order in data.orders %}
             <tr class="order-row">
+                <td>{{ order.order_number }}</td>
                 <td>{{ order.platform_code.platform_code }}</td>
                 <td>{{ order.get_order_type_display }}</td>
                 <td>{{ order.order_date.date }}</td>
                 <td>{{ order.deadline_date.date }}</td>
-                <td>{{ order.is_paid }}</td>
                 <td>{{ order.get_order_status_display }}</td>
 
                 <td>
@@ -84,7 +84,7 @@
                         {% if order.is_paid == False %}
                             <span>Оплата пока недоступна</span>
                         {% else %}
-                            <span>Заказ оплачен</span>
+                            <span>{{order.order_date}}</span>
                         {% endif %}
                     {% endif %}
                 </td>
@@ -93,7 +93,7 @@
                     <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                         Перейти в чат
                     </a>
-                    <a href="{% url 'download_excel'%}" class="button chat-button">
+                    <a href="{% url 'download_excel_from_order_id' order.id %}" class="button chat-button">
                         Скачать Excel файл
                     </a>
                 </td>
@@ -107,4 +107,3 @@
     <a href="{% url "new_order" %}" class="button">Добавить заказ...</a>
 </div>
 
-{% endblock %}

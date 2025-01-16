@@ -1,7 +1,7 @@
 import datetime
+from io import BytesIO
 
-from django.forms import modelformset_factory
-from urllib.parse import quote #Для названия excel файла
+from urllib.parse import quote
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from django.utils import timezone
+from django.utils.timezone import localtime
 
 from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, TopicForm, FileForm, MessageForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Topic, UserTopic, Message, File, Role
@@ -71,23 +71,16 @@ def _dashboard_client(request, message=''):
 
 @login_required
 def new_order(request):
-    last_order = Order.objects.latest("created_at")
-    
-    
-    # date_last_order, number_last_order = last_order.order_number[1:9], last_order.order_number[9:]
-    
-    # if date_last_order == str(datetime.datetime.today().strftime("%Y%m%d")):
-    #     order_number = 'F' + str(datetime.datetime.today().strftime("%Y%m%d")) + str(((int(number_last_order) / 10000 + 0.0001))).replace('.', '')
-    # else:
-    #     order_number = 'F' + str(datetime.datetime.today().strftime("%Y%m%d")) + '00001' 
-        
-        
+    profile = request.user.profile.company_name
+    last_order = Order.objects.latest("created_at")  
     date_last_order, number_last_order = last_order.order_number[1:9], int(last_order.order_number[9:])
     if date_last_order == datetime.datetime.today().strftime("%Y%m%d"):
         new_number = str(number_last_order + 1).zfill(5)
     else:
         new_number = '00001'
     order_number = str('F' + datetime.datetime.today().strftime("%Y%m%d") + new_number)
+    technical_processes = TechnicalProcess.objects.all()
+    
     if request.method == 'POST':
         order_form = OrderEditForm(request.POST, request.FILES)
 
@@ -97,25 +90,34 @@ def new_order(request):
             order_form.save(commit=True)
             order_in_progress = Order.objects.latest("created_at")
             order_data = model_to_dict(order_in_progress)
-            excluded_fields = ['invoice_file', 'contract_file', 'GDS_file']  
-            for field in excluded_fields:
-                order_data.pop(field, None)  
+            file_field = order_in_progress.multiplan_dicing_plan_file
+            order_data['multiplan_dicing_plan_file'] = file_field.url if file_field else None
+
+            for key, value in list(order_data.items()):
+                if not isinstance(value, (str, int, float, bool, type(None))):
+                    order_data[key] = str(value)
+
             request.session['form_data'] = order_data
             
             return render(request, 'account/client/new_order_success.html')
         else:
             messages.error(request, 'Ошибка в заполнении данных для заказа')
     else:
-        order_form = OrderEditForm()
+        order_form = OrderEditForm(initial=request.session.get('form_data', {}))
 
     return render(
         request,
         'account/client/new_order.html',
         {
+            'profile': profile,
             'order_form': order_form,
             'order_number': order_number,
+            'technical_processes': technical_processes,
         }
     )
+
+
+
     
 def technical_materials(request):
     techprocess = TechnicalProcess.objects.values('name_process').distinct()
@@ -147,6 +149,7 @@ def changes_in_order(request, order_id):
         'order': order,
         'order_form': order_form,
     })
+
     
 def add_gds(request, order_id):
     order = Order.objects.get(id=order_id)
@@ -167,11 +170,8 @@ def add_gds(request, order_id):
         'account/client/add_gds.html',
         {
             'form': form,
-            'data': {
-                'order': order,
-                'order_dict': order_dict,
-                'creator_name': creator_name,
-            }
+            'order': order_dict,
+            'creator_name': creator_name,
         }
     )
     
@@ -205,7 +205,6 @@ def order_paid(request, order_id):
             'order_dict': order_dict,
         }
     })
-
 
 
 def _dashboard_curator(request, message=''):
@@ -251,7 +250,7 @@ def edit_order(request, order_id):
         'creator_name': creator_name,
         'order': order_dict,
         })
-    
+
     
 @login_required
 def view_is_paid(request, order_id):
@@ -287,6 +286,7 @@ def view_is_paid(request, order_id):
 @login_required
 def shipping_is_confirm(request, order_id):
     order = Order.objects.get(id=order_id)
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     
     if request.method == 'POST':
         action = None  
@@ -308,7 +308,7 @@ def shipping_is_confirm(request, order_id):
         request, 
         'account/shipping_is_confirm.html',
         {  
-            'order': order,
+            'order': order_dict,
         }
     )
     
@@ -354,11 +354,9 @@ def order_view(request, order_id):
         'account/order_view.html',
         {
             'section': dashboard,
-            'data': {
-                'order': order,
-                'order_dict': order_dict,
-                'creator_name': creator_name,
-            }
+            'order': order_dict,
+            'creator_name': creator_name,
+    
         }
     )
    
@@ -466,6 +464,7 @@ def view_is_paid_exec(request, order_id):
 @login_required
 def plates_in_stock(request, order_id):
     order = Order.objects.get(id=order_id)
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     
     if request.method == 'POST':
         action = None
@@ -489,7 +488,7 @@ def plates_in_stock(request, order_id):
         request,
         'account/plates_in_stock.html',
         {
-            'order': order,
+            'order': order_dict,
         }
     )
 
@@ -518,64 +517,77 @@ def edit(request):
                   'account/edit.html',
                   {'user_form': user_form,
                    'profile_form': profile_form})
-
+    
 
 def load_data(request):
-    values = [(key, request.GET.getlist(key)) for key in request.GET]
-    fields_from_html = {}
+    thikness_type = request.GET.get('thikness_type')
 
-    for i in range(len(values)):
-        fields_from_html[values[i][0]] = values[i][1][0]
-    if "thikness_substate_id" in fields_from_html.keys():
-        thikness_substate_id = request.GET.get('thikness_substate_id')
-        print('-' * 30)
-        print(thikness_substate_id)
-        if thikness_substate_id != '':
-            thikness = Substrate.objects.get(id=thikness_substate_id).thikness
-            tech_proces = Substrate.objects.get(id=thikness_substate_id).tech_proces
-            diameter = Substrate.objects.filter(thikness=thikness, tech_proces=tech_proces)
-            # return render(request, 'accoust/client/new_order.html', {'technical_process': technical_process})
-            return JsonResponse(list(diameter.values('id', 'diameter')), safe=False)
+    if thikness_type:
+        substrates = Substrate.objects.filter(thikness_type=thikness_type)
+    else:
+        substrates = Substrate.objects.none()
 
-    if "technical_process_id" in fields_from_html.keys():
-        technical_process_id = request.GET.get('technical_process_id')
-        if technical_process_id != '':
+    substrates_data = [{
+        'id': substrate.id,
+        'thikness': substrate.thikness,
+        'diameter': substrate.diameter
+    } for substrate in substrates]
 
-            substrate = Substrate.objects.filter(tech_proces_id=technical_process_id).values("thikness").distinct()
-            # return render(request, 'accoust/client/new_order.html', {'technical_process': technical_process})
-            d = {}
-            res=[]
-            print(list(substrate.values('id','thikness').distinct()))
-            for i in list(substrate.values('id','thikness').distinct()):
-                if i['thikness'] not in d.values():
-                    d['id'] = i['id']
-                    d['thikness'] = i['thikness']
-                    res.append(d)
-            substrate = res
-
-            return JsonResponse(substrate, safe=False)
-
-    platform_code_id = request.GET.get('platform_code_id')
-    technical_process = TechnicalProcess.objects.filter(platform_id=platform_code_id).distinct()
-
-    return JsonResponse(list(technical_process.values('id', 'name_process')), safe=False)
+    return JsonResponse(substrates_data, safe=False)
 
 
 def new_order_success_view(request):
     return render(request, 'new_order_success.html')
 
 
-def download_excel_file(request):
-    session_data = request.session.get('form_data', {})
-    wb = generate_excel_file(session_data)
-    
-    filename = 'Отчет заказа.xlsx'
-    
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename="{quote(filename)}"; filename=*UTF-8\'\'{quote(filename)}'
-    wb.save(response)
-    
-    return response
+def download_excel_file_from_session(request):
+    form_data = request.session.get('form_data', {})
+    order_id = form_data.get('id')
+    if not order_id:
+        print('Ошибка: не найден order_id в form_data сессии.')
+        return HttpResponse("Ошибка: не найден order_id в form_data сессии.", status=400)
+
+    session_data = dict(request.session)
+    try:
+        wb = generate_excel_file(request, session_data=session_data, order_id=order_id)
+    except Exception as e:
+        print('Ошибка генерации Excel:', e)
+        return HttpResponse("Ошибка при создании файла.", status=500)
+
+    if wb:
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        filename = f"Детали_заказа_{order_id}.xlsx"
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="{quote(filename)}"; filename*=UTF-8\'\'{quote(filename)}'
+        return response
+    else:
+        return HttpResponse("Ошибка при создании файла.", status=400)
+
+
+def download_excel_file_from_order_id(request, order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return HttpResponse("Ошибка: заказ не найден.", status=404)
+
+    session_data = request.session
+
+    wb = generate_excel_file(request, session_data=session_data, order_id=order_id)
+
+    if wb:
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        filename = f"Детали_заказа_{order_id}.xlsx"
+        response['Content-Disposition'] = f'attachment; filename="{quote(filename)}"; filename*=UTF-8\'\'{quote(filename)}'
+        return response
+    else:
+        return HttpResponse("Ошибка при создании файла.", status=400)
 
 
 def feedback(request):
@@ -608,6 +620,11 @@ def topic_detail(request, topic_id):
             message.topic = topic
             message.user = request.user.profile
             message.save()
+            
+            
+            if topic.is_private == 1:
+                topic.name = f'Чат {topic.related_order.order_number} | {localtime().strftime("%H:%M:%S")}'
+                topic.save(update_fields=['name'])
 
             for file in files:
                 File.objects.create(message=message, file=file)
@@ -622,15 +639,14 @@ def topic_detail(request, topic_id):
         'message_form': message_form,
     })
 
-    
 
 def create_or_open_chat(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
+    order = Order.objects.get(id=order_id)
 
     topic, created = Topic.objects.get_or_create(
         related_order=order,
         defaults={
-            'name': f'Чат для заказа {order.platform_code}', 
+            'name': f'Чат {order.order_number} | ', 
             'is_private': True
         }
     )

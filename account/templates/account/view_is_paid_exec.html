@@ -3,17 +3,17 @@
 {% block content %}
     <h1>Подтверждение оплаты исполнителем</h1>
 
-    <div>
-        <table border="1">
+    <div class="order-table-wrapper">
+        <table border="1" class="order-table">
             <tr>
-                <th scope="col">ID заказа</th>
+                <th scope="col">Номер заказа</th>
                 <th scope="col">Код площадки</th>
                 <th scope="col">Статус оплаты</th>
             </tr>
             <tr>
                 <td>{{ order.order_number }}</td>
                 <td>{{ order.platform_code.platform_code }}</td>
-                <td>{{ order.is_paid }}</td>
+                <td>{{ order.is_paid|yesno:"Да,Нет" }}</td>
             </tr>     
         </table>
     </div>

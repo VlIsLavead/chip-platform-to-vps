@@ -37,6 +37,29 @@ body {
     justify-content: space-between;
 }
 
+:root {
+    --main-search-color: #007bff;
+    --main-bg-color: #5680E9;
+    --main-page-color: #e3e8e6;
+    --main-text-color: #000000;
+    --main-block-hover: #C0C0C0;
+    --main-block-color: #FDE7DA;
+    --main-other-bg: #4f0070;
+    --main-other-bg-copy: #7851a9;
+    --main-color-for: #C1C8E4;
+    --main-color: #e7e8e6;
+
+    --main-bg-button: #007bff;
+    --main-bg-hover: #0056b3;
+}
+
+.page{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 
 :root {
     --main-search-color: #007bff;

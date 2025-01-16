@@ -3,7 +3,7 @@ from io import BytesIO
 
 from urllib.parse import quote
 from django.forms.models import model_to_dict
-from django.http import HttpResponse, JsonResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -11,8 +11,8 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils.timezone import localtime
 
-from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, TopicForm, FileForm, MessageForm
-from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Topic, UserTopic, Message, File, Role
+from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm
+from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Topic, UserTopic, Message, File
 from ..export_excel import generate_excel_file
 
 
@@ -72,7 +72,7 @@ def _dashboard_client(request, message=''):
 @login_required
 def new_order(request):
     profile = request.user.profile.company_name
-    last_order = Order.objects.latest("created_at")  
+    last_order = Order.objects.latest("created_at")
     date_last_order, number_last_order = last_order.order_number[1:9], int(last_order.order_number[9:])
     if date_last_order == datetime.datetime.today().strftime("%Y%m%d"):
         new_number = str(number_last_order + 1).zfill(5)
@@ -80,7 +80,7 @@ def new_order(request):
         new_number = '00001'
     order_number = str('F' + datetime.datetime.today().strftime("%Y%m%d") + new_number)
     technical_processes = TechnicalProcess.objects.all()
-    
+
     if request.method == 'POST':
         order_form = OrderEditForm(request.POST, request.FILES)
 
@@ -98,7 +98,7 @@ def new_order(request):
                     order_data[key] = str(value)
 
             request.session['form_data'] = order_data
-            
+
             return render(request, 'account/client/new_order_success.html')
         else:
             messages.error(request, 'Ошибка в заполнении данных для заказа')
@@ -117,8 +117,6 @@ def new_order(request):
     )
 
 
-
-    
 def technical_materials(request):
     techprocess = TechnicalProcess.objects.values('name_process').distinct()
     selected_process_name = request.GET.get('technical_process')
@@ -127,11 +125,11 @@ def technical_materials(request):
     if selected_process_name:
         selected_process = TechnicalProcess.objects.filter(name_process=selected_process_name).first()
 
-    
-    return render(request, 'account/client/technical_materials.html',{
-                    'techprocess': techprocess,
-                    'selected_process': selected_process,
-                    })
+    return render(request, 'account/client/technical_materials.html', {
+        'techprocess': techprocess,
+        'selected_process': selected_process,
+    })
+
 
 def changes_in_order(request, order_id):
     order = Order.objects.get(id=order_id)
@@ -150,12 +148,12 @@ def changes_in_order(request, order_id):
         'order_form': order_form,
     })
 
-    
+
 def add_gds(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-    
+
     if request.method == 'POST':
         form = AddGDSFile(request.POST, request.FILES, instance=order)
         if form.is_valid():
@@ -164,7 +162,7 @@ def add_gds(request, order_id):
             return render(request, 'account/client/add_gds_success.html', )
     else:
         form = AddGDSFile(instance=order)
-        
+
     return render(
         request,
         'account/client/add_gds.html',
@@ -174,11 +172,11 @@ def add_gds(request, order_id):
             'creator_name': creator_name,
         }
     )
-    
-    
+
+
 @login_required
 def order_paid(request, order_id):
-    order = Order.objects.get(id=order_id)  
+    order = Order.objects.get(id=order_id)
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
 
     if request.method == 'POST':
@@ -199,7 +197,7 @@ def order_paid(request, order_id):
             {'order': order, 'action': action}
         )
 
-    return render(request, 'account/client/order_paid.html', { 
+    return render(request, 'account/client/order_paid.html', {
         'order': order,
         'data': {
             'order_dict': order_dict,
@@ -209,28 +207,28 @@ def order_paid(request, order_id):
 
 def _dashboard_curator(request, message=''):
     orders = Order.objects.all()
-    
+
     return render(
         request,
         'account/dashboard_curator.html',
         {
-            'section': 'dashboard', 
+            'section': 'dashboard',
             'data': {
                 'orders_all': orders,
                 'profile': {'company': 'рога и копыта'},
-                },
+            },
         }
     )
-    
-    
+
+
 @login_required
 def edit_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-    
+
     if request.method == 'POST':
-        form = OrderEditingForm(request.POST, request.FILES, instance=order) 
+        form = OrderEditingForm(request.POST, request.FILES, instance=order)
         if form.is_valid():
             action = None
             if 'success' in request.POST:
@@ -242,20 +240,20 @@ def edit_order(request, order_id):
             order.save()
             return render(request, 'account/edit_order_success.html', {'order': order, 'action': action})
     else:
-        form = OrderEditingForm(instance=order) 
+        form = OrderEditingForm(instance=order)
 
     return render(request, 'account/edit_order.html', {
         'form': form,
         'order_number': order.id,
         'creator_name': creator_name,
         'order': order_dict,
-        })
+    })
 
-    
+
 @login_required
 def view_is_paid(request, order_id):
     order = Order.objects.get(id=order_id)
-    
+
     if request.method == 'POST':
         action = None
         if 'paid_confirmation' in request.POST:
@@ -273,7 +271,7 @@ def view_is_paid(request, order_id):
             'account/view_is_paid_success.html',
             {'order': order, 'action': action}
         )
-    
+
     return render(
         request,
         'account/view_is_paid.html',
@@ -287,31 +285,31 @@ def view_is_paid(request, order_id):
 def shipping_is_confirm(request, order_id):
     order = Order.objects.get(id=order_id)
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-    
+
     if request.method == 'POST':
-        action = None  
-        if 'success_shipping' in request.POST: 
-            order.order_status = "EO" 
+        action = None
+        if 'success_shipping' in request.POST:
+            order.order_status = "EO"
             action = 'success'
-        elif 'cansel_shipping' in request.POST:  
-            order.order_status = "SO"  
+        elif 'cansel_shipping' in request.POST:
+            order.order_status = "SO"
             action = 'cancelled'
-        order.save()  
+        order.save()
 
         return render(
-            request, 
+            request,
             'account/shipping_is_confirm_success.html',
             {'order': order, 'action': action}
         )
-    
+
     return render(
-        request, 
+        request,
         'account/shipping_is_confirm.html',
-        {  
+        {
             'order': order_dict,
         }
     )
-    
+
 
 @login_required
 def _dashboard_executor(request, message=''):
@@ -321,8 +319,8 @@ def _dashboard_executor(request, message=''):
     name_platform = Platform.objects.filter(platform_code=code_company).values_list('platform_name', flat=True).first()
 
     return render(
-        request, 
-        'account/dashboard_executor.html', 
+        request,
+        'account/dashboard_executor.html',
         {
             'section': 'dashboard',
             'data': {
@@ -330,25 +328,26 @@ def _dashboard_executor(request, message=''):
                 'name_platform': name_platform,
                 'code_company': code_company,
                 'profile': {'company': 'рога и копыта'},
-        }
-    })
-    
+            }
+        })
+
+
 @login_required
 def order_view(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     print(creator_name)
-    
+
     if request.method == "POST":
         if 'save_changes' in request.POST:
-            order.order_status = "OA" 
+            order.order_status = "OA"
             order.save()
             return redirect(reverse('order_view_success') + '?success_type=saved')
         elif 'cancel_changes' in request.POST:
             pass
         return redirect(reverse('order_view_success') + '?success_type=canceled')
-    
+
     return render(
         request,
         'account/order_view.html',
@@ -356,14 +355,15 @@ def order_view(request, order_id):
             'section': dashboard,
             'order': order_dict,
             'creator_name': creator_name,
-    
+
         }
     )
-   
+
+
 @login_required
 def order_view_success(request):
     success_type = request.GET.get('success_type', '')
-    
+
     if success_type == 'saved':
         message = "Изменения успешно сохранены!"
     elif success_type == 'canceled':
@@ -377,9 +377,9 @@ def order_view_success(request):
         {
             'message': message
         }
-    )   
-    
-    
+    )
+
+
 @login_required
 def edit_platform(request):
     if request.method == 'POST':
@@ -389,7 +389,7 @@ def edit_platform(request):
             return redirect('edit_platform_success')
     else:
         editing_form = EditPlatform()
-        
+
     return render(request,
                   'account/edit_platform.html',
                   {'editing_form': editing_form})
@@ -404,36 +404,36 @@ def edit_platform_success(request):
 def check_gds_file(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
-    
+
     if request.method == 'POST':
-        action = None  
-        if 'success_gds' in request.POST: 
-            order.order_status = "PO" 
+        action = None
+        if 'success_gds' in request.POST:
+            order.order_status = "PO"
             action = 'confirmed'
-        elif 'cansel_gds' in request.POST:  
-            order.order_status = "OA"  
+        elif 'cansel_gds' in request.POST:
+            order.order_status = "OA"
             action = 'cancelled'
-        order.save()  
+        order.save()
 
         return render(
-            request, 
+            request,
             'account/check_gds_file_success.html',
             {'order': order, 'action': action}
         )
-    
-    return render(request, 'account/check_gds_file.html',{
-            'data': {
-                'order': order,
-                'creator_name': creator_name,
-            }
+
+    return render(request, 'account/check_gds_file.html', {
+        'data': {
+            'order': order,
+            'creator_name': creator_name,
         }
-    )
-    
-    
+    }
+                  )
+
+
 @login_required
 def view_is_paid_exec(request, order_id):
     order = Order.objects.get(id=order_id)
-    
+
     if request.method == 'POST':
         action = None
         if 'paid_confirmation' in request.POST:
@@ -451,7 +451,7 @@ def view_is_paid_exec(request, order_id):
             'account/view_is_paid_exec_success.html',
             {'order': order, 'action': action}
         )
-    
+
     return render(
         request,
         'account/view_is_paid_exec.html',
@@ -465,7 +465,7 @@ def view_is_paid_exec(request, order_id):
 def plates_in_stock(request, order_id):
     order = Order.objects.get(id=order_id)
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-    
+
     if request.method == 'POST':
         action = None
         if 'success_confirmation' in request.POST:
@@ -483,7 +483,7 @@ def plates_in_stock(request, order_id):
             'account/plates_in_stock_success.html',
             {'order': order, 'action': action}
         )
-        
+
     return render(
         request,
         'account/plates_in_stock.html',
@@ -517,7 +517,7 @@ def edit(request):
                   'account/edit.html',
                   {'user_form': user_form,
                    'profile_form': profile_form})
-    
+
 
 def load_data(request):
     thikness_type = request.GET.get('thikness_type')
@@ -595,17 +595,17 @@ def feedback(request):
     profile = user.profile
     general_topics = Topic.objects.filter(is_private=False)
     private_topics = Topic.objects.filter(
-        is_private=True, 
+        is_private=True,
         usertopic__user=profile
     )
     tab = request.GET.get('tab', 'general')
-    
+
     return render(request, 'account/feedback.html', {
         'general_topics': general_topics,
         'private_topics': private_topics,
         'sub_section': tab,
     })
-    
+
 
 def topic_detail(request, topic_id):
     topic = Topic.objects.get(id=topic_id)
@@ -620,8 +620,7 @@ def topic_detail(request, topic_id):
             message.topic = topic
             message.user = request.user.profile
             message.save()
-            
-            
+
             if topic.is_private == 1:
                 topic.name = f'Чат {topic.related_order.order_number} | {localtime().strftime("%H:%M:%S")}'
                 topic.save(update_fields=['name'])
@@ -646,7 +645,7 @@ def create_or_open_chat(request, order_id):
     topic, created = Topic.objects.get_or_create(
         related_order=order,
         defaults={
-            'name': f'Чат {order.order_number} | ', 
+            'name': f'Чат {order.order_number} | ',
             'is_private': True
         }
     )
@@ -675,5 +674,5 @@ def upload_files(request):
             file_urls.append(file_instance.file.url)
 
         return JsonResponse({'message': 'Файлы успешно загружены!', 'file_urls': file_urls})
-    
+
     return JsonResponse({'error': 'Ошибка при загрузке файлов.'})

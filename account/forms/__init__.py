@@ -32,6 +32,7 @@ class OrderEditForm(forms.ModelForm):
     class Meta:
         model = Order
         exclude = [
+            'mask_name',
             'order_number',
             'mask_name',
             'creator',
@@ -51,7 +52,8 @@ class OrderEditForm(forms.ModelForm):
         label='Диаметр подложки',
         to_field_name='diameter'
     )
-    # TODO исправить опечатку
+
+    # TODO исправить опечатку thikness -> thickness
     thikness_type = forms.ChoiceField(
         choices=Substrate.THICKNESS_TYPE_CHOISES,
         label='Тип толщины подложки'
@@ -66,7 +68,7 @@ class OrderEditForm(forms.ModelForm):
     )
 
     field_order = [
-        'customer_product_name', 'technical_process',
+        'order_start', 'customer_product_name', 'technical_process',
         'platform_code', 'order_type', 'product_count',
         'formation_frame_by_customer', 'thikness_type', 'substrate', 'diameter',
         'experimental_structure',
@@ -115,7 +117,7 @@ class OrderEditingForm(forms.ModelForm):
     class Meta:
         model = Order
 
-        fields = ['contract_file', 'invoice_file', 'mask_name']
+        fields = ['mask_name', 'contract_file', 'invoice_file']
 
 
 class EditPlatform(forms.ModelForm):

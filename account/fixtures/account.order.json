@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
 "order_number"				:	"F2024091900001"		,
+"order_start"         : 1,
 "customer_product_name"		:	"KIGSi025"			,
 "mask_name"					:	null				,
 "order_type"				:	"ENG"					,

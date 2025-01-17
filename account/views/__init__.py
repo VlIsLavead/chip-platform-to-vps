@@ -663,6 +663,15 @@ def feedback(request):
         is_private=True,
         usertopic__user=profile
     )
+    
+    for topic in general_topics:
+        last_message = Message.objects.filter(topic=topic).order_by('-created_at').first()
+        topic.last_message_time = last_message.created_at if last_message else None
+        
+    for topic in private_topics:    
+        last_message = Message.objects.filter(topic=topic).order_by('-created_at').first()
+        topic.last_message_time = last_message.created_at if last_message else None
+    
     tab = request.GET.get('tab', 'general')
 
     return render(request, 'account/feedback.html', {

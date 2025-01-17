@@ -28,6 +28,13 @@
                 {% for topic in general_topics %}
                     <tr>
                         <td><a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a></td>
+                        <td>
+                            {% if topic.last_message_time %}
+                                {{ topic.last_message_time|date:"d-m-Y H:i" }}
+                            {% else %}
+                                Нет сообщений
+                            {% endif %}
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -52,6 +59,13 @@
                 {% for topic in private_topics %}
                     <tr>
                         <td><a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a></td>
+                        <td>
+                            {% if topic.last_message_time %}
+                                {{ topic.last_message_time|date:"d-m-Y H:i" }}
+                            {% else %}
+                                Нет сообщений
+                            {% endif %}
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>

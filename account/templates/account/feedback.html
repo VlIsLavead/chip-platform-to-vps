@@ -36,6 +36,10 @@
                 {% endfor %}
             </tbody>
         </table>
+        <form method="post" action="{% url 'create_general_topic' %}" style="margin-bottom: 20px;">
+            {% csrf_token %}
+            <button type="submit" class="button">Создать новую тему</button>
+        </form>
     {% elif sub_section == "support" %}
         <h2>Вопросы по заказам</h2>
         <table border="1" style="width: 50%; border-collapse: collapse; text-align: left;">

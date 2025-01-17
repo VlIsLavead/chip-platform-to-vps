@@ -729,6 +729,17 @@ def create_or_open_chat(request, order_id):
     return redirect('topic_detail', topic_id=topic.id)
 
 
+def create_general_topic(request):
+    if request.method == 'POST':
+        # Создаем новый общий чат (тему)
+        topic = Topic.objects.create(
+            # name=f'Общий чат {localtime().strftime("%d.%m.%Y %H:%M:%S")}',
+            is_private=False,
+        )
+        return redirect('topic_detail', topic_id=topic.id)
+    return redirect('feedback')
+
+
 def upload_files(request):
     if request.method == 'POST' and request.FILES:
         files = request.FILES.getlist('file')

@@ -35,6 +35,7 @@ urlpatterns = [
     path('feedback/', views.feedback, name='feedback'),
     path('topic/<int:topic_id>/', views.topic_detail, name='topic_detail'),
     path('create_or_open_chat/<int:order_id>/', views.create_or_open_chat, name='create_or_open_chat'),
+    path('chat/create_general/', views.create_general_topic, name='create_general_topic'),
     path('upload/', views.upload_files, name='upload_files'),
 
     path('load-data/', views.load_data, name='load_data')  # AJAX

@@ -24,8 +24,8 @@
     </div>
     <br>
     <div class="block_search">
-        <form method="GET" action="">
-            <input type="search" name="search"/>&nbsp;
+        <form method="get" action="{% url 'generic_search_curator' %}">
+            <input type="text" name="q" class="input_text" placeholder="Введите запрос" value="{{ request.GET.q }}">
             <button class="search-button" type="submit">Поиск</button>
         </form>
     </div>
@@ -43,48 +43,50 @@
                 <th scope="col">Договор</th>
                 <th scope="col">Счет</th>
             </tr>
-
-            {% for order in data.orders_all %}
-                <tr>
-                    <td>{{ order.order_number }}</td>
-                    <td>{{ order.id }}</td>
-                    <td>{{ order.platform_code.platform_code }}</td>
-                    <td>{{ order.get_order_type_display }}</td>
-                    <td>{{ order.order_date.date }}</td>
-                    <td>{{ order.deadline_date.date }}</td>
-                    <td>{{ order.order_date|default:"нет" }}</td>
-                    <td>{{ order.get_order_status_display }}</td>
-                    <td>
-                        {% if order.contract_file %}
-                            <a href="{{ order.contract_file.url }}" download>скачать</a>
-                        {% else %}
-                            <span>отсутствует</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if order.invoice_file %}
-                            <a href="{{ order.invoice_file.url }}" download>скачать</a>
-                        {% else %}
-                            <span>отсутствует</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if order.get_order_status_display == "На проверке у куратора" %}
-                            <a href="{% url 'edit_order' order.id %}">Редактировать</a>
-                        {% elif order.get_order_status_display == "Подтверждение оплаты куратором" %}
-                            <a href="{% url 'view_is_paid' order.id %}">Подтверждение оплаты</a>
-                        {% elif order.get_order_status_display == "Отгрузка" %}
-                            <a href="{% url 'shipping_is_confirm' order.id %}">Подтверждение отгрузки</a>
-                        {% else %}
-                            <span>Недоступно</span>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}       
-
-
+            {% if not data.orders %}
+            <tr>
+                <td colspan="11" style="text-align: center;">Ничего не найдено.</td>
+            </tr>
+            {% else %}
+                {% for order in data.orders %}
+                    <tr>
+                        <td>{{ order.order_number }}</td>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.platform_code.platform_code }}</td>
+                        <td>{{ order.get_order_type_display }}</td>
+                        <td>{{ order.order_date.date }}</td>
+                        <td>{{ order.deadline_date.date }}</td>
+                        <td>{{ order.order_date|default:"нет" }}</td>
+                        <td>{{ order.get_order_status_display }}</td>
+                        <td>
+                            {% if order.contract_file %}
+                                <a href="{{ order.contract_file.url }}" download>скачать</a>
+                            {% else %}
+                                <span>отсутствует</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.invoice_file %}
+                                <a href="{{ order.invoice_file.url }}" download>скачать</a>
+                            {% else %}
+                                <span>отсутствует</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.get_order_status_display == "На проверке у куратора" %}
+                                <a href="{% url 'edit_order' order.id %}">Редактировать</a>
+                            {% elif order.get_order_status_display == "Подтверждение оплаты куратором" %}
+                                <a href="{% url 'view_is_paid' order.id %}">Подтверждение оплаты</a>
+                            {% elif order.get_order_status_display == "Отгрузка" %}
+                                <a href="{% url 'shipping_is_confirm' order.id %}">Подтверждение отгрузки</a>
+                            {% else %}
+                                <span>Недоступно</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}   
+            {% endif %}
         </table>
-
     </div>
     <br/>
 {% endblock %}

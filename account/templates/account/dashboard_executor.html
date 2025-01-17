@@ -16,7 +16,7 @@
 
 {% block content %}
     <h1>Личный кабинет исполнителя</h1>
-    <h2>Компания: {{ data.profile.company }}</h2>
+    <h2>Компания: {{ data.company }}</h2>
     <div class="header_content">
         <p>
             Это ваш личный кабинет. Здесь вы 
@@ -27,8 +27,8 @@
     <h2>Заказы для компании: {{ data.name_platform }}</h2>
     <h3 class="platform_name">Код платформы: {{ data.code_company }}</h3>
     <div class="block_search">
-        <form method="GET" action="">
-            <input type="search" name="search"/>&nbsp;
+        <form method="get" action="{% url 'generic_search_executor' %}">
+            <input type="text" name="q" class="input_text" placeholder="Введите запрос" value="{{ request.GET.q }}">
             <button class="search-button" type="submit">Поиск</button>
         </form>
     </div>
@@ -45,43 +45,48 @@
                 <th scope="col">Договор</th>
                 <th scope="col">Счет</th>
             </tr>
-
-            {% for order in data.orders %}
-                <tr>
-                    <td>{{ order.order_number }}</td>
-                    <td>{{ order.id }}</td>
-                    <td>{{ order.get_order_type_display }}</td>
-                    <td>{{ order.order_date.date }}</td>
-                    <td>{{ order.deadline_date.date }}</td>
-                    <td>{{ order.order_date|default:"нет" }}</td>
-                    <td>{{ order.get_order_status_display }}</td>
-                    <td>
-                        {% if order.contract_file %}
-                            <a href="{{ order.contract_file.url }}" download>скачать</a>
-                        {% else %}
-                            <span>отсутствует</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if order.invoice_file %}
-                            <a href="{{ order.invoice_file.url }}" download>скачать</a>
-                        {% else %}
-                            <span>отсутствует</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if order.get_order_status_display == "На проверке у исполнителя" %}
-                            <a href="{% url 'order_view' order.id %}">Просмотр заказа</a>
-                        {% elif order.get_order_status_display == "Согласование" %}
-                            <a href="{% url 'check_gds_file' order.id %}">Проверка GDS файла</a>
-                        {% elif order.get_order_status_display == "Подтверждение оплаты исполнителем" %}
-                            <a href="{% url 'view_is_paid_exec' order.id %}">Проверка оплаты</a>
-                        {% elif order.get_order_status_display == "Производство" %}
-                            <a href="{% url 'plates_in_stock' order.id %}">Пластины на складе</a>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}       
+            {% if not data.orders %}
+            <tr>
+                <td colspan="11" style="text-align: center;">Ничего не найдено.</td>
+            </tr>
+            {% else %}
+                {% for order in data.orders %}
+                    <tr>
+                        <td>{{ order.order_number }}</td>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.get_order_type_display }}</td>
+                        <td>{{ order.order_date.date }}</td>
+                        <td>{{ order.deadline_date.date }}</td>
+                        <td>{{ order.order_date|default:"нет" }}</td>
+                        <td>{{ order.get_order_status_display }}</td>
+                        <td>
+                            {% if order.contract_file %}
+                                <a href="{{ order.contract_file.url }}" download>скачать</a>
+                            {% else %}
+                                <span>отсутствует</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.invoice_file %}
+                                <a href="{{ order.invoice_file.url }}" download>скачать</a>
+                            {% else %}
+                                <span>отсутствует</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.get_order_status_display == "На проверке у исполнителя" %}
+                                <a href="{% url 'order_view' order.id %}">Просмотр заказа</a>
+                            {% elif order.get_order_status_display == "Согласование" %}
+                                <a href="{% url 'check_gds_file' order.id %}">Проверка GDS файла</a>
+                            {% elif order.get_order_status_display == "Подтверждение оплаты исполнителем" %}
+                                <a href="{% url 'view_is_paid_exec' order.id %}">Проверка оплаты</a>
+                            {% elif order.get_order_status_display == "Производство" %}
+                                <a href="{% url 'plates_in_stock' order.id %}">Пластины на складе</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}       
         </table>
     </div>
     <br>

@@ -5,6 +5,8 @@ from urllib.parse import quote
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q, Value
+from django.db.models.functions import Lower
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -14,6 +16,69 @@ from django.utils.timezone import localtime
 from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Topic, UserTopic, Message, File
 from ..export_excel import generate_excel_file
+
+
+def filter_orders(orders, query):
+    filtered_orders = orders.filter(
+        Q(order_number__icontains=query) |
+        Q(id__icontains=query) |
+        Q(platform_code__platform_code__icontains=query) |
+        Q(order_date__icontains=query) |
+        Q(deadline_date__icontains=query) |
+        Q(contract_file__icontains=query) |
+        Q(invoice_file__icontains=query) |
+        Q(GDS_file__icontains=query)
+    )
+
+    additional_orders = []
+    for order in orders:
+        if query.lower() in order.get_order_type_display().lower() or query.lower() in order.get_order_status_display().lower():
+            additional_orders.append(order)
+
+    return (filtered_orders | orders.filter(id__in=[o.id for o in additional_orders])).distinct()
+
+
+
+def generic_search_clients(request):
+    query = request.GET.get('q')
+    orders = Order.objects.filter(creator_id=request.user.id)
+    filtered_orders = filter_orders(orders, query)
+
+    data = {
+        'orders': filtered_orders,
+        'profile': {'company': 'Рога и Копыта'},
+    }
+    return render(request, 'account/client/dashboard_client.html', {'data': data})
+
+
+
+def generic_search_curator(request):
+    query = request.GET.get('q')
+    orders = Order.objects.all()
+    filtered_orders = filter_orders(orders, query)
+
+    data = {
+        'orders': filtered_orders,
+        'profile': {'company': 'рога и копыта'},
+    }
+    return render(request, 'account/dashboard_curator.html', {'data': data})
+
+
+
+def generic_search_executor(request):
+    query = request.GET.get('q')
+    user_p = request.user.profile
+    code_company = Platform.objects.get(platform_code=user_p.company_name)
+    orders = Order.objects.filter(platform_code_id=code_company)
+    filtered_orders = filter_orders(orders, query)
+
+    data = {
+        'profile': user_p,
+        'code_company': code_company,
+        'orders': filtered_orders,
+    }
+    return render(request, 'account/dashboard_executor.html', {'data': data})
+
 
 
 def user_login(request):
@@ -214,7 +279,7 @@ def _dashboard_curator(request, message=''):
         {
             'section': 'dashboard',
             'data': {
-                'orders_all': orders,
+                'orders': orders,
                 'profile': {'company': 'рога и копыта'},
             },
         }

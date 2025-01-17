@@ -204,6 +204,9 @@ class File(models.Model):
 class UserTopic(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    last_read_message = models.ForeignKey('Message', null=True,
+        blank=True, on_delete=models.SET_NULL, related_name='last_read_by'
+    )
 
     class Meta:
         unique_together = ('user', 'topic')

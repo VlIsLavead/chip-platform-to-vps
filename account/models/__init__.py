@@ -154,9 +154,7 @@ class Order(models.Model):
     delivery_premium_template = models.BooleanField("Ускоренный запуск производства фотошаблонов", blank=False,
                                                     null=False, )
     delivery_premium_plate = models.BooleanField("Ускоренный запуск производства пластин", blank=False, null=False, )
-    special_note = models.CharField('Заметка', choices=WaferDeliverFormat.choices, default=WaferDeliverFormat.NotCut,
-                                    blank=False,
-                                    null=False, max_length=2000)
+    special_note = models.TextField('Заметка', blank=False, null=True, max_length=2000)
 
     order_date = models.DateTimeField('Дата оплаты', blank=False, null=True)
     deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=True)

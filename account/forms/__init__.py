@@ -44,7 +44,6 @@ class OrderEditForm(forms.ModelForm):
             'invoice_file',
             'deleted_at',
             'GDS_file',
-            'special_note',
         ]
 
     diameter = forms.ModelChoiceField(
@@ -71,13 +70,19 @@ class OrderEditForm(forms.ModelForm):
         'order_start', 'customer_product_name', 'technical_process',
         'platform_code', 'order_type', 'product_count',
         'formation_frame_by_customer', 'thikness_type', 'substrate', 'diameter',
-        'experimental_structure',
-        'dc_rf_probing_e_map', 'dc_rf_probing_inking',
+        'experimental_structure', 'dc_rf_probing_e_map', 'dc_rf_probing_inking',
         'visual_inspection_inking', 'parametric_monitor_control', 'dicing_method', 'tape_uv_support',
         'wafer_deliver_format', 'container_for_crystals', 'multiplan_dicing_plan', 'multiplan_dicing_plan_file',
-        'package_servce',
-        'delivery_premium_template', 'delivery_premium_plate'
+        'package_servce', 'delivery_premium_template', 'delivery_premium_plate', 'special_note',
     ]
+    
+    widgets = {
+            'special_note': forms.Textarea(attrs={
+                'rows': 4,
+                'cols': 50,
+                'style': 'resize: vertical;',
+            }),
+        }
 
     def __init__(self, *args, **kwargs):
         # TODO not used?

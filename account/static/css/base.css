@@ -150,7 +150,7 @@ form {
 }
 
 form p {
-    width:100%;
+    max-width: 500px;
     overflow:auto;
 }
 
@@ -630,4 +630,12 @@ select#technical_process {
 .center.unread {
     background-color: yellow;
     color: black;
+}
+
+form #id_special_note {
+    display: block;
+    margin-bottom: 5px;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 
+    'Lucida Grande', 'Lucida Sans Unicode', 
+    Geneva, Verdana, sans-serif;
 }

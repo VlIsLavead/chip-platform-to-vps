@@ -112,7 +112,7 @@ def generate_excel_file(request, session_data=None, order_id=None):
             session_data.get('delivery_premium_plate')
             if not order_id else order.delivery_premium_plate,
         'Примечания':
-            'Заполняет заказчик',
+            order.special_note,
         'Форму заполнил':
             '@mail',
     }

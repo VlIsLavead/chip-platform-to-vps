@@ -664,11 +664,31 @@ def feedback(request):
         usertopic__user=profile
     )
     
+     # Обработка общих тем
     for topic in general_topics:
+        last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()
+        if last_read_message and last_read_message.last_read_message:
+            topic.unread_count = Message.objects.filter(
+                topic=topic,
+                id__gt=last_read_message.last_read_message.id
+            ).count()
+        else:
+            topic.unread_count = 0
+        
         last_message = Message.objects.filter(topic=topic).order_by('-created_at').first()
         topic.last_message_time = last_message.created_at if last_message else None
-        
+    
+    # Обработка приватных тем
     for topic in private_topics:    
+        last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()
+        if last_read_message and last_read_message.last_read_message:
+            topic.unread_count = Message.objects.filter(
+                topic=topic,
+                id__gt=last_read_message.last_read_message.id
+            ).count()
+        else:
+            topic.unread_count = 0 
+        
         last_message = Message.objects.filter(topic=topic).order_by('-created_at').first()
         topic.last_message_time = last_message.created_at if last_message else None
     
@@ -682,8 +702,16 @@ def feedback(request):
 
 
 def topic_detail(request, topic_id):
-    topic = Topic.objects.get(id=topic_id)
+    topic = get_object_or_404(Topic, id=topic_id)
     messages = Message.objects.filter(topic=topic)
+
+    profile = request.user.profile
+    user_topic, created = UserTopic.objects.get_or_create(user=profile, topic=topic)
+
+    last_message = Message.objects.filter(topic=topic).order_by('-id').first()
+    if last_message:
+        user_topic.last_read_message = last_message
+        user_topic.save()
 
     if request.method == 'POST':
         message_form = MessageForm(request.POST)
@@ -692,10 +720,10 @@ def topic_detail(request, topic_id):
         if message_form.is_valid():
             message = message_form.save(commit=False)
             message.topic = topic
-            message.user = request.user.profile
+            message.user = profile
             message.save()
 
-            if topic.is_private == 1:
+            if topic.is_private:
                 topic.name = f'Чат {topic.related_order.order_number} | {localtime().strftime("%H:%M:%S")}'
                 topic.save(update_fields=['name'])
 
@@ -711,7 +739,6 @@ def topic_detail(request, topic_id):
         'messages': messages,
         'message_form': message_form,
     })
-
 
 def create_or_open_chat(request, order_id):
     order = Order.objects.get(id=order_id)
@@ -740,12 +767,15 @@ def create_or_open_chat(request, order_id):
 
 def create_general_topic(request):
     if request.method == 'POST':
-        # Создаем новый общий чат (тему)
-        topic = Topic.objects.create(
-            # name=f'Общий чат {localtime().strftime("%d.%m.%Y %H:%M:%S")}',
-            is_private=False,
-        )
-        return redirect('topic_detail', topic_id=topic.id)
+        topic_name = request.POST.get('topic_name')
+        if topic_name:  
+            topic = Topic.objects.create(
+                name=topic_name,
+                is_private=False
+            )
+            return redirect('topic_detail', topic_id=topic.id)
+        else:
+            messages.error(request, 'Название комнаты не может быть пустым.')
     return redirect('feedback')
 
 

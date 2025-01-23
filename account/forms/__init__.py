@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, Message, Topic, File
+from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, Thickness, Diameter, Message, Topic, File
 
 
 class LoginForm(forms.Form):
@@ -34,7 +34,6 @@ class OrderEditForm(forms.ModelForm):
         exclude = [
             'mask_name',
             'order_number',
-            'mask_name',
             'creator',
             'order_date',
             'deadline_date',
@@ -46,53 +45,51 @@ class OrderEditForm(forms.ModelForm):
             'GDS_file',
         ]
 
-    diameter = forms.ModelChoiceField(
-        queryset=Substrate.objects.none(),
-        label='Диаметр подложки',
-        to_field_name='diameter'
-    )
-
-    # TODO исправить опечатку thikness -> thickness
-    thikness_type = forms.ChoiceField(
-        choices=Substrate.THICKNESS_TYPE_CHOISES,
-        label='Тип толщины подложки'
-    )
-    substrate = forms.ModelChoiceField(
-        queryset=Substrate.objects.none(),
-        label='Подложка'
-    )
     technical_process = forms.ModelChoiceField(
         queryset=TechnicalProcess.objects.none(),
         label='Техпроцесс'
     )
 
+    substrate_type = forms.ChoiceField(
+        choices=Order.THICKNESS_TYPE_CHOICES,
+        label='Тип подложки'
+    )
+
+    selected_thickness = forms.ModelChoiceField(
+        queryset=Thickness.objects.none(),
+        label='Толщина'
+    )
+
+    selected_diameter = forms.ModelChoiceField(
+        queryset=Diameter.objects.none(),
+        label='Диаметр'
+    )
+
     field_order = [
         'order_start', 'customer_product_name', 'technical_process',
         'platform_code', 'order_type', 'product_count',
-        'formation_frame_by_customer', 'thikness_type', 'substrate', 'diameter',
+        'formation_frame_by_customer', 'substrate_type', 'selected_thickness', 'selected_diameter',
         'experimental_structure', 'dc_rf_probing_e_map', 'dc_rf_probing_inking',
         'visual_inspection_inking', 'parametric_monitor_control', 'dicing_method', 'tape_uv_support',
         'wafer_deliver_format', 'container_for_crystals', 'multiplan_dicing_plan', 'multiplan_dicing_plan_file',
         'package_servce', 'delivery_premium_template', 'delivery_premium_plate', 'special_note',
     ]
-    
+
     widgets = {
-            'special_note': forms.Textarea(attrs={
-                'rows': 4,
-                'cols': 50,
-                'style': 'resize: vertical;',
-            }),
-        }
+        'special_note': forms.Textarea(attrs={
+            'rows': 4,
+            'cols': 50,
+            'style': 'resize: vertical;',
+        }),
+    }
 
     def __init__(self, *args, **kwargs):
-        # TODO not used?
-        technical_process = kwargs.pop('technical_process', TechnicalProcess.objects.all())
         super(OrderEditForm, self).__init__(*args, **kwargs)
 
+        self.fields['selected_thickness'].queryset = Thickness.objects.none()
+        self.fields['selected_diameter'].queryset = Diameter.objects.none()
         self.fields['technical_process'].queryset = TechnicalProcess.objects.all()
-        self.fields['substrate'].queryset = Substrate.objects.none()
-        self.fields['diameter'].queryset = Substrate.objects.none()
-        self.fields["platform_code"].queryset = Platform.objects.all()
+        self.fields['platform_code'].queryset = Platform.objects.all()
 
         if 'platform_code' in self.data:
             try:
@@ -101,28 +98,26 @@ class OrderEditForm(forms.ModelForm):
             except (ValueError, TypeError):
                 pass
 
-        if 'technical_process' in self.data:
+        if 'substrate_type' in self.data:
             try:
-                technical_process_id = int(self.data.get('technical_process'))
-                self.fields['substrate'].queryset = Substrate.objects.filter(tech_proces_id=technical_process_id)
+                substrate_type = self.data.get('substrate_type')
+                self.fields['selected_thickness'].queryset = Thickness.objects.filter(type=substrate_type)
+
+                self.fields['selected_diameter'].queryset = Diameter.objects.filter(type=substrate_type)
             except (ValueError, TypeError):
                 pass
 
-        if 'substrate' in self.data:
-            try:
-                substrate_id = int(self.data.get('substrate'))
-                substrate = Substrate.objects.get(id=substrate_id)
-                thikness = substrate.thikness
-                self.fields['diameter'].queryset = Substrate.objects.filter(thikness=thikness)
-            except (ValueError, TypeError, Substrate.DoesNotExist):
-                pass
-
+        elif self.instance.pk:
+            self.fields['selected_thickness'].queryset = Thickness.objects.filter(type=self.instance.substrate_type)
+            self.fields['selected_diameter'].queryset = Diameter.objects.filter(type=self.instance.substrate_type)
+            
+            
 
 class OrderEditingForm(forms.ModelForm):
     class Meta:
         model = Order
 
-        fields = ['mask_name', 'contract_file', 'invoice_file']
+        fields = ['mask_name']
 
 
 class EditPlatform(forms.ModelForm):

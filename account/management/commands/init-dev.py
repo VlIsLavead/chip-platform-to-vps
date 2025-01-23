@@ -9,6 +9,8 @@ fixtures = [
     'account.platform.json',
 
     'account.technicalprocess.json',
+    'account.diameter.json',
+    'account.thickness.json',
     'account.substrate.json',
     'account.order.json',
     'account.topic.json',

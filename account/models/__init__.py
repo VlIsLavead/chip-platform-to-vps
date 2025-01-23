@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 
 
 class Role(models.Model):
@@ -45,24 +46,77 @@ class TechnicalProcess(models.Model):
         return self.name_process
 
 
+class Thickness(models.Model):
+    STANDARD = 'standard'
+    NON_STANDARD = 'non_standard'
+    TYPE_CHOICES = [
+        (STANDARD, 'Стандартная'),
+        (NON_STANDARD, 'Нестандартная'),
+    ]
+
+    type = models.CharField(
+        max_length=15,
+        choices=TYPE_CHOICES,
+        default=STANDARD
+    )
+    value = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.value} мкм - {self.type}"
+    
+    
+
+class Diameter(models.Model):
+    STANDARD = 'standard'
+    NON_STANDARD = 'non_standard'
+    TYPE_CHOICES = [
+        (STANDARD, 'Стандартный'),
+        (NON_STANDARD, 'Нестандартный'),
+    ]
+
+    type = models.CharField(
+        max_length=15,
+        choices=TYPE_CHOICES,
+        default=STANDARD
+    )
+    value = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.value} мм - {self.type}"
+    
+    
+
 class Substrate(models.Model):
     STANDARD = 'standard'
     NON_STANDARD = 'non_standard'
-    THICKNESS_TYPE_CHOISES = [
+    THICKNESS_TYPE_CHOICES = [
         (STANDARD, 'Стандартная толщина подложки'),
         (NON_STANDARD, 'Нестандартная толщина подложки'),
     ]
-    thikness_type = models.CharField('Тип толщины', max_length=15,
-                                     choices=THICKNESS_TYPE_CHOISES, default=STANDARD)
-    thikness = models.IntegerField('Толщина подложки', blank=False, null=True)
-    diameter = models.IntegerField('Диаметр подложки', blank=False, null=True)
-    tech_proces = models.ForeignKey(TechnicalProcess, on_delete=models.CASCADE, null=False, )
+    
+    thickness_type = models.CharField(
+        'Тип подложки',
+        max_length=15,
+        choices=THICKNESS_TYPE_CHOICES,
+        default=STANDARD
+    )
 
     def __str__(self):
-        return f"{self.thikness} мкм"
+        return self.thickness_type
 
 
 class Order(models.Model):
+    STANDARD = 'standard'
+    NON_STANDARD = 'non_standard'
+    THICKNESS_TYPE_CHOICES = [
+        (STANDARD, 'Стандартная толщина подложки'),
+        (NON_STANDARD, 'Нестандартная толщина подложки'),
+    ]
+    
+    class OrderStart(models.TextChoices):
+        NEW = 'NEW', 'Новый заказ'
+        REP = 'REP', 'Повтор заказа'
+    
     class OrderType(models.TextChoices):
         MPW = 'MPW', 'MPW',
         REP = 'REP', 'Повтор',
@@ -116,7 +170,10 @@ class Order(models.Model):
                                         validators=[MinValueValidator(1)])
     formation_frame_by_customer = models.BooleanField('Формирование кадра заказчиком', blank=False,
                                                       null=False, default=False)
-    substrate = models.ForeignKey(Substrate, on_delete=models.CASCADE, null=False, )
+    substrate_type = models.CharField(max_length=15, choices=THICKNESS_TYPE_CHOICES, default=STANDARD,
+                                      verbose_name='Тип толщины подложки')
+    selected_thickness = models.ForeignKey(Thickness, on_delete=models.CASCADE, verbose_name='Толщина')
+    selected_diameter = models.ForeignKey(Diameter, on_delete=models.CASCADE, verbose_name='Диаметр')
     dc_rf_probing_e_map = models.CharField('Контроль электрических параметров на пластине',
                                            choices=DCRFProbingEMap.choices,
                                            default=DCRFProbingEMap.NO, blank=False,

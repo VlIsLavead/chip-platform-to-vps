@@ -16,7 +16,7 @@
                 {{ order_form.instance.multiplan_dicing_plan_file.name }}
             </a>
         </p>
-    {% endif %}
+        {% endif %}
         {% csrf_token %}
         <p><input type="submit" value="Сохранить"></p>
     </form>
@@ -41,57 +41,58 @@
             });
         
             function loadSubstrates() {
-                const thikness_type = $("#id_thikness_type").val();
+                const substrate_type = $("#id_substrate_type").val();
                 const url = $("#orderForm").attr("data-url");
-        
+
                 $.ajax({
                     url: url,
                     data: {
-                        'thikness_type': thikness_type
+                        'substrate_type': substrate_type
                     },
                     success: function (data) {
-                        $("#id_substrate").html('<option value="">---------</option>');
-                        $("#id_diameter").html('<option value="">---------</option>');
-                        data.forEach(function (substrate) {
-        
-                            const substrateId = parseInt(substrate.id, 10);
-                            const thikness = parseInt(substrate.thikness, 10);
-                            const diameter = parseInt(substrate.diameter, 10);
-        
-                            if (!isNaN(substrateId) && !isNaN(thikness)) {
-                                $("#id_substrate").append('<option value="' + substrateId + '">' + thikness + '</option>');
-                            }
-        
-                            if (!isNaN(diameter)) {
-                                $("#id_diameter").append('<option value="' + diameter + '">' + diameter + '</option>');
-                            }
+                        $("#id_selected_thickness").html('<option value="">---------</option>');
+                        $("#id_selected_diameter").html('<option value="">---------</option>');
+                        data.thicknesses.forEach(function (thickness) {
+                            $("#id_selected_thickness").append(
+                                '<option value="' + thickness.id + '">' + thickness.value + ' мкм</option>'
+                            );
+                        });
+
+                        data.diameters.forEach(function (diameter) {
+                            $("#id_selected_diameter").append(
+                                '<option value="' + diameter.id + '">' + diameter.value + ' мм</option>'
+                            );
                         });
                     },
                     error: function () {
-                        $("#id_substrate").html('<option value="">---------</option>');
-                        $("#id_diameter").html('<option value="">---------</option>');
+                        $("#id_selected_thickness").html('<option value="">---------</option>');
+                        $("#id_selected_diameter").html('<option value="">---------</option>');
                     }
                 });
             }
-        
-            $("#id_thikness_type").change(function () {
+
+            $("#id_substrate_type").change(function () {
                 loadSubstrates();
             });
-        
-            if (localStorage.getItem('thikness_type')) {
-                const thikness_type = localStorage.getItem('thikness_type');
-                $("#id_thikness_type").val(thikness_type).trigger("change");
+
+            if ($("#id_substrate_type").val()) {
+                loadSubstrates();
             }
-        
-            $("#id_thikness_type").change(function () {
-                localStorage.setItem('thikness_type', $(this).val());
+
+            if (localStorage.getItem('substrate_type')) {
+                const substrate_type = localStorage.getItem('substrate_type');
+                $("#id_substrate_type").val(substrate_type).trigger("change");
+            }
+
+            $("#id_substrate_type").change(function () {
+                localStorage.setItem('substrate_type', $(this).val());
             });
-        
-            $("#id_substrate").change(function () {
-                localStorage.setItem('thikness', $(this).val());
+
+            $("#id_selected_thickness").change(function () {
+                localStorage.setItem('thickness', $(this).val());
             });
-        
-            $("#id_diameter").change(function () {
+
+            $("#id_selected_diameter").change(function () {
                 localStorage.setItem('diameter', $(this).val());
             });
         });

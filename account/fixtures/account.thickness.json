@@ -1,0 +1,34 @@
+[
+    {
+      "model": "account.thickness",
+      "pk": 1,
+      "fields": {
+        "type": "standard",
+        "value": 100
+      }
+    },
+    {
+      "model": "account.thickness",
+      "pk": 2,
+      "fields": {
+        "type": "standard",
+        "value": 150
+      }
+    },
+    {
+      "model": "account.thickness",
+      "pk": 3,
+      "fields": {
+        "type": "non_standard",
+        "value": 300
+      }
+    },
+    {
+      "model": "account.thickness",
+      "pk": 4,
+      "fields": {
+        "type": "non_standard",
+        "value": 500
+      }
+    }
+]

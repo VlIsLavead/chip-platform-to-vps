@@ -585,20 +585,22 @@ def edit(request):
 
 
 def load_data(request):
-    thikness_type = request.GET.get('thikness_type')
+    substrate_type = request.GET.get('substrate_type')
 
-    if thikness_type:
-        substrates = Substrate.objects.filter(thikness_type=thikness_type)
-    else:
-        substrates = Substrate.objects.none()
+    if substrate_type not in [Substrate.STANDARD, Substrate.NON_STANDARD]:
+        return JsonResponse({'error': 'Invalid substrate type'}, status=400)
 
-    substrates_data = [{
-        'id': substrate.id,
-        'thikness': substrate.thikness,
-        'diameter': substrate.diameter
-    } for substrate in substrates]
+    thicknesses = Thickness.objects.filter(type=substrate_type)
+    thickness_data = [{'id': t.id, 'value': t.value} for t in thicknesses]
 
-    return JsonResponse(substrates_data, safe=False)
+    diameters = Diameter.objects.filter(type=substrate_type)
+    diameter_data = [{'id': d.id, 'value': d.value} for d in diameters]
+
+    return JsonResponse({
+        'thicknesses': thickness_data,
+        'diameters': diameter_data,
+    })
+
 
 
 def new_order_success_view(request):

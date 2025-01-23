@@ -68,13 +68,11 @@ def generate_excel_file(request, session_data=None, order_id=None):
             session_data.get('formation_frame_by_customer')
             if not order_id else order.formation_frame_by_customer,
         'Тип толщины подложки':
-            order.substrate.get_thikness_type_display(),
+            order.get_substrate_type_display(),
         'Толщина подложки':
-            session_data.get('thickness')
-            if not order_id else order.substrate.thikness,
+            order.selected_thickness.value,
         'Диаметр подложки':
-            session_data.get('diameter')
-            if not order_id else order.substrate.diameter,
+            order.selected_diameter.value,
         'Экспериментальная структура':
             session_data.get('experimental_structure')
             if not order_id else order.experimental_structure,

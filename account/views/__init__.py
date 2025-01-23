@@ -13,8 +13,8 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils.timezone import localtime
 
-from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm
-from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Topic, UserTopic, Message, File
+from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm
+from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Thickness, Diameter, Topic, UserTopic, Message, File
 from ..export_excel import generate_excel_file
 
 
@@ -320,27 +320,31 @@ def view_is_paid(request, order_id):
     order = Order.objects.get(id=order_id)
 
     if request.method == 'POST':
-        action = None
-        if 'paid_confirmation' in request.POST:
-            order.is_paid = True
-            order.order_status = "POC"
-            action = 'success'
-        elif 'paid_cansel' in request.POST:
-            order.is_paid = False
-            order.order_status = "PO"
-            action = 'cancelled'
-        order.save()
-
-        return render(
-            request,
-            'account/view_is_paid_success.html',
-            {'order': order, 'action': action}
-        )
-
+        form = EditPaidForm(request.POST, request.FILES, instance=order)
+        if form.is_valid():
+            action = None
+            if 'paid_confirmation' in request.POST:
+                order.is_paid = True
+                order.order_status = "POC"
+                action = 'success'
+            elif 'paid_cansel' in request.POST:
+                order.is_paid = False
+                order.order_status = "PO"
+                action = 'cancelled'
+            order.save()
+            return render(
+                request,
+                'account/view_is_paid_success.html',
+                {'order': order, 'action': action}
+            )
+    else:
+        form = EditPaidForm(instance=order)
+            
     return render(
         request,
         'account/view_is_paid.html',
         {
+            'form': form,
             'order': order,
         }
     )

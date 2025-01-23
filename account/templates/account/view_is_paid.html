@@ -17,7 +17,8 @@
             </tr>     
         </table>
     </div>
-    <form method="post" action="{% url 'view_is_paid' order.id %}">
+    <form method="post" action="{% url 'view_is_paid' order.id %}" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
+        {{ form.as_p }}
         {% csrf_token %}
         <p>
             <input type="submit" name="paid_confirmation" value="Подтвердить оплату">

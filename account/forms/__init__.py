@@ -134,6 +134,13 @@ class AddGDSFile(forms.ModelForm):
         fields = ['GDS_file']
 
 
+class EditPaidForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        
+        fields = ['contract_file', 'invoice_file']
+
+
 class MessageForm(forms.ModelForm):
     text = forms.CharField(widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Введите ваше сообщение...'}))
 

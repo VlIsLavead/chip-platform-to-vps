@@ -38,8 +38,7 @@ def generate_excel_file(request, session_data=None, order_id=None):
 
     custom_headers = {
         'Тип заказа':
-            session_data.get('order_start')
-            if not order_id else order.order_start,
+            order.get_order_start_display(),
         'Номер заказа':
             session_data.get('order_number')
             if not order_id else order.order_number,

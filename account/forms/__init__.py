@@ -57,12 +57,12 @@ class OrderEditForm(forms.ModelForm):
 
     selected_thickness = forms.ModelChoiceField(
         queryset=Thickness.objects.none(),
-        label='Толщина подложки'
+        label='Толщина подложки, мкм'
     )
 
     selected_diameter = forms.ModelChoiceField(
         queryset=Diameter.objects.none(),
-        label='Диаметр подложки'
+        label='Диаметр подложки, мм'
     )
 
     field_order = [

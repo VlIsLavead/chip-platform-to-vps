@@ -12,7 +12,7 @@
     "model": "account.technicalprocess",
     "pk": 2,
     "fields": {
-      "name_process": "GSi025",
+      "name_process": "GSi024",
       "PDK_file": "",
       "platform": 2
     }

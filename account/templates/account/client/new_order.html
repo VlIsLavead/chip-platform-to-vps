@@ -54,13 +54,13 @@
                         $("#id_selected_diameter").html('<option value="">---------</option>');
                         data.thicknesses.forEach(function (thickness) {
                             $("#id_selected_thickness").append(
-                                '<option value="' + thickness.id + '">' + thickness.value + ' мкм</option>'
+                                '<option value="' + thickness.id + '">' + thickness.value + '</option>'
                             );
                         });
 
                         data.diameters.forEach(function (diameter) {
                             $("#id_selected_diameter").append(
-                                '<option value="' + diameter.id + '">' + diameter.value + ' мм</option>'
+                                '<option value="' + diameter.id + '">' + diameter.value + '</option>'
                             );
                         });
                     },

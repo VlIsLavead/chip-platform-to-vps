@@ -94,8 +94,6 @@ def generate_excel_file(request, session_data=None, order_id=None):
         'Вид поставки пластин':
             session_data.get('wafer_deliver_format')
             if not order_id else order.wafer_deliver_format,
-        'Возвращение пластин на фабрику для разделения на кристаллы':
-            'НЕПОНЯТНО',
         'Схема разделения пластины на кристаллы по схеме заказчика':
             session_data.get('multiplan_dicing_plan')
             if not order_id else order.multiplan_dicing_plan,

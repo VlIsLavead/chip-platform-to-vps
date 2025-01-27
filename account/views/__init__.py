@@ -203,7 +203,9 @@ def changes_in_order(request, order_id):
         if order_form.is_valid():
             order.order_status = "OVK"
             order_form.save()
-            return render(request, 'account/client/changes_in_order_success.html')
+            return render(request, 'account/client/changes_in_order_success.html',
+                          {'order_form': order_form,
+                          'order_id': order_id})
         else:
             messages.error(request, 'Ошибка в заполнении данных для заказа')
     else:
@@ -211,6 +213,7 @@ def changes_in_order(request, order_id):
     return render(request, 'account/client/changes_in_order.html', {
         'order': order,
         'order_form': order_form,
+        'order_id': order_id,
     })
 
 

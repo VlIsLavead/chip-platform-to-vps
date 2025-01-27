@@ -79,9 +79,7 @@
 
                     <td>
                         {% if order.get_order_status_display == "Оплата" %}
-                            <a href="{% url 'is_paid' order.id %}">Оплатить</a>  
-                        {% elif order.get_order_status_display == "Необходима доработка" %}
-                            <a href="{% url 'changes_in_order' order.id %}">Внести изменения</a>  
+                            <a href="{% url 'is_paid' order.id %}">Оплатить</a>    
                         {% else %}
                             {% if order.is_paid == False %}
                                 <span>Оплата пока недоступна</span>
@@ -92,6 +90,9 @@
                     </td>
 
                     <td>
+                        {% if order.get_order_status_display == "Необходима доработка" %}
+                            <a href="{% url 'changes_in_order' order.id %}" class="button chat-button">Внести изменения в заказ</a> 
+                        {% endif %}
                         <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                             Перейти в чат
                         </a>

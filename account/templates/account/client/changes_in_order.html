@@ -15,77 +15,92 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>
     $(document).ready(function () {
-        function updateTechnicalProcess(platform_code_id) {
-            const url = $("#orderForm").attr("data-url"); 
-            if (platform_code_id) {
-                $.ajax({
-                    url: url,
-                    data: { 'platform_code_id': platform_code_id },
-                    success: function (data) {
-                        let html_data = '<option value="">---------</option>';
-                        data.forEach(function (technical_process) {
-                            html_data += `<option value="${technical_process.id}">${technical_process.name_process}</option>`;
-                        });
-                        $("#id_technical_process").html(html_data);
-
-                        const selectedTechnicalProcess = $("#id_technical_process").data("selected");
-                        if (selectedTechnicalProcess) {
-                            $("#id_technical_process").val(selectedTechnicalProcess);
-                            $("#id_technical_process").trigger("change");
-                        }
-                    }
-                });
+        function toggleMultiplanFileField() {
+            const choiceField = $("#id_multiplan_dicing_plan");
+            const fileField = $("#id_multiplan_dicing_plan_file").closest("p");
+            if (choiceField.prop("checked")) {
+                fileField.show();
+            } else {
+                fileField.hide();
             }
         }
 
-        const platform_code_id = $("#id_platform_code").val();
-        if (platform_code_id) {
-            updateTechnicalProcess(platform_code_id);
+        toggleMultiplanFileField();
+
+        $("#id_multiplan_dicing_plan").change(function () {
+            toggleMultiplanFileField();
+        });
+
+        function loadSubstrates() {
+            const substrate_type = $("#id_substrate_type").val();
+            const url = $("#orderForm").attr("data-url");
+
+            $.ajax({
+                url: url,
+                data: {
+                    'substrate_type': substrate_type
+                },
+                success: function (data) {
+                    $("#id_selected_thickness").html('<option value="">---------</option>');
+                    $("#id_selected_diameter").html('<option value="">---------</option>');
+
+                    data.thicknesses.forEach(function (thickness) {
+                        $("#id_selected_thickness").append(
+                            '<option value="' + thickness.id + '">' + thickness.value + '</option>'
+                        );
+                    });
+
+                    data.diameters.forEach(function (diameter) {
+                        $("#id_selected_diameter").append(
+                            '<option value="' + diameter.id + '">' + diameter.value + '</option>'
+                        );
+                    });
+
+                    // Восстановление сохранённых значений
+                    const savedThickness = localStorage.getItem('thickness');
+                    const savedDiameter = localStorage.getItem('diameter');
+
+                    if (savedThickness) {
+                        $("#id_selected_thickness").val(savedThickness);
+                    }
+
+                    if (savedDiameter) {
+                        $("#id_selected_diameter").val(savedDiameter);
+                    }
+                },
+                error: function () {
+                    $("#id_selected_thickness").html('<option value="">---------</option>');
+                    $("#id_selected_diameter").html('<option value="">---------</option>');
+                }
+            });
         }
 
-        $("#id_platform_code").change(function () {
-            updateTechnicalProcess($(this).val());
+        $("#id_substrate_type").change(function () {
+            loadSubstrates();
         });
 
-        $("#id_technical_process").change(function () {
-            const url = $("#orderForm").attr("data-url");
-            const technical_process_id = $(this).val();
+        if ($("#id_substrate_type").val()) {
+            loadSubstrates();
+        }
 
-            if (technical_process_id) {
-                $.ajax({
-                    url: url,
-                    data: { 'technical_process_id': technical_process_id },
-                    success: function (data) {
-                        let html_data = '<option value="">---------</option>';
-                        data.forEach(function (substrate) {
-                            html_data += `<option value="${substrate.id}">${substrate.thikness}</option>`;
-                        });
-                        $("#id_substrate").html(html_data);
-                    }
-                });
-            }
+        if (localStorage.getItem('substrate_type')) {
+            const substrate_type = localStorage.getItem('substrate_type');
+            $("#id_substrate_type").val(substrate_type).trigger("change");
+        }
+
+        $("#id_substrate_type").change(function () {
+            localStorage.setItem('substrate_type', $(this).val());
         });
 
-        $("#id_substrate").change(function () {
-            const url = $("#orderForm").attr("data-url");
-            const substrate_id = $(this).val();
+        $("#id_selected_thickness").change(function () {
+            const thickness = $(this).val();
+            localStorage.setItem('thickness', thickness);
+        });
 
-            if (substrate_id) {
-                $.ajax({
-                    url: url,
-                    data: { 'thikness_substate_id': substrate_id },
-                    success: function (data) {
-                        let html_data = '<option value="">---------</option>';
-                        data.forEach(function (diameter) {
-                            html_data += `<option value="${diameter.id}">${diameter.diameter}</option>`;
-                        });
-                        $("#id_diameter").html(html_data);
-                    }
-                });
-            }
+        $("#id_selected_diameter").change(function () {
+            const diameter = $(this).val();
+            localStorage.setItem('diameter', diameter);
         });
     });
 </script>
-
 {% endblock %}
-

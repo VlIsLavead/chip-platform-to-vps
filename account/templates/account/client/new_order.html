@@ -71,9 +71,42 @@
                 });
             }
 
+            function loadContainerForCrystals() {
+                const wafer_deliver_format = $("#id_wafer_deliver_format").val();
+                const substrate_type = $("#id_substrate_type").val();  // Получаем выбранное значение substrate_type
+                const url = $("#orderForm").attr("data-url");
+
+                $.ajax({
+                    url: url,
+                    data: {
+                        'wafer_deliver_format': wafer_deliver_format,
+                        'substrate_type': substrate_type
+                    },
+                    success: function (data) {
+                        $("#id_container_for_crystals").html('<option value="">---------</option>');
+                        data.container_for_crystals.forEach(function (container) {
+                            $("#id_container_for_crystals").append(
+                                '<option value="' + container.id + '">' + container.value + '</option>'
+                            );
+                        });
+                    },
+                    error: function () {
+                        $("#id_container_for_crystals").html('<option value="">---------</option>');
+                    }
+                });
+            }
+
+            $("#id_wafer_deliver_format").change(function () {
+                loadContainerForCrystals();
+            });
+
             $("#id_substrate_type").change(function () {
                 loadSubstrates();
             });
+            
+            if ($("#id_wafer_deliver_format").val()) {
+                loadContainerForCrystals();
+            }
 
             if ($("#id_substrate_type").val()) {
                 loadSubstrates();

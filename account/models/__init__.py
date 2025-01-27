@@ -62,7 +62,7 @@ class Thickness(models.Model):
     value = models.IntegerField()
 
     def __str__(self):
-        return f"{self.value} мкм - {self.type}"
+        return f"{self.value} мкм"
     
     
 
@@ -82,7 +82,7 @@ class Diameter(models.Model):
     value = models.IntegerField()
 
     def __str__(self):
-        return f"{self.value} мм - {self.type}"
+        return f"{self.value} мм"
     
     
 
@@ -141,7 +141,8 @@ class Order(models.Model):
         NO = 'No', 'Без проверки'
 
     class DicingMethod(models.TextChoices):
-        SAW = 'SAW', 'Пила',
+        DC = 'DC', 'Дисковая резка',
+        LS = 'LS', 'Лазер',
 
     class WaferDeliverFormat(models.TextChoices):
         NotCut = 'Пластины неразделенные', 'Пластины неразделенные',
@@ -149,9 +150,9 @@ class Order(models.Model):
         Container = 'Кристаллы в таре', 'Кристаллы в таре',
 
     class ContainerForCrystals(models.TextChoices):
-        GelPack = 'Gel-Pak', 'Gel-Pak',
+        СontainerForCrystalls = 'Тара для пластин', 'Тара для пластин'
         PlasticCells = 'Пластмассовые ячейки', 'Пластмассовые ячейки',
-        PetriDish = 'Чашка Петри', 'Чашка Петри',
+        GelPack = 'Gel-Pak', 'Gel-Pak',
 
     # repeat = models.BooleanField('Повтор',  blank=False, null=False,)
 
@@ -190,7 +191,7 @@ class Order(models.Model):
     experimental_structure = models.BooleanField('Экспериментальная структура', blank=False,
                                                  null=False, default=False, )
     dicing_method = models.CharField('Способ разделения пластины на кристаллы', choices=DicingMethod.choices,
-                                     default=DicingMethod.SAW, blank=False,
+                                     default=DicingMethod.DC, blank=False,
                                      null=False, max_length=200)
     tape_uv_support = models.BooleanField('УФ засветка полимерного носителя', blank=False,
                                           null=False, )

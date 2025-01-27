@@ -64,6 +64,16 @@ class OrderEditForm(forms.ModelForm):
         queryset=Diameter.objects.none(),
         label='Диаметр подложки, мм'
     )
+    
+    wafer_deliver_format = forms.ChoiceField(
+        choices=Order.WaferDeliverFormat.choices,
+        label='Вид поставки пластин'
+    )
+
+    container_for_crystals = forms.ChoiceField(
+        choices=[],
+        label='Тара для кристаллов'
+    )
 
     field_order = [
         'order_start', 'customer_product_name', 'technical_process',
@@ -105,11 +115,43 @@ class OrderEditForm(forms.ModelForm):
 
                 self.fields['selected_diameter'].queryset = Diameter.objects.filter(type=substrate_type)
             except (ValueError, TypeError):
-                pass
-
+                pass 
+            
         elif self.instance.pk:
             self.fields['selected_thickness'].queryset = Thickness.objects.filter(type=self.instance.substrate_type)
             self.fields['selected_diameter'].queryset = Diameter.objects.filter(type=self.instance.substrate_type)
+            
+        if 'wafer_deliver_format' in self.data:
+            wafer_deliver_format = self.data.get('wafer_deliver_format')
+            self._update_container_for_crystals_choices(wafer_deliver_format)
+        elif self.instance.pk:
+            wafer_deliver_format = self.instance.wafer_deliver_format
+            self._update_container_for_crystals_choices(wafer_deliver_format)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        wafer_deliver_format = cleaned_data.get('wafer_deliver_format')
+
+        if wafer_deliver_format:
+            self._update_container_for_crystals_choices(wafer_deliver_format)
+
+        return cleaned_data
+
+    def _update_container_for_crystals_choices(self, wafer_deliver_format):
+        if wafer_deliver_format == Order.WaferDeliverFormat.NotCut:
+            self.fields['container_for_crystals'].choices = [
+                (Order.ContainerForCrystals.СontainerForCrystalls, 'Тара для пластин'),
+            ]
+        elif wafer_deliver_format == Order.WaferDeliverFormat.Cut:
+            self.fields['container_for_crystals'].choices = [
+                (Order.ContainerForCrystals.PlasticCells, 'Пластмассовые ячейки'),
+            ]
+        elif wafer_deliver_format == Order.WaferDeliverFormat.Container:
+            self.fields['container_for_crystals'].choices = [
+                (Order.ContainerForCrystals.GelPack, 'Gel-Pak'),
+            ]
+        else:
+            self.fields['container_for_crystals'].choices = []
             
             
 

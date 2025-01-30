@@ -3,17 +3,6 @@
 {% block content %}
     <h1>Подтверждение окончания отгрузки заказа</h1>
     <h2>При подтверждении окончания отгрузки, заказ будет закрыт</h2>
-    <p class='bb'>Подробная информация о заказе:</p>
-    <div class="order-table-wrapper">
-        <table border="1" class="order-table">
-            {% for key, value in order.items %}
-                <tr>
-                    <th>{{ key }}</th>
-                    <td>{{ value }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
     <form method="post" action="{% url 'shipping_is_confirm' order.id %}">
         {% csrf_token %}
         <p>
@@ -21,4 +10,31 @@
             <input type="submit" name="cansel_shipping" value="Отменить подтверждение">
         <p>
     </form>
+    <p>Подробная информация о заказе:</p>
+        <div class="order-table-wrapper">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Поле</th>
+                        <th>Значение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field, value in order_items %}
+                        <tr>
+                            <td><strong>{{ field }}</strong></td>
+                            <td>
+                                {% if value %}
+                                    {% if value|length > 20 and value|slice:":6" == "/media" %}
+                                        <a href="{{ value }}" download target="_blank">Скачать</a>
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 {% endblock %}

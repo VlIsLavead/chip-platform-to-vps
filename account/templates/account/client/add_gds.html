@@ -11,13 +11,29 @@
         </form>
         <p>Подробная информация о заказе:</p>
         <div class="order-table-wrapper">
-            <table border="1" class="order-table">
-                {% for key, value in order.items %}
+            <table border="1">
+                <thead>
                     <tr>
-                        <th>{{ key }}</th>
-                        <td>{{ value }}</td>
+                        <th>Поле</th>
+                        <th>Значение</th>
                     </tr>
-                {% endfor %}
+                </thead>
+                <tbody>
+                    {% for field, value in order_items %}
+                        <tr>
+                            <td><strong>{{ field }}</strong></td>
+                            <td>
+                                {% if value %}
+                                    {% if value|length > 20 and value|slice:":6" == "/media" %}
+                                        <a href="{{ value }}" download target="_blank">Скачать</a>
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
 {% endblock %}

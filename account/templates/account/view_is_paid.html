@@ -2,21 +2,6 @@
 
 {% block content %}
     <h1>Подтверждение оплаты куратором</h1>
-
-    <div class="order-table-wrapper">
-        <table border="1" class="order-table">
-            <tr>
-                <th scope="col">Номер заказа</th>
-                <th scope="col">Код площадки</th>
-                <th scope="col">Статус оплаты</th>
-            </tr>
-            <tr>
-                <td>{{ order.order_number }}</td>
-                <td>{{ order.platform_code.platform_code }}</td>
-                <td>{{ order.is_paid|yesno:"Да,Нет" }}</td>
-            </tr>     
-        </table>
-    </div>
     <form method="post" action="{% url 'view_is_paid' order.id %}" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
         {{ form.as_p }}
         {% csrf_token %}
@@ -25,4 +10,31 @@
             <input type="submit" name="paid_cansel" value="Отменить подтверждение">
         <p>
     </form>
+    <p>Подробная информация о заказе:</p>
+        <div class="order-table-wrapper">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Поле</th>
+                        <th>Значение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field, value in order_items %}
+                        <tr>
+                            <td><strong>{{ field }}</strong></td>
+                            <td>
+                                {% if value %}
+                                    {% if value|length > 20 and value|slice:":6" == "/media" %}
+                                        <a href="{{ value }}" download target="_blank">Скачать</a>
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 {% endblock %}

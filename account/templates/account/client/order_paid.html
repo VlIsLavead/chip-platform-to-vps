@@ -12,50 +12,28 @@
 
     <h1>Подробная информация о заказе:</h1>
     <div class="order-table-wrapper">
-        <table border="1" class="order-table">
+        <table border="1">
             <thead>
                 <tr>
-                    <th>Код заказа</th>
-                    <th>Номер заказчика</th>
-                    <th>Имя запуска</th>
-                    <th>Номер шаблона</th>
-                    <th>Номер техпроцесса</th>
-                    <th>Номер производственной площадки</th>
-                    <th>Тип запуска</th>
-                    <th>Число проектов в кадре</th>
-                    <th>Контроль электрических параметров на пластине</th>
-                    <th>Визуальный контроль и маркировка брака</th>
-                    <th>Метод резки</th>
-                    <th>УФ Засветка</th>
-                    <th>Вариант упаковки</th>
-                    <th>Сложная резка</th>
-                    <th>Корпусирование</th>
-                    <th>Ускоренный запуск шаблона</th>
-                    <th>Ускоренный запуск пластины</th>
-                    <th>Дата создания заказа</th>
+                    <th>Поле</th>
+                    <th>Значение</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>{{ order.order_number }}</td>
-                    <td>{{ order.creator_id }}</td>
-                    <td>{{ order.customer_product_name }}</td>
-                    <td>{{ order.mask_name }}</td>
-                    <td>{{ order.technical_process_id }}</td>
-                    <td>{{ order.platform_code_id }}</td>
-                    <td>{{ order.order_type }}</td>
-                    <td>{{ order.product_count }}</td>
-                    <td>{{ order.dc_rf_probing_e_map|yesno:"Да,Нет" }}</td>
-                    <td>{{ order.visual_inspection_inking|yesno:"Да,Нет" }}</td>
-                    <td>{{ order.dicing_method }}</td>
-                    <td>{{ order.tape_uv_support|yesno:"Да,Нет" }}</td>
-                    <td>{{ order.wafer_deliver_format }}</td>
-                    <td>{{ order.multiplan_dicing_plan|yesno:"Да,Нет" }}</td>
-                    <td>{{ order.package_servce|yesno:"Да,Нет" }}</td>
-                    <td>{{ order.delivery_premium_template|yesno:"Да,Нет" }}</td>
-                    <td>{{ order.delivery_premium_plate|yesno:"Да,Нет" }}</td>
-                    <td>{{ order.created_at }}</td>
-                </tr>
+                {% for field, value in order_items %}
+                    <tr>
+                        <td><strong>{{ field }}</strong></td>
+                        <td>
+                            {% if value %}
+                                {% if value|length > 20 and value|slice:":6" == "/media" %}
+                                    <a href="{{ value }}" download target="_blank">Скачать</a>
+                                {% else %}
+                                    {{ value }}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

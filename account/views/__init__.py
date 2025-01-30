@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils.timezone import localtime
 
-from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm
+from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, ViewForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Thickness, Diameter, Topic, UserTopic, Message, File
 from ..export_excel import generate_excel_file
 
@@ -230,6 +230,9 @@ def add_gds(request, order_id):
             return render(request, 'account/client/add_gds_success.html', )
     else:
         form = AddGDSFile(instance=order)
+        
+    view_form = ViewForm(instance=order)
+    order_items = view_form.get_order_data(order)
 
     return render(
         request,
@@ -238,6 +241,8 @@ def add_gds(request, order_id):
             'form': form,
             'order': order_dict,
             'creator_name': creator_name,
+            'view_form': view_form,
+            'order_items': order_items,
         }
     )
 
@@ -245,7 +250,6 @@ def add_gds(request, order_id):
 @login_required
 def order_paid(request, order_id):
     order = Order.objects.get(id=order_id)
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
 
     if request.method == 'POST':
         action = None
@@ -264,12 +268,14 @@ def order_paid(request, order_id):
             'account/client/order_paid_success.html',
             {'order': order, 'action': action}
         )
+        
+    view_form = ViewForm(instance=order)
+    order_items = view_form.get_order_data(order)
 
     return render(request, 'account/client/order_paid.html', {
         'order': order,
-        'data': {
-            'order_dict': order_dict,
-        }
+        'view_form': view_form,
+        'order_items': order_items,
     })
 
 
@@ -309,8 +315,15 @@ def edit_order(request, order_id):
             return render(request, 'account/edit_order_success.html', {'order': order, 'action': action})
     else:
         form = OrderEditingForm(instance=order)
+        
+        
+    view_form = ViewForm(instance=order)
+    order_items = view_form.get_order_data(order)
+
 
     return render(request, 'account/edit_order.html', {
+        'view_form': view_form,
+        'order_items': order_items,
         'form': form,
         'order_number': order.id,
         'creator_name': creator_name,
@@ -342,11 +355,16 @@ def view_is_paid(request, order_id):
             )
     else:
         form = EditPaidForm(instance=order)
+        
+    view_form = ViewForm(instance=order)
+    order_items = view_form.get_order_data(order)
             
     return render(
         request,
         'account/view_is_paid.html',
         {
+            'view_form': view_form,
+            'order_items': order_items,
             'form': form,
             'order': order,
         }
@@ -356,7 +374,6 @@ def view_is_paid(request, order_id):
 @login_required
 def shipping_is_confirm(request, order_id):
     order = Order.objects.get(id=order_id)
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
 
     if request.method == 'POST':
         action = None
@@ -374,11 +391,16 @@ def shipping_is_confirm(request, order_id):
             {'order': order, 'action': action}
         )
 
+    view_form = ViewForm(instance=order)
+    order_items = view_form.get_order_data(order)
+    
     return render(
         request,
         'account/shipping_is_confirm.html',
         {
-            'order': order_dict,
+            'order': order,
+            'view_form': view_form,
+            'order_items': order_items,
         }
     )
 
@@ -420,6 +442,9 @@ def order_view(request, order_id):
             pass
         return redirect(reverse('order_view_success') + '?success_type=canceled')
 
+    view_form = ViewForm(instance=order)
+    order_items = view_form.get_order_data(order)
+    
     return render(
         request,
         'account/order_view.html',
@@ -427,7 +452,8 @@ def order_view(request, order_id):
             'section': dashboard,
             'order': order_dict,
             'creator_name': creator_name,
-
+            'view_form': view_form,
+            'order_items': order_items,
         }
     )
 
@@ -523,11 +549,16 @@ def view_is_paid_exec(request, order_id):
             'account/view_is_paid_exec_success.html',
             {'order': order, 'action': action}
         )
+        
+    view_form = ViewForm(instance=order)
+    order_items = view_form.get_order_data(order)
 
     return render(
         request,
         'account/view_is_paid_exec.html',
         {
+            'view_form': view_form,
+            'order_items': order_items,
             'order': order,
         }
     )
@@ -536,7 +567,6 @@ def view_is_paid_exec(request, order_id):
 @login_required
 def plates_in_stock(request, order_id):
     order = Order.objects.get(id=order_id)
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
 
     if request.method == 'POST':
         action = None
@@ -555,12 +585,17 @@ def plates_in_stock(request, order_id):
             'account/plates_in_stock_success.html',
             {'order': order, 'action': action}
         )
+        
+    view_form = ViewForm(instance=order)
+    order_items = view_form.get_order_data(order)
 
     return render(
         request,
         'account/plates_in_stock.html',
         {
-            'order': order_dict,
+            'order': order,
+            'view_form': view_form,
+            'order_items': order_items,
         }
     )
 
@@ -691,7 +726,6 @@ def feedback(request):
         usertopic__user=profile
     )
     
-     # Обработка общих тем
     for topic in general_topics:
         last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()
         if last_read_message and last_read_message.last_read_message:

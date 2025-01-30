@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils.timezone import localtime
 
-from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, ViewForm
+from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, ViewOrderForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Thickness, Diameter, Topic, UserTopic, Message, File
 from ..export_excel import generate_excel_file
 
@@ -232,7 +232,7 @@ def add_gds(request, order_id):
     else:
         form = AddGDSFile(instance=order)
         
-    view_form = ViewForm(instance=order)
+    view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
     return render(
@@ -270,7 +270,7 @@ def order_paid(request, order_id):
             {'order': order, 'action': action}
         )
         
-    view_form = ViewForm(instance=order)
+    view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
     return render(request, 'account/client/order_paid.html', {
@@ -318,7 +318,7 @@ def edit_order(request, order_id):
         form = OrderEditingForm(instance=order)
         
         
-    view_form = ViewForm(instance=order)
+    view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
 
@@ -357,7 +357,7 @@ def view_is_paid(request, order_id):
     else:
         form = EditPaidForm(instance=order)
         
-    view_form = ViewForm(instance=order)
+    view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
             
     return render(
@@ -392,7 +392,7 @@ def shipping_is_confirm(request, order_id):
             {'order': order, 'action': action}
         )
 
-    view_form = ViewForm(instance=order)
+    view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
     
     return render(
@@ -443,7 +443,7 @@ def order_view(request, order_id):
             pass
         return redirect(reverse('order_view_success') + '?success_type=canceled')
 
-    view_form = ViewForm(instance=order)
+    view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
     
     return render(
@@ -551,7 +551,7 @@ def view_is_paid_exec(request, order_id):
             {'order': order, 'action': action}
         )
         
-    view_form = ViewForm(instance=order)
+    view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
     return render(
@@ -587,7 +587,7 @@ def plates_in_stock(request, order_id):
             {'order': order, 'action': action}
         )
         
-    view_form = ViewForm(instance=order)
+    view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
     return render(

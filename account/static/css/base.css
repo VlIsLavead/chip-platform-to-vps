@@ -150,7 +150,7 @@ form {
 }
 
 form p {
-    max-width: 500px;
+    max-width: 600px;
     overflow:auto;
 }
 
@@ -638,4 +638,8 @@ form #id_special_note {
     font-family:'Lucida Sans', 'Lucida Sans Regular', 
     'Lucida Grande', 'Lucida Sans Unicode', 
     Geneva, Verdana, sans-serif;
+}
+
+.help-icon {
+    margin-left: 10px;
 }

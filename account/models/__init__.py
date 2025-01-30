@@ -159,37 +159,42 @@ class Order(models.Model):
     # Номер заказа имеет формат FYYYYMMDD{№} где № это число из 5 символов начиная с 00001
     order_number = models.CharField(blank=False, null=False, max_length=14)
     creator = models.ForeignKey(Profile, on_delete=models.CASCADE, null=False)
-    customer_product_name = models.CharField('Имя запуска', blank=False, null=False, max_length=200)
+    customer_product_name = models.CharField('Имя запуска', blank=False, null=False, max_length=200,
+                                             help_text="Пояснение для имени запуска")
     order_start = models.CharField('Тип заказа',choices=OrderStart.choices,
                                      default=OrderStart.NEW, blank=False, null=False, 
                                      max_length=200)
     mask_name = models.CharField('Номер шаблона', blank=False, null=True, max_length=200)
     technical_process = models.ForeignKey(TechnicalProcess, on_delete=models.CASCADE, null=False,
-                                          verbose_name='Техпроцесс')
-    platform_code = models.ForeignKey(Platform, on_delete=models.CASCADE, null=False, verbose_name='Площадка')
+                                          verbose_name='Техпроцесс', help_text="Пояснение для техпроцесса")
+    platform_code = models.ForeignKey(Platform, on_delete=models.CASCADE, null=False, 
+                                      verbose_name='Площадка', help_text="Пояснение для площадки")
     order_type = models.CharField('Тип запуска', choices=OrderType.choices, default=OrderType.ENG, blank=False,
-                                  null=False, max_length=200)
+                                  null=False, max_length=200, help_text="Пояснение для типа запуска")
     product_count = models.IntegerField('Число проектов в кадре', blank=False, null=True,
-                                        validators=[MinValueValidator(1)])
+                                        validators=[MinValueValidator(1)], help_text="Пояснение для числа проектов")
     formation_frame_by_customer = models.BooleanField('Формирование кадра заказчиком', blank=False,
-                                                      null=False, default=False)
+                                                      null=False, default=False, 
+                                                      help_text="Пояснение для формирования запуска")
     substrate_type = models.CharField(max_length=15, choices=THICKNESS_TYPE_CHOICES, default=STANDARD,
-                                      verbose_name='Тип толщины подложки')
+                                      verbose_name='Тип толщины подложки', help_text="Пояснение для типа подложки")
     selected_thickness = models.ForeignKey(Thickness, on_delete=models.CASCADE, verbose_name='Толщина')
     selected_diameter = models.ForeignKey(Diameter, on_delete=models.CASCADE, verbose_name='Диаметр')
     dc_rf_probing_e_map = models.CharField('Контроль электрических параметров на пластине',
                                            choices=DCRFProbingEMap.choices,
                                            default=DCRFProbingEMap.NO, blank=False,
-                                           null=False, max_length=200)
+                                           null=False, max_length=200,
+                                           help_text="Пояснение для контроля электрических параметров")
     dc_rf_probing_inking = models.BooleanField('Маркировка брака по электрическим параметрам', blank=False,
-                                               null=False, )
+                                               null=False, help_text="Пояснение для маркировки брака по электрическим параметрам")
     visual_inspection_inking = models.BooleanField('Визуальный контроль и маркировка брака', blank=False,
-                                                   null=False, )
+                                                   null=False, help_text="Пояснение для визуального контроля и маркировки брака")
     parametric_monitor_control = models.BooleanField('Предоставление данных контроля параметрического монитора',
-                                                     blank=False,
-                                                     null=False, default=False, )
+                                                     blank=False, null=False, default=False, 
+                                                     help_text="Пояснение для данных контроля параметрического монитора")
     experimental_structure = models.BooleanField('Экспериментальная структура', blank=False,
-                                                 null=False, default=False, )
+                                                 null=False, default=False, 
+                                                 help_text="Пояснение экспериментальной структуры")
     dicing_method = models.CharField('Способ разделения пластины на кристаллы', choices=DicingMethod.choices,
                                      default=DicingMethod.DC, blank=False,
                                      null=False, max_length=200)
@@ -210,11 +215,13 @@ class Order(models.Model):
     multiplan_dicing_plan_file = models.FileField('Файл ', upload_to='uploads/dicing_plan/%Y/%m/%d/', blank=True,
                                                   null=True,
                                                   default='')
-    package_servce = models.BooleanField("Корпусирование силами производителя", blank=False, null=False, )
+    package_servce = models.BooleanField("Корпусирование силами производителя", blank=False, null=False, 
+                                        help_text="Пояснение корпусирования силами производителя")
     delivery_premium_template = models.BooleanField("Ускоренный запуск производства фотошаблонов", blank=False,
-                                                    null=False, )
-    delivery_premium_plate = models.BooleanField("Ускоренный запуск производства пластин", blank=False, null=False, )
-    special_note = models.TextField('Заметка', blank=False, null=True, max_length=2000)
+                                                    null=False, help_text="Пояснение для запуска производства фотошаблонов")
+    delivery_premium_plate = models.BooleanField("Ускоренный запуск производства пластин", blank=False, null=False,
+                                                 help_text="Пояснение для запуска производства пластин")
+    special_note = models.TextField('Заметка', blank=False, null=True, max_length=2000, help_text=None, )
 
     order_date = models.DateTimeField('Дата оплаты', blank=False, null=True)
     deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=True)

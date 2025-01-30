@@ -95,6 +95,11 @@ class OrderEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(OrderEditForm, self).__init__(*args, **kwargs)
+        
+        for field_name, field in self.fields.items():
+            if not field.help_text:
+                field.help_text = None
+                
 
         self.fields['selected_thickness'].queryset = Thickness.objects.none()
         self.fields['selected_diameter'].queryset = Diameter.objects.none()
@@ -127,6 +132,7 @@ class OrderEditForm(forms.ModelForm):
         elif self.instance.pk:
             wafer_deliver_format = self.instance.wafer_deliver_format
             self._update_container_for_crystals_choices(wafer_deliver_format)
+            
 
     def clean(self):
         cleaned_data = super().clean()

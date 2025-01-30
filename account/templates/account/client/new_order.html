@@ -9,7 +9,22 @@
         <p>Номер заказа: {{order_number}}</p>
         <p>Наименование предприятия заказчика: {{profile}}</p>
         <p>Код заказчика: {{ request.user.id }}</p>
-        {{ order_form.as_p }}
+
+        {% for field in order_form %}
+            <p>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <span class="help-icon" style="cursor: pointer;" onclick="showHelpText('{{ field.help_text|escapejs }}')">
+                        &#x3F;
+                    </span>
+                {% endif %}
+                {% for error in field.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </p>
+        {% endfor %}
+
         {% if order_form.instance.multiplan_dicing_plan_file %}
         <p>Загруженный файл:
             <a href="{{ order_form.instance.multiplan_dicing_plan_file.url }}" target="_blank">
@@ -21,9 +36,24 @@
         <p><input type="submit" value="Сохранить"></p>
     </form>
 
+    <div id="helpModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <h4>Подсказка</h4>
+        <p id="helpText"></p>
+        <button id="closeHelpBtn">Закрыть</button>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
         $(document).ready(function () {
+            window.showHelpText = function(text) {
+                document.getElementById('helpText').innerText = text;
+                document.getElementById('helpModal').style.display = 'block';
+            }
+
+            $('#closeHelpBtn').click(function () {
+                $('#helpModal').hide();
+            });
+
             function toggleMultiplanFileField() {
                 const choiceField = $("#id_multiplan_dicing_plan");
                 const fileField = $("#id_multiplan_dicing_plan_file").closest("p");
@@ -39,7 +69,7 @@
             $("#id_multiplan_dicing_plan").change(function () {
                 toggleMultiplanFileField();
             });
-        
+
             function loadSubstrates() {
                 const substrate_type = $("#id_substrate_type").val();
                 const url = $("#orderForm").attr("data-url");
@@ -73,7 +103,7 @@
 
             function loadContainerForCrystals() {
                 const wafer_deliver_format = $("#id_wafer_deliver_format").val();
-                const substrate_type = $("#id_substrate_type").val();  // Получаем выбранное значение substrate_type
+                const substrate_type = $("#id_substrate_type").val();
                 const url = $("#orderForm").attr("data-url");
 
                 $.ajax({

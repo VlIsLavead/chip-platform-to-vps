@@ -193,6 +193,7 @@ def technical_materials(request):
     return render(request, 'account/client/technical_materials.html', {
         'techprocess': techprocess,
         'selected_process': selected_process,
+        'section': 'technical_materials',
     })
 
 
@@ -739,7 +740,6 @@ def feedback(request):
         last_message = Message.objects.filter(topic=topic).order_by('-created_at').first()
         topic.last_message_time = last_message.created_at if last_message else None
     
-    # Обработка приватных тем
     for topic in private_topics:    
         last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()
         if last_read_message and last_read_message.last_read_message:
@@ -759,6 +759,7 @@ def feedback(request):
         'general_topics': general_topics,
         'private_topics': private_topics,
         'sub_section': tab,
+        'section': 'feedback',
     })
 
 

@@ -16,20 +16,37 @@
             {% if request.user.is_authenticated %}
                 <ul class="menu">
                     {% block tabs %}
-                    <li {% if section == "dashboard" %}class="selected"{% endif %}>
-                        <a href="{% url "dashboard" %}">Заказы</a>
-                    </li>
-                    <li {% if section == "technical_materials" %}class="selected"{% endif %}>
-                        <a href="{% url "technical_materials" %}">Технические материалы</a>
-                    </li>
-                    <li {% if section == "feedback" %}class="selected"{% endif %}>
-                        <a href="{% url "feedback" %}">Обратная связь</a>
-                    </li>
+                        {% if user_role == "Куратор" %}
+                            <li {% if section == "dashboard" %}class="selected"{% endif %}>
+                                <a href="{% url "dashboard" %}">Заказы</a>
+                            </li>
+                            <li {% if section == "feedback" %}class="selected"{% endif %}>
+                                <a href="{% url "feedback" %}">Обратная связь</a>
+                            </li>
+                        {% elif user_role == "Исполнитель" %}
+                            <li {% if section == "dashboard" %}class="selected"{% endif %}>
+                                <a href="{% url "dashboard" %}">Заказы</a>
+                            </li>
+                            <li {% if section == "edit_platform" %}class="selected"{% endif %}>
+                                <a href="{% url "edit_platform" %}">Работа с техпроцессами</a>
+                            </li>
+                            <li {% if section == "feedback" %}class="selected"{% endif %}>
+                                <a href="{% url "feedback" %}">Обратная связь</a>
+                            </li>
+                        {% else %}
+                            <li {% if section == "dashboard" %}class="selected"{% endif %}>
+                                <a href="{% url "dashboard" %}">Заказы</a>
+                            </li>
+                            <li {% if section == "technical_materials" %}class="selected"{% endif %}>
+                                <a href="{% url "technical_materials" %}">Технические материалы</a>
+                            </li>
+                            <li {% if section == "feedback" %}class="selected"{% endif %}>
+                                <a href="{% url "feedback" %}">Обратная связь</a>
+                            </li>
+                        {% endif %}
                     {% endblock %}
                 </ul>
             {% endif %}
-
-            {% comment %} Доабвить список {% endcomment %}
             <span class="user">
             {% if request.user.is_authenticated %}
                 Привет, {{ request.user.first_name|default:request.user.username }}!

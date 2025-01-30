@@ -1,15 +1,5 @@
 {% extends "base.html" %}
 
-{% block tabs %}
-    <li {% if section == "dashboard" %}class="selected"{% endif %}>
-        <a href="{% url "dashboard" %}">Заказы</a>
-    </li>
-    <li {% if section == "feedback" %}class="selected"{% endif %}>
-        <a href="{% url "feedback" %}">Обратная связь</a>
-    </li>
-{% endblock %}
-
-
 {% block title %}Личный кабинет{% endblock %}
 
 {% block content %}

@@ -47,12 +47,13 @@ class OrderEditForm(forms.ModelForm):
 
     technical_process = forms.ModelChoiceField(
         queryset=TechnicalProcess.objects.none(),
-        label='Техпроцесс'
+        label='Техпроцесс',
+        help_text='Технология, по которой будет изготовлен проект',
     )
 
     substrate_type = forms.ChoiceField(
         choices=Order.THICKNESS_TYPE_CHOICES,
-        label='Тип подложки'
+        label='Тип подложки',
     )
 
     selected_thickness = forms.ModelChoiceField(
@@ -67,12 +68,17 @@ class OrderEditForm(forms.ModelForm):
     
     wafer_deliver_format = forms.ChoiceField(
         choices=Order.WaferDeliverFormat.choices,
-        label='Вид поставки пластин'
+        label='Вид поставки пластин',
+        help_text='Выбор вида разделения пластины \
+        на отдельные структуры перед отгрузкой, \
+        либо его отсутсвие'
     )
 
     container_for_crystals = forms.ChoiceField(
         choices=[],
-        label='Тара для кристаллов'
+        label='Тара для кристаллов',
+        help_text='Выбор тары, в которой будут \
+        поставляться структуры после разделения пластины'
     )
 
     field_order = [

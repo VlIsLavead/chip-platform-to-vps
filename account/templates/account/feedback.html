@@ -18,11 +18,12 @@
 
 {% if sub_section == "general" %}
     <h2>Общие вопросы</h2>
-    <table border="1" class="no-center" style="width: 50%;  border-collapse: inherit; text-align: left;">
+    <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">
         <thead>
             <tr>
-                <th>Тема</th>
-                <th>Время последнего сообщения</th>
+                <th>Основные направления</th>
+                <th class="new-messages-th">Новые сообщения</th>
+                <th>Дата</th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +31,12 @@
                 <tr>
                     <td class="d-flex">
                         <a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a> 
-                        <p class="center {% if topic.unread_count > 0 %}unread{% endif %}">{{ topic.unread_count }}</p>
+                    </td>
+                    <td class="new-messages-th">
+                        <p class="center
+                            {% if topic.unread_count > 0 %}unread{% endif %}">
+                            {{ topic.unread_count }}
+                        </p>
                     </td>
                     <td>
                         {% if topic.last_message_time %}
@@ -48,26 +54,32 @@
         </tbody>
     </table>
     <br>
-    <form method="post" action="{% url 'create_general_topic' %}" style="margin-bottom: 20px;">
+    <form method="post" action="{% url 'create_general_topic' %}" style="margin: 0 0 20px 35% ">
         {% csrf_token %}
         <input type="text" name="topic_name" class="input_text" placeholder="Введите название темы">
         <button type="submit" class="button">Создать новую тему</button>
     </form>
 {% elif sub_section == "support" %}
     <h2>Вопросы по заказам</h2>
-    <table border="1" class="no-center" style="width: 50%; border-collapse: inherit; text-align: left;">
+    <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">
         <thead>
             <tr>
-                <th>Тема</th>
-                <th>Время последнего сообщения</th>
+                <th>Основные направления</th>
+                <th class="new-messages-th">Новые сообщения</th>
+                <th>Дата</th>
             </tr>
         </thead>
         <tbody>
             {% for topic in private_topics %}
                 <tr>
-                    <td class="d-flex">
-                        <a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a> 
-                        <p class="center {% if topic.unread_count > 0 %}unread{% endif %}">{{ topic.unread_count }}</p>
+                    <td>
+                        <a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a>
+                    </td>
+                    <td class="new-messages-th">
+                        <p class="center
+                            {% if topic.unread_count > 0 %}unread{% endif %}">
+                            {{ topic.unread_count }}
+                        </p>
                     </td>
                     <td>
                         {% if topic.last_message_time %}

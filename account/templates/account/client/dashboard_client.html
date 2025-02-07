@@ -24,14 +24,14 @@
     <table border="1" class="order-table">
         <tr>
             <th>Номер заказа</th>
+            <th>Статус заказа</th>
             <th>Код площадки</th>
             <th>Тип заказа</th>
             <th>Дата формирования заявки</th>
             <th>Срок выполнения по договору</th>
-            <th>Статус заказа</th>
             <th>Договор</th>
             <th>Счет</th>
-            <th>GDS файл</th>
+            <th>GDS</th>
             <th>Дата оплаты</th> 
             <th>Действия</th>
         </tr>
@@ -43,11 +43,11 @@
             {% for order in data.orders %}
                 <tr class="order-row">
                     <td>{{ order.order_number }}</td>
+                    <td>{{ order.get_order_status_display }}</td>
                     <td>{{ order.platform_code.platform_code }}</td>
                     <td>{{ order.get_order_type_display }}</td>
-                    <td>{{ order.order_date.date }}</td>
-                    <td>{{ order.deadline_date.date }}</td>
-                    <td>{{ order.get_order_status_display }}</td>
+                    <td>{{ order.order_date.date|date:"d.m.Y" }}</td>
+                    <td>{{ order.deadline_date.date|date:"d.m.Y" }}</td>
 
                     <td>
                         {% if order.contract_file %}
@@ -72,7 +72,7 @@
                             {% if order.GDS_file %}
                                 <a href="{{ order.GDS_file.url }}" download>Скачать</a>
                             {% else %}
-                                <span>GDS файла нет</span>
+                                <span>GDS не загружен</span>
                             {% endif %}
                         {% endif %}
                     </td>
@@ -82,7 +82,7 @@
                             <a href="{% url 'is_paid' order.id %}">Оплатить</a>    
                         {% else %}
                             {% if order.is_paid == False %}
-                                <span>Оплата пока недоступна</span>
+                                <span>Оплата недоступна</span>
                             {% else %}
                                 <span>{{order.order_date}}</span>
                             {% endif %}

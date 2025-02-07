@@ -467,6 +467,11 @@ img.user-detail {
     text-align: center;
 }
 
+.no-center {
+    margin: 0 auto;
+    width: 100%;
+}
+
 .no-center th, td{
     padding: 10px 10px 10px 30px;
 }
@@ -613,16 +618,11 @@ select#technical_process {
     transition: all 0.3s ease;
 }
 
-.d-flex{
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
-    align-items: center;
-}
-
 .center{
-    margin: 0px 0px 0px 0px;
-    padding: 5px 14px 5px 15px;
+    width: 10px;
+    height: 27px;
+    margin: 0px 0px 0px 40%;
+    padding: 5px 15px 5px 15px;
     background-color: green;
     border-radius: 50%;
 }
@@ -630,6 +630,11 @@ select#technical_process {
 .center.unread {
     background-color: yellow;
     color: black;
+}
+
+.new-messages-th{
+    width: 250px;
+    text-align: center;
 }
 
 form #id_special_note {

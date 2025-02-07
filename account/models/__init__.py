@@ -286,3 +286,13 @@ class UserTopic(models.Model):
 
     def __str__(self):
         return f"{self.user.username} in topic {self.topic.name}"
+    
+    
+class RegistrationRequest(models.Model):
+    name = models.CharField('ФИО', blank=False, null=False, max_length=100)
+    mail = models.CharField('Email', blank=False, null=False, max_length=50)
+    number = models.CharField('Номер телефона', blank=False, null=False, max_length=12)
+    company = models.CharField('Наименование организации', blank=False, null=False, max_length=50)
+    privacy_file = models.FileField('Файл конфиденциальности', upload_to='uploads/privacy_file/', blank=True, null=True,)
+    processing_data = models.BooleanField('Я согласен на обработку персональных данных', blank=False, null=False)
+    

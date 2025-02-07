@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Страница регистрации</h1>
+    <p>Заполните форму ниже. Запрос на регистрацию будет передан администрации.</p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p>
+            📄 <button type="button" id="downloadBtn">Соглашение о конфиденциальности</button>
+        </p>
+
+        <p><input type="submit" value="Отправить запрос"></p>
+    </form>
+    <script>
+        document.getElementById("downloadBtn").addEventListener("click", function() {
+            fetch("{% url 'download_privacy_file' %}")
+            .then(response => response.blob())
+            .then(blob => {
+                let link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "privacy_file.txt";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            })
+            .catch(error => console.error("Ошибка при скачивании файла:", error));
+        });
+    </script>
+
+{% endblock %}

@@ -1,9 +1,11 @@
 import datetime
+import os
 from io import BytesIO
 
 from urllib.parse import quote
+from django.conf import settings
 from django.forms.models import model_to_dict
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q, Value
 from django.db.models.functions import Lower
@@ -13,9 +15,11 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils.timezone import localtime
 
-from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, ViewOrderForm
+from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, ViewOrderForm, RegistrationForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Thickness, Diameter, Topic, UserTopic, Message, File
 from ..export_excel import generate_excel_file
+from ..utils.email_sender import send_email_with_attachments
+
 
 
 def filter_orders(orders, query):
@@ -78,6 +82,51 @@ def generic_search_executor(request):
         'orders': filtered_orders,
     }
     return render(request, 'account/dashboard_executor.html', {'data': data})
+
+
+def registration(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            user_email = form.cleaned_data['mail']
+            subject = "Регистрация на chip platform"
+            body = """
+                <html>
+                <body>
+                    <h1>Регистрация на chip platform</h1>
+                    <p>Вы подали заявку на регистрацию на платформе chip platform.</p>
+                    <p>Ознакомьтесь с приложенными файлами, заполните данные и отправьте по адресу: <strong>ФИЗ.АДРЕС</strong></p>
+                </body>
+                </html>
+            """
+            sender_email = settings.EMAIL_HOST_USER
+            password = settings.EMAIL_HOST_PASSWORD
+            file_paths = [
+                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/file_one.txt'),
+                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/file_two.txt')
+            ]
+
+            send_email_with_attachments(sender_email, user_email, password, subject, body, file_paths)
+            messages.success(request, 'Регистрация прошла успешно!')
+            return render(request, 'account/registration_done.html')
+        else:
+            messages.error(request, 'Ошибка в заполнении данных')
+    else:
+        form = RegistrationForm()
+
+    return render(request, 'account/registration.html', {'form': form})
+
+
+
+def download_privacy_file(request):
+    """Скачивание файла конфиденциальности"""
+    file_path = os.path.join(settings.MEDIA_ROOT, 'uploads/privacy_file/privacy_file.txt')
+
+    if not os.path.exists(file_path):
+        raise Http404("Файл не найден")
+
+    return FileResponse(open(file_path, 'rb'), as_attachment=True, filename="privacy_file.txt")
 
 
 

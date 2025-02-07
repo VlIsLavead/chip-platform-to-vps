@@ -1,12 +1,23 @@
 from django import forms
 from django.contrib.auth.models import User
-from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, Thickness, Diameter, Message, Topic, File
+from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, Thickness, Diameter, Message, Topic, File, RegistrationProfile
 
 
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
+
+class RegistrationForm(forms.ModelForm):
+    class Meta:
+        model = RegistrationRequest
+        fields = ['name', 'mail', 'number', 'company', 'processing_data']
+        
+        exclude = [
+            'privacy_file'
+        ]
+        
+        
 
 class UserEditForm(forms.ModelForm):
     class Meta:

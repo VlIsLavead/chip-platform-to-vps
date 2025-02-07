@@ -5,6 +5,8 @@ from . import views
 # TODO normalize all URLs, use dash instead of underscore, remove trailing slashes(?)
 urlpatterns = [
     path('login/', views.user_login, name='login'),
+    path('registration/', views.registration, name='registration'),
+    path('registration/download/', views.download_privacy_file, name='download_privacy_file'),
     path('logout/', views.user_logout, name='logout'),
     path('', include('django.contrib.auth.urls')),
     path('', views.dashboard, name='dashboard'),

@@ -1,4 +1,4 @@
 Django
-# django-admin
 Pillow
 openpyxl
+python-dotenv

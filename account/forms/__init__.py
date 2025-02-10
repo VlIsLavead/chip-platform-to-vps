@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, Thickness, Diameter, Message, Topic, File, RegistrationProfile
+from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, \
+Thickness, Diameter, Message, Topic, File, RegistrationRequest
 
 
 class LoginForm(forms.Form):
@@ -50,6 +51,7 @@ class OrderEditForm(forms.ModelForm):
             'deadline_date',
             'is_paid',
             'order_status',
+            'contract_is_ready',
             'contract_file',
             'invoice_file',
             'deleted_at',
@@ -238,13 +240,27 @@ class ViewOrderForm(forms.ModelForm):
         
         order_items = [(field, value) for field, value in order_data.items()]
         return order_items
-    
+
 
 class OrderEditingForm(forms.ModelForm):
     class Meta:
         model = Order
 
         fields = ['mask_name']
+        
+
+class AddContractForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        
+        fields = ['contract_is_ready']
+        
+
+class AddContractFileForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        
+        fields = ['contract_file']
 
 
 class EditPlatform(forms.ModelForm):
@@ -265,7 +281,7 @@ class EditPaidForm(forms.ModelForm):
     class Meta:
         model = Order
         
-        fields = ['contract_file', 'invoice_file']
+        fields = ['invoice_file']
 
 
 class MessageForm(forms.ModelForm):

@@ -62,14 +62,19 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if order.get_order_status_display == "На проверке у исполнителя" %}
+                            {% if order.order_status == "OVC" %}
                                 <a href="{% url 'order_view' order.id %}">Просмотр заказа</a>
-                            {% elif order.get_order_status_display == "Согласование" %}
-                                <a href="{% url 'check_gds_file' order.id %}">Проверка GDS файла</a>
-                            {% elif order.get_order_status_display == "Подтверждение оплаты исполнителем" %}
+                            {% elif order.order_status == "ESA" %}
+                                <a href="{% url 'check_signing_exec' order.id %}">Проверка подписания договора</a>
+                            {% elif order.order_status == "EGDS" %}
+                                <a href="{% url 'check_gds_file_exec' order.id %}">Проверка GDS исполнителем</a>
+                            {% elif order.order_status == "POC" %}
                                 <a href="{% url 'view_is_paid_exec' order.id %}">Проверка оплаты</a>
-                            {% elif order.get_order_status_display == "Производство" %}
+                            {% elif order.order_status == "MPO" %}
                                 <a href="{% url 'plates_in_stock' order.id %}">Пластины на складе</a>
+                            {% elif order.order_status == "SO" %}
+                                <a href="{% url 'shipping_is_confirm' order.id %}">Подтверждение отгрузки</a>
+                            {% else %}
                             {% endif %}
                         </td>
                     </tr>

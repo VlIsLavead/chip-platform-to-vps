@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Подтверждение окончания отгрузки заказа</h1>
-    <h2>При подтверждении окончания отгрузки, заказ будет отправлен</h2>
-    <form method="post" action="{% url 'shipping_is_confirm' order.id %}">
+    <h1>Получение пластин</h1>
+    <p>
+        Подтвердите получение пластин.
+        После подтверждения получения заказ будет завершен
+    </p>
+    <form method="post" action="{% url 'confirmation_receipt' order.id %}">
         {% csrf_token %}
         <p>
-            <input type="submit" name="success_shipping" value="Подтвердить окончание отгрузки">
-            <input type="submit" name="cancel_shipping" value="Отменить подтверждение">
+            <input type="submit" name="receipt_success" value="Подтвердить отправление">
+            <input type="submit" name="receipt_cancel" value="Отменить отправление">
         <p>
     </form>
     <p>Подробная информация о заказе:</p>

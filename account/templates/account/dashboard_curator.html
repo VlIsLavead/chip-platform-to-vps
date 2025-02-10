@@ -63,14 +63,16 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if order.get_order_status_display == "На проверке у куратора" %}
+                            {% if order.order_status == "OVK" %}
                                 <a href="{% url 'edit_order' order.id %}">Редактировать</a>
-                            {% elif order.get_order_status_display == "Подтверждение оплаты куратором" %}
-                                <a href="{% url 'view_is_paid' order.id %}">Подтверждение оплаты</a>
-                            {% elif order.get_order_status_display == "Отгрузка" %}
-                                <a href="{% url 'shipping_is_confirm' order.id %}">Подтверждение отгрузки</a>
-                            {% else %}
-                                <span>Недоступно</span>
+                            {% elif order.order_status == "CSA"%}
+                                <a href="{% url 'check_signing_curator' order.id %}">Проверка подписания договора</a>
+                            {% elif order.order_status == "CGDS"%}
+                                <a href="{% url 'check_gds_file_curator' order.id %}">Проверка подписания договора</a>
+                            {% elif order.order_status == "POK" %}
+                                <a href="{% url 'view_is_paid' order.id %}">Проверка оплаты</a>
+                            {% elif order.order_status == "PS" %}
+                                <a href="{% url 'plates_shipped' order.id %}">Отправление пластин</a>
                             {% endif %}
                         </td>
                     </tr>

@@ -66,7 +66,7 @@
                     </td>
 
                     <td>
-                        {% if order.get_order_status_display == "Принят" %}
+                        {% if order.order_status == "OGDS" %}
                             <a href="{% url 'add_gds' order.id %}">Загрузить GDS файл</a>
                         {% else %}
                             {% if order.GDS_file %}
@@ -78,20 +78,24 @@
                     </td>
 
                     <td>
-                        {% if order.get_order_status_display == "Оплата" %}
+                        {% if order.order_status == "PO" %}
                             <a href="{% url 'is_paid' order.id %}">Оплатить</a>    
                         {% else %}
                             {% if order.is_paid == False %}
                                 <span>Оплата недоступна</span>
                             {% else %}
-                                <span>{{order.order_date}}</span>
+                                <span>{{order.order_date.date|date:"d.m.Y" }}</span>
                             {% endif %}
                         {% endif %}
                     </td>
 
                     <td>
-                        {% if order.get_order_status_display == "Необходима доработка" %}
-                            <a href="{% url 'changes_in_order' order.id %}" class="button chat-button">Внести изменения в заказ</a> 
+                        {% if order.order_status == "NFW" %}
+                            <a href="{% url 'changes_in_order' order.id %}" class="button chat-button">Внести изменения в заказ</a>
+                        {% elif order.order_status == "OA" or order.order_status == "SA" %}
+                            <a href="{% url 'signing_agreement' order.id %}" class="button chat-button">Подтверждение подписания договора</a>
+                        {% elif order.order_status == "CR" %}
+                            <a href="{% url 'confirmation_receipt' order.id %}" class="button chat-button">Подтверждение получения пластин</a>
                         {% endif %}
                         <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                             Перейти в чат

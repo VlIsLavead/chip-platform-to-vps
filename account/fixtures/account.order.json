@@ -34,6 +34,7 @@
       "order_date": "2024-09-19T00:00:00Z",
       "deadline_date": "2024-12-27T00:00:00Z",
       "is_paid": false,
+      "contract_is_ready": false,
       "order_status": "OVK",
       "invoice_file": null,
       "contract_file": null,

@@ -13,9 +13,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.timezone import localtime
 
-from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, ViewOrderForm, RegistrationForm
+from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, \
+OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, \
+ViewOrderForm, RegistrationForm, AddContractForm, AddContractFileForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Thickness, Diameter, Topic, UserTopic, Message, File
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
@@ -267,6 +270,37 @@ def changes_in_order(request, order_id):
     })
 
 
+def signing_agreement(request, order_id):
+    order = Order.objects.get(id=order_id)
+    creator_name = order.creator.user.username
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+    
+    if request.method == 'POST':
+        form = AddContractForm(request.POST, instance=order)
+        if form.is_valid():
+            order.order_status = "CSA"
+            form.save()
+            return render(request, 'account/client/signing_agreement_success.html', )
+    else:
+        form = AddContractForm(instance=order)
+        
+    view_form = ViewOrderForm(instance=order)
+    order_items = view_form.get_order_data(order)
+    
+    return render(
+        request,
+        'account/client/signing_agreement.html',
+        {
+            'form': form,
+            'order': order_dict,
+            'creator_name': creator_name,
+            'view_form': view_form,
+            'order_items': order_items,
+        }
+    )
+
+    
+
 def add_gds(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
@@ -275,7 +309,7 @@ def add_gds(request, order_id):
     if request.method == 'POST':
         form = AddGDSFile(request.POST, request.FILES, instance=order)
         if form.is_valid():
-            order.order_status = "OGDS"
+            order.order_status = "CGDS"
             form.save()
             return render(request, 'account/client/add_gds_success.html', )
     else:
@@ -306,10 +340,12 @@ def order_paid(request, order_id):
         if 'paid_success' in request.POST:
             order.is_paid = True
             order.order_status = "POK"
+            order.order_date = timezone.now()
             action = 'success'
         elif 'paid_cansel' in request.POST:
             order.is_paid = False
             order.order_status = "PO"
+            order.order_date = None
             action = 'cancelled'
         order.save()
 
@@ -323,6 +359,38 @@ def order_paid(request, order_id):
     order_items = view_form.get_order_data(order)
 
     return render(request, 'account/client/order_paid.html', {
+        'order': order,
+        'view_form': view_form,
+        'order_items': order_items,
+    })
+    
+    
+@login_required
+def confirmation_receipt(request, order_id):
+    order = Order.objects.get(id=order_id)
+
+    if request.method == 'POST':
+        action = None
+        if 'receipt_success' in request.POST:
+            order.is_paid = True
+            order.order_status = "EO"
+            action = 'success'
+        elif 'receipt_cancel' in request.POST:
+            order.is_paid = False
+            order.order_status = "PS"
+            action = 'cancelled'
+        order.save()
+
+        return render(
+            request,
+            'account/client/confirmation_receipt_success.html',
+            {'order': order, 'action': action}
+        )
+        
+    view_form = ViewOrderForm(instance=order)
+    order_items = view_form.get_order_data(order)
+
+    return render(request, 'account/client/confirmation_receipt.html', {
         'order': order,
         'view_form': view_form,
         'order_items': order_items,
@@ -379,6 +447,43 @@ def edit_order(request, order_id):
         'creator_name': creator_name,
         'order': order_dict,
     })
+    
+    
+def check_signing_curator(request, order_id):
+    order = Order.objects.get(id=order_id)
+    creator_name = order.creator.user.username
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+    
+    if request.method == 'POST':
+        form = AddContractFileForm(request.POST,  request.FILES, instance=order)
+        action = None
+        if 'success' in request.POST:
+            order.order_status = "ESA"
+            action = 'success'
+        elif 'cancel' in request.POST:
+            order.order_status = "SA"
+            action = 'cancelled'
+        if form.is_valid():
+            form.save()
+            return render(request, 'account/check_signing_success.html', 
+                          {'order': order, 'action': action})
+    else:
+        form = AddContractFileForm(instance=order)
+        
+    view_form = ViewOrderForm(instance=order)
+    order_items = view_form.get_order_data(order)
+    
+    return render(
+        request,
+        'account/check_signing_curator.html',
+        {
+            'form': form,
+            'order': order_dict,
+            'creator_name': creator_name,
+            'view_form': view_form,
+            'order_items': order_items,
+        }
+    )
 
 
 @login_required
@@ -428,10 +533,10 @@ def shipping_is_confirm(request, order_id):
     if request.method == 'POST':
         action = None
         if 'success_shipping' in request.POST:
-            order.order_status = "EO"
+            order.order_status = "PS"
             action = 'success'
-        elif 'cansel_shipping' in request.POST:
-            order.order_status = "SO"
+        elif 'cancel_shipping' in request.POST:
+            order.order_status = "MPO"
             action = 'cancelled'
         order.save()
 
@@ -454,6 +559,39 @@ def shipping_is_confirm(request, order_id):
         }
     )
 
+@login_required
+def plates_shipped(request, order_id):
+    order = Order.objects.get(id=order_id)
+
+    if request.method == 'POST':
+        action = None
+        if 'success_shipped' in request.POST:
+            order.order_status = "CR"
+            action = 'success'
+        elif 'cancel_shipped' in request.POST:
+            order.order_status = "SO"
+            action = 'cancelled'
+        order.save()
+
+        return render(
+            request,
+            'account/plates_shipped_success.html',
+            {'order': order, 'action': action}
+        )
+
+    view_form = ViewOrderForm(instance=order)
+    order_items = view_form.get_order_data(order)
+    
+    return render(
+        request,
+        'account/plates_shipped.html',
+        {
+            'order': order,
+            'view_form': view_form,
+            'order_items': order_items,
+        }
+    )
+    
 
 @login_required
 def _dashboard_executor(request, message=''):
@@ -548,18 +686,54 @@ def edit_platform_success(request):
     return render(request, 'account/edit_platform_success.html')
 
 
-@login_required
-def check_gds_file(request, order_id):
+def check_signing_exec(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+
+    if request.method == "POST":
+        action = None
+        if 'success' in request.POST:
+            order.order_status = "OGDS"
+            action = 'success'
+        elif 'cancel' in request.POST:
+            order.order_status = "CSA"
+            action = 'cancelled'
+        order.save()      
+        return render(
+            request,
+            'account/check_signing_success.html',
+            {'order': order, 'action': action}
+        )
+
+    view_form = ViewOrderForm(instance=order)
+    order_items = view_form.get_order_data(order)
+    
+    return render(
+        request,
+        'account/check_signing_exec.html',
+        {
+            'section': dashboard,
+            'order': order_dict,
+            'creator_name': creator_name,
+            'view_form': view_form,
+            'order_items': order_items,
+        }
+    )
+
+@login_required
+def check_gds_file_curator(request, order_id):
+    order = Order.objects.get(id=order_id)
+    creator_name = order.creator.user.username
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
 
     if request.method == 'POST':
         action = None
         if 'success_gds' in request.POST:
-            order.order_status = "PO"
+            order.order_status = "EGDS"
             action = 'confirmed'
-        elif 'cansel_gds' in request.POST:
-            order.order_status = "OA"
+        elif 'cancel_gds' in request.POST:
+            order.order_status = "OGDS"
             action = 'cancelled'
         order.save()
 
@@ -568,14 +742,53 @@ def check_gds_file(request, order_id):
             'account/check_gds_file_success.html',
             {'order': order, 'action': action}
         )
+        
+    view_form = ViewOrderForm(instance=order)
+    order_items = view_form.get_order_data(order)
 
-    return render(request, 'account/check_gds_file.html', {
-        'data': {
-            'order': order,
-            'creator_name': creator_name,
-        }
+    return render(request, 'account/check_gds_file_curator.html', {
+        'section': dashboard,
+        'order': order_dict,
+        'creator_name': creator_name,
+        'view_form': view_form,
+        'order_items': order_items,
     }
-                  )
+)
+    
+    
+@login_required
+def check_gds_file_exec(request, order_id):
+    order = Order.objects.get(id=order_id)
+    creator_name = order.creator.user.username
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+
+    if request.method == 'POST':
+        action = None
+        if 'success_gds' in request.POST:
+            order.order_status = "PO"
+            action = 'confirmed'
+        elif 'cancel_gds' in request.POST:
+            order.order_status = "CGDS"
+            action = 'cancelled'
+        order.save()
+
+        return render(
+            request,
+            'account/check_gds_file_success.html',
+            {'order': order, 'action': action}
+        )
+        
+    view_form = ViewOrderForm(instance=order)
+    order_items = view_form.get_order_data(order)
+
+    return render(request, 'account/check_gds_file_exec.html', {
+        'section': dashboard,
+        'order': order,
+        'creator_name': creator_name,
+        'view_form': view_form,
+        'order_items': order_items,
+    }
+)
 
 
 @login_required
@@ -626,7 +839,7 @@ def plates_in_stock(request, order_id):
             action = 'success'
         elif 'cansel_confirmation' in request.POST:
             order.is_paid = False
-            order.order_status = "MPO"
+            order.order_status = "POK"
             action = 'cancelled'
         order.save()
 

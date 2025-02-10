@@ -124,16 +124,23 @@ class Order(models.Model):
 
     class OrderStatus(models.TextChoices):
         NFW = 'NFW', 'Необходима доработка',
-        OVK = 'OVK', 'На проверке у куратора',
-        OVC = 'OVC', 'На проверке у исполнителя',
-        OA = 'OA', 'Принят'
-        OGDS = 'OGDS', 'Согласование'
-        PO = 'PO', 'Оплата'
-        POK = 'POK', 'Подтверждение оплаты куратором'
-        POC = 'POC', 'Подтверждение оплаты исполнителем'
-        MPO = 'MPO', 'Производство'
-        SO = 'SO', 'Отгрузка'
-        EO = 'EO', 'Завершен'
+        OVK = 'OVK', 'На проверке',  # На проверке у куратора
+        OVC = 'OVC', 'На проверке',  #На проверке у исполнителя
+        OA = 'OA', 'Принят',
+        SA = 'SA', 'Подписание договора',
+        CSA = 'CSA', 'Подписание договора', #Проверка договора куратором
+        ESA = 'ESA', 'Подписание договора', #Проверка договора исполнителем
+        OGDS = 'OGDS', 'Загрузка GDS',
+        CGDS = 'CGDS', 'Загрузка GDS', #Проверка GDS куратором
+        EGDS = 'EGDS', 'Загрузка GDS', #Проверка GDS исполнителем
+        PO = 'PO', 'Оплата',
+        POK = 'POK', 'Подтверждение оплаты', #Подтверждение оплаты куратором
+        POC = 'POC', 'Подтверждение оплаты', #Подтверждение оплаты исполнителем
+        MPO = 'MPO', 'Производство',
+        SO = 'SO', 'Отгрузка',
+        PS = 'PS', 'Пластины отправлены',
+        CR = 'CR', 'Подтверждение получения пластин',
+        EO = 'EO', 'Завершен',
 
     class DCRFProbingEMap(models.TextChoices):
         DC = 'DC Probing', 'DC проверка',
@@ -234,6 +241,7 @@ class Order(models.Model):
     order_date = models.DateTimeField('Дата оплаты', blank=False, null=True)
     deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=True)
     is_paid = models.BooleanField('Заказ оплачен?', blank=True, null=True, default=False)
+    contract_is_ready = models.BooleanField('Подписание договора', blank=False, null=False, default=False)
     order_status = models.CharField('Статус заказа', choices=OrderStatus.choices, default=OrderStatus.OVK,
                                     blank=False, null=False, max_length=200)
     invoice_file = models.FileField('Файл счета', upload_to='uploads/invoices/%Y/%m/%d/', blank=True, null=False,

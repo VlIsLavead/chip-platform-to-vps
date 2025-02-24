@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Зайти в систему{% endblock %}
+{% block title %}Вход в систему{% endblock %}
 
 {% block content %}
     <h1>Зайти в систему</h1>
@@ -11,10 +11,9 @@
         </p>
     {% else %}
         <p>
-            Используйте форму для захода в систему.
+            Используйте форму для входа в систему.
             Если у вас нет профиля, вы можете отправить
-            <a href="{% url "registration" %}">запрос</a>
-            на его создание.
+            <a href="{% url "registration" %}">зарегистрироваться</a>
         </p>
     {% endif %}
     <div class="login-form">

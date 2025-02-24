@@ -8,7 +8,20 @@
     <form method="post" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
         <p>Номер заказа {{order.order_number}}</p>
         <p>Creator {{ request.user.first_name|default:request.user.username }}</p>
-        {{ order_form.as_p }}
+        {% for field in order_form %}
+            <p>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <span class="help-icon" style="cursor: pointer;" onclick="showHelpText('{{ field.help_text|escapejs }}')">
+                        &#x3F;
+                    </span>
+                {% endif %}
+                {% for error in field.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </p>
+        {% endfor %}
         {% csrf_token %}
         <p><input type="submit" value="Сохранить"></p>
     </form>

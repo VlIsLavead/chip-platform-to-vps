@@ -11,7 +11,10 @@
     <div class="page">
         <div id="header">
             <span class="logo">
-                <a href="{% url "dashboard" %}">Платформа</a>
+                <a class="logo_text" href="{% url "dashboard" %}">
+                    Интерактивная платформа контрактного <br>
+                    производства полупроводниковых пластин
+                </a>
             </span>
             {% if request.user.is_authenticated %}
                 <ul class="menu">
@@ -65,7 +68,9 @@
         <div id="footer">
             <div class="footer_logo">
                 <span class="logo">
-                    <a href="{% url "dashboard" %}">Платформа</a>
+                    <a href="{% url "dashboard" %}">
+                        @ 2025 ООО«ИнноЦентр ВАО»
+                    </a>
                 </span>
             </div>
             <ul class="footer_list">

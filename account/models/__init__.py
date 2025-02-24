@@ -123,7 +123,7 @@ class Order(models.Model):
         ENG = 'ENG', 'Инженерный'
 
     class OrderStatus(models.TextChoices):
-        NFW = 'NFW', 'Необходима доработка',
+        NFW = 'NFW', 'Требуется уточнение',
         OVK = 'OVK', 'На проверке',  # На проверке у куратора
         OVC = 'OVC', 'На проверке',  #На проверке у исполнителя
         OA = 'OA', 'Принят',
@@ -203,7 +203,7 @@ class Order(models.Model):
                                                      help_text="Пояснение для данных контроля параметрического монитора")
     experimental_structure = models.BooleanField('Экспериментальная структура', blank=False,
                                                  null=False, default=False, 
-                                                help_text="Запуск экспериментальных структур Потребителя, \
+                                                help_text="Запуск экспериментальных структур заказчика, \
                                                         выходящих за рамки библиотеки стандартных элементов, без \
                                                         гарантии работоспособности таких структур.")
     dicing_method = models.CharField('Способ разделения пластины на кристаллы', choices=DicingMethod.choices,

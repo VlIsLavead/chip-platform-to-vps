@@ -5,8 +5,13 @@ Thickness, Diameter, Message, Topic, File, RegistrationRequest
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(
+        label='Логин'
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Пароль'
+    )
 
 
 class RegistrationForm(forms.ModelForm):

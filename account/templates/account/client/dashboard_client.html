@@ -16,7 +16,7 @@
 <br>
 <div class="block_search">
     <form method="get" action="{% url 'generic_search_clients' %}">
-        <input type="text" name="q" class="input_text" placeholder="Введите запрос" value="{{ request.GET.q }}">
+        <input type="text" name="q" class="input_text" placeholder="Поиск по любым параметрам заказа" value="{{ request.GET.q }}">
         <button class="search-button" type="submit">Поиск</button>
     </form>
 </div>
@@ -37,7 +37,7 @@
         </tr>
         {% if not data.orders %}
             <tr>
-                <td colspan="11" style="text-align: center;">Ничего не найдено.</td>
+                <td colspan="11" style="text-align: center;">Заказов не найдено</td>
             </tr>
         {% else %}
             {% for order in data.orders %}
@@ -112,7 +112,7 @@
 
 <br/>
 <div>
-    <a href="{% url "new_order" %}" class="button">Добавить заказ...</a>
+    <a href="{% url "new_order" %}" class="button">Новый заказ</a>
 </div>
 
 {% endblock %}

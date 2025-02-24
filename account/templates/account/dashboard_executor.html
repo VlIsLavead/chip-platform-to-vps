@@ -16,7 +16,7 @@
     <h3 class="platform_name">Код платформы: {{ data.code_company }}</h3>
     <div class="block_search">
         <form method="get" action="{% url 'generic_search_executor' %}">
-            <input type="text" name="q" class="input_text" placeholder="Введите запрос" value="{{ request.GET.q }}">
+            <input type="text" name="q" class="input_text" placeholder="Поиск по любым параметрам заказа" value="{{ request.GET.q }}">
             <button class="search-button" type="submit">Поиск</button>
         </form>
     </div>

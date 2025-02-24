@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
 {% block title %}Личный кабинет клиента{% endblock %}
 
@@ -22,7 +23,9 @@
 
 {% if selected_process %}
     {% if selected_process.PDK_file %}
-        <a href="{{ selected_process.PDK_file.url }}" download class="button">Скачать файл КИП для {{ selected_process.name_process }}</a>
+        <a href="{{ selected_process.PDK_file.url }}" download class="button">
+            Скачать {{ selected_process.PDK_file.name|filename }}
+        </a>
     {% else %}
         <span>Файл КИП отсутствует для {{ selected_process.name_process }}</span>
     {% endif %}

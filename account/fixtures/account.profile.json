@@ -9,6 +9,7 @@
       "role": 1,
       "company_name": "KI",
       "is_nda_signed": true,
+      "expiration_date": null,
       "created_at": "2024-07-18T11:44:39.861Z",
       "deleted_at": null
     }
@@ -23,6 +24,7 @@
       "role": 1,
       "company_name": "KI",
       "is_nda_signed": true,
+      "expiration_date": null,
       "created_at": "2024-07-18T11:44:39.862Z",
       "deleted_at": null
     }
@@ -37,6 +39,7 @@
       "role": 2,
       "company_name": "KI",
       "is_nda_signed": true,
+      "expiration_date": null,
       "created_at": "2024-07-18T11:44:39.863Z",
       "deleted_at": null
     }
@@ -51,6 +54,7 @@
       "role": 3,
       "company_name": "KI",
       "is_nda_signed": true,
+      "expiration_date": null,
       "created_at": "2024-07-26T08:06:02.685Z",
       "deleted_at": null
     }
@@ -65,6 +69,7 @@
       "role": 1,
       "company_name": "KI",
       "is_nda_signed": true,
+      "expiration_date": null,
       "created_at": "2024-07-18T11:44:39.863Z",
       "deleted_at": null
     }
@@ -79,6 +84,7 @@
       "role": 2,
       "company_name": "MT",
       "is_nda_signed": true,
+      "expiration_date": null,
       "created_at": "2024-07-18T11:44:39.863Z",
       "deleted_at": null
     }
@@ -93,6 +99,7 @@
       "role": 3,
       "company_name": "MT",
       "is_nda_signed": true,
+      "expiration_date": null,
       "created_at": "2024-07-18T11:44:39.863Z",
       "deleted_at": null
     }

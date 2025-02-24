@@ -8,6 +8,7 @@ urlpatterns = [
     path('registration/', views.registration, name='registration'),
     path('registration/download/', views.download_privacy_file, name='download_privacy_file'),
     path('logout/', views.user_logout, name='logout'),
+    path('account-expired/', views.account_expired, name='account_expired'),
     path('', include('django.contrib.auth.urls')),
     path('', views.dashboard, name='dashboard'),
     # TODO unify search urls, they shouldn't lead to different endpoints

@@ -23,6 +23,7 @@ class Profile(models.Model):
     photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True)
     company_name = models.CharField('Наименование компании заказчика', blank=False, null=False, max_length=200)
     is_nda_signed = models.BooleanField('NDA подписано?', blank=False, null=False, default=False)
+    expiration_date = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
@@ -37,6 +38,7 @@ class Profile(models.Model):
 def document_upload_path(instance, filename):
     return f'uploads/{instance.document_type}/{filename}'
 
+  
 class Document(models.Model):
     DOCUMENT_TYPES = [
         ('NDA', 'NDA'),
@@ -331,5 +333,5 @@ class RegistrationRequest(models.Model):
     number = models.CharField('Номер телефона', blank=False, null=False, max_length=12)
     company = models.CharField('Наименование организации', blank=False, null=False, max_length=50)
     privacy_file = models.FileField('Файл конфиденциальности', upload_to='uploads/privacy_file/', blank=True, null=True,)
-    processing_data = models.BooleanField('Я согласен на обработку персональных данных', blank=False, null=False)
+    processing_data = models.BooleanField('Я согласен на обработку персональных данных', blank=False, null=False, required=True)
     

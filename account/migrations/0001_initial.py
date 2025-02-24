@@ -104,6 +104,7 @@ class Migration(migrations.Migration):
                 ('photo', models.ImageField(blank=True, upload_to='users/%Y/%m/%d/')),
                 ('company_name', models.CharField(max_length=200, verbose_name='Наименование компании заказчика')),
                 ('is_nda_signed', models.BooleanField(default=False, verbose_name='NDA подписано?')),
+                ('expiration_date', models.DateTimeField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
                 ('deleted_at', models.DateTimeField(blank=True, null=True)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),

@@ -89,6 +89,7 @@ table {
 }
 
 #header {
+    line-height: normal;
     padding: 25px 100px;
     font-size:14px;
     background: var(--main-bg-color);
@@ -105,15 +106,21 @@ table {
     margin-right: 10%;
 }
 
+.logo_text{
+    font-size: 18px;
+}
+
 #header ul.menu {
     list-style:none;
     float:left;
     margin:0;
     padding:0;
 }
+
 #header ul.menu li {
     float:left;
-    padding: 10px 10px;
+    padding: 23px 10px;
+
 }
 
 #header ul.menu li.selected a, #header ul.menu li.selected a:hover {
@@ -124,13 +131,14 @@ table {
 #header a {
     color: var(--main-block-color);
 }
+
 #header a:hover {
     color: var(--main-color-for);
 }
 
 #header .user {
     float: right;
-    padding-top: 10px;
+    padding: 23px 10px;
 }
 
 #content {
@@ -446,7 +454,7 @@ img.user-detail {
 
 .footer_logo>span>a{
     color: var(--main-block-color); 
-    font-size: 25px;
+    font-size: 18px;
 }
 
 
@@ -454,6 +462,7 @@ img.user-detail {
 
 .order-table-wrapper {
     position: relative;
+    display: flex;
 }
 
 .order-table {
@@ -647,4 +656,98 @@ form #id_special_note {
 
 .help-icon {
     margin-left: 10px;
+}
+
+.table-center{
+    display: flex;
+    justify-content: center;
+}
+
+.table-column-all {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-table-file {
+}
+
+.file-table{
+    margin-left: 50px;
+    margin-top: 50px;
+}
+
+.file-table tr td a{
+    margin: 0 auto;
+}
+
+
+.users-container {
+    display: flex;
+    flex-direction: column; /* Все блоки идут друг под другом */
+    gap: 20px;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+}
+
+/* Блок пользователя (на всю ширину) */
+.user-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 400px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    width: 100%; /* Растягиваем на всю ширину */
+    box-sizing: border-box;
+}
+
+/* Заголовок имени пользователя */
+.user-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Первый ряд (3 таблицы в строку) */
+.table-container.first-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+}
+
+/* Второй ряд (1 таблица на всю ширину) */
+.table-container.second-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Общие стили таблиц */
+.file-table {
+    flex: 1 1 300px; /* Минимальная ширина таблицы */
+    max-width: 200px;
+    border-collapse: collapse;
+    text-align: center;
+    background: white;
+}
+
+.file-table th, .file-table td {
+    border: 1px solid #000;
+    padding: 8px;
+}
+
+.file-table th {
+    background-color: #ddd;
+}
+
+/* Специальный стиль для широкой таблицы */
+.wide-table {
+    width: 100%;
+    max-width: 100%;
 }

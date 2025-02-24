@@ -11,6 +11,7 @@ from django.db.models import Q, Value
 from django.db.models.functions import Lower
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
@@ -19,7 +20,8 @@ from django.utils.timezone import localtime
 from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, \
 OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, \
 ViewOrderForm, RegistrationForm, AddContractForm, AddContractFileForm
-from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, Thickness, Diameter, Topic, UserTopic, Message, File
+from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, \
+Thickness, Diameter, Topic, UserTopic, Message, File, Document
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 
@@ -168,6 +170,10 @@ def dashboard(request, message=''):
         2: _dashboard_curator,
         3: _dashboard_executor,
     }[profile.role_id](request, message)
+    
+
+def account_expired(request):
+    return render(request, 'account/expired.html')
 
 
 def _dashboard_client(request, message=''):
@@ -247,6 +253,46 @@ def technical_materials(request):
         'selected_process': selected_process,
         'section': 'technical_materials',
     })
+    
+    
+def my_documents(request):
+    nda_documents = Document.objects.filter(document_type='NDA')
+    consumer_request_documents = Document.objects.filter(document_type='consumer_request')
+    consumer_form_documents = Document.objects.filter(document_type='consumer_form')
+    
+    contract_documents = Order.objects.filter(contract_file__isnull=False)  # Фильтруем заказы с наличием файла contract_file
+    invoice_documents = Order.objects.filter(invoice_file__isnull=False)
+
+    context = {
+        'nda_documents': nda_documents,
+        'consumer_request_documents': consumer_request_documents,
+        'consumer_form_documents': consumer_form_documents,
+        'contract_documents': contract_documents,
+        'invoice_documents': invoice_documents,
+    }
+    return render(request, 'account/client/my_documents.html', context)
+    
+def all_documents(request):
+    profiles = Profile.objects.all()
+
+    user_documents = {}
+
+    for profile in profiles:
+        nda_documents = Document.objects.filter(owner=profile.user, document_type='NDA')
+        consumer_request_documents = Document.objects.filter(owner=profile.user, document_type='consumer_request')
+        consumer_form_documents = Document.objects.filter(owner=profile.user, document_type='consumer_form')
+
+        contract_documents = Order.objects.filter(creator=profile, contract_file__isnull=False)
+        invoice_documents = Order.objects.filter(creator=profile, invoice_file__isnull=False)
+
+        user_documents[profile] = {
+            'nda_documents': nda_documents,
+            'consumer_request_documents': consumer_request_documents,
+            'consumer_form_documents': consumer_form_documents,
+            'contract_documents': contract_documents,
+            'invoice_documents': invoice_documents,
+        }
+    return render(request, 'account/all_documents.html', {'user_documents': user_documents})
 
 
 def changes_in_order(request, order_id):

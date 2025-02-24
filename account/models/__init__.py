@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
+from django.utils.timezone import now
+from django.utils import timezone
 
 
 class Role(models.Model):
@@ -27,7 +29,34 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'Профиль {self.user.username}'
+    
+    def is_expired(self):
+        return self.expiration_date and now() > self.expiration_date
+    
 
+def document_upload_path(instance, filename):
+    return f'uploads/{instance.document_type}/{filename}'
+
+class Document(models.Model):
+    DOCUMENT_TYPES = [
+        ('NDA', 'NDA'),
+        ('consumer_request', 'consumer_request'),
+        ('consumer_form', 'consumer_form'),
+    ]
+    
+    document_type = models.CharField(max_length=50, choices=DOCUMENT_TYPES)
+    file_path = models.FileField(upload_to=document_upload_path)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+    expiration_date = models.DateTimeField(blank=True, null=True)
+    
+    def __str__(self):
+        return f'{self.get_document_type_display()} - {self.owner.username}'
+    
+    def is_expired(self):
+        return self.expiration_date and timezone.now() > self.expiration_date
+    
 
 class Platform(models.Model):
     platform_name = models.CharField('Название платформы', blank=False, null=False, max_length=200)

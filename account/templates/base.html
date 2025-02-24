@@ -26,6 +26,9 @@
                             <li {% if section == "feedback" %}class="selected"{% endif %}>
                                 <a href="{% url "feedback" %}">Обратная связь</a>
                             </li>
+                            <li {% if section == "all_documents" %}class="selected"{% endif %}>
+                                <a href="{% url "all_documents" %}">Личные документы</a>
+                            </li>
                         {% elif user_role == "Исполнитель" %}
                             <li {% if section == "dashboard" %}class="selected"{% endif %}>
                                 <a href="{% url "dashboard" %}">Заказы</a>
@@ -45,6 +48,9 @@
                             </li>
                             <li {% if section == "feedback" %}class="selected"{% endif %}>
                                 <a href="{% url "feedback" %}">Обратная связь</a>
+                            </li>
+                            <li {% if section == "my_documents" %}class="selected"{% endif %}>
+                                <a href="{% url "my_documents" %}">Мои документы</a>
                             </li>
                         {% endif %}
                     {% endblock %}

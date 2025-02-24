@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="users-container">
+    {% for profile, documents in user_documents.items %}
+    <div class="user-block">
+        <div class="user-title">{{ profile.user.username }}</div>
+
+        <!-- Первый ряд: три таблицы -->
+        <div class="table-container first-row">
+            <!-- Таблица для NDA -->
+            <table border="1" class="file-table">
+                <tr><th>NDA</th></tr>
+                {% for document in documents.nda_documents %}
+                <tr>
+                    <td>
+                        {% if document.file_path %}
+                            <a href="{{ document.file_path.url }}" download>{{ document.file_path.name|filename }}</a>
+                        {% else %}
+                            <span>Нет файла</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td><span>Нет файлов</span></td></tr>
+                {% endfor %}
+            </table>
+
+            <!-- Таблица для consumer_request -->
+            <table border="1" class="file-table">
+                <tr><th>Запрос на доступ потребителя</th></tr>
+                {% for document in documents.consumer_request_documents %}
+                <tr>
+                    <td>
+                        {% if document.file_path %}
+                            <a href="{{ document.file_path.url }}" download>{{ document.file_path.name|filename }}</a>
+                        {% else %}
+                            <span>Нет файла</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td><span>Нет файлов</span></td></tr>
+                {% endfor %}
+            </table>
+
+            <!-- Таблица для consumer_form -->
+            <table border="1" class="file-table">
+                <tr><th>Анкета потребителя</th></tr>
+                {% for document in documents.consumer_form_documents %}
+                <tr>
+                    <td>
+                        {% if document.file_path %}
+                            <a href="{{ document.file_path.url }}" download>{{ document.file_path.name|filename }}</a>
+                        {% else %}
+                            <span>Нет файла</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td><span>Нет файлов</span></td></tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- Второй ряд: объединенная таблица -->
+        <div class="table-container second-row">
+            <table border="1" class="file-table wide-table">
+                <tr>
+                    <th>Номер заказа</th>
+                    <th>Файл договора</th>
+                    <th>Файл счета</th>
+                </tr>
+                {% for order in documents.contract_documents %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>
+                        {% if order.contract_file %}
+                            <a href="{{ order.contract_file.url }}" download>{{ order.contract_file.name|filename }}</a>
+                        {% else %}
+                            <span>Нет файла</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.invoice_file %}
+                            <a href="{{ order.invoice_file.url }}" download>{{ order.invoice_file.name|filename }}</a>
+                        {% else %}
+                            <span>Нет файла</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3"><span>Нет заказов</span></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

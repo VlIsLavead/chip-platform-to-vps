@@ -333,5 +333,5 @@ class RegistrationRequest(models.Model):
     number = models.CharField('Номер телефона', blank=False, null=False, max_length=12)
     company = models.CharField('Наименование организации', blank=False, null=False, max_length=50)
     privacy_file = models.FileField('Файл конфиденциальности', upload_to='uploads/privacy_file/', blank=True, null=True,)
-    processing_data = models.BooleanField('Я согласен на обработку персональных данных', blank=False, null=False, required=True)
+    processing_data = models.BooleanField('Я согласен на обработку персональных данных', blank=False, null=False)
     

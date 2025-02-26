@@ -23,6 +23,12 @@ class RegistrationForm(forms.ModelForm):
             'privacy_file'
         ]
         
+        def clean_processing_data(self):
+            processing_data = self.cleaned_data.get('processing_data')
+            if not processing_data:
+                raise forms.ValidationError('Это обязательное поле.')
+            return processing_data
+        
         
 
 class UserEditForm(forms.ModelForm):

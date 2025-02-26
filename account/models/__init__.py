@@ -199,9 +199,9 @@ class Order(models.Model):
     creator = models.ForeignKey(Profile, on_delete=models.CASCADE, null=False)
     customer_product_name = models.CharField('Имя запуска', blank=False, null=False, max_length=200,
                                             help_text="Пояснение для имени запуска")
-    order_start = models.CharField('Тип заказа',choices=OrderStart.choices,
-                                     default=OrderStart.NEW, blank=False, null=False, 
-                                     max_length=200)
+    # order_start = models.CharField('Тип заказа',choices=OrderStart.choices,
+    #                                  default=OrderStart.NEW, blank=False, null=False, 
+    #                                  max_length=200)
     mask_name = models.CharField('Номер шаблона', blank=False, null=True, max_length=200)
     technical_process = models.ForeignKey(TechnicalProcess, on_delete=models.CASCADE, null=False, 
                                             verbose_name='Техпроцесс')

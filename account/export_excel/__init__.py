@@ -37,8 +37,6 @@ def generate_excel_file(request, session_data=None, order_id=None):
     header_cell.alignment = Alignment(wrap_text=True)
 
     custom_headers = {
-        'Тип заказа':
-            order.get_order_start_display(),
         'Номер заказа':
             session_data.get('order_number')
             if not order_id else order.order_number,

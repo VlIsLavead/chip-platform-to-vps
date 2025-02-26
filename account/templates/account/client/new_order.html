@@ -7,7 +7,7 @@
     <p>Заполните форму и прикрепите документы</p>
     <form method="post" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
         <p>Номер заказа: {{order_number}}</p>
-        <p>Наименование предприятия заказчика: {{profile}}</p>
+        <p>Заказчик: {{profile}}</p>
         <p>Код заказчика: {{ request.user.id }}</p>
 
         {% for field in order_form %}

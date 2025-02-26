@@ -14,7 +14,6 @@
 {% endblock %}
 
 {% block content %}
-<h1>Обратная связь</h1>
 
 {% if sub_section == "general" %}
     <h2>Общие вопросы</h2>
@@ -22,7 +21,7 @@
         <thead>
             <tr>
                 <th>Основные направления</th>
-                <th class="new-messages-th">Новые сообщения</th>
+                {% comment %} <th class="new-messages-th">Новые сообщения</th> {% endcomment %}
                 <th>Дата</th>
             </tr>
         </thead>
@@ -32,12 +31,12 @@
                     <td class="d-flex">
                         <a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a> 
                     </td>
-                    <td class="new-messages-th">
+                    {% comment %} <td class="new-messages-th">
                         <p class="center
                             {% if topic.unread_count > 0 %}unread{% endif %}">
                             {{ topic.unread_count }}
                         </p>
-                    </td>
+                    </td> {% endcomment %}
                     <td>
                         {% if topic.last_message_time %}
                             {{ topic.last_message_time|date:"d-m-Y H:i" }}
@@ -64,9 +63,9 @@
     <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">
         <thead>
             <tr>
-                <th>Основные направления</th>
-                <th class="new-messages-th">Новые сообщения</th>
-                <th>Дата</th>
+                <th>Номер заказа</th>
+                {% comment %} <th class="new-messages-th">Новые сообщения</th> {% endcomment %}
+                <th>Последнее сообщение</th>
             </tr>
         </thead>
         <tbody>
@@ -75,12 +74,12 @@
                     <td>
                         <a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a>
                     </td>
-                    <td class="new-messages-th">
+                    {% comment %} <td class="new-messages-th">
                         <p class="center
                             {% if topic.unread_count > 0 %}unread{% endif %}">
                             {{ topic.unread_count }}
                         </p>
-                    </td>
+                    </td> {% endcomment %}
                     <td>
                         {% if topic.last_message_time %}
                             {{ topic.last_message_time|date:"d-m-Y H:i" }}

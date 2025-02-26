@@ -106,7 +106,7 @@ class OrderEditForm(forms.ModelForm):
     )
 
     field_order = [
-        'order_start', 'customer_product_name', 'technical_process',
+        'customer_product_name', 'technical_process',
         'platform_code', 'order_type', 'product_count',
         'formation_frame_by_customer', 'substrate_type', 'selected_thickness', 'selected_diameter',
         'experimental_structure', 'dc_rf_probing_e_map', 'dc_rf_probing_inking',

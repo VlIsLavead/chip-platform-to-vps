@@ -214,7 +214,6 @@ class ViewOrderForm(forms.ModelForm):
         
     def get_order_data(self, order):
         order_data = {
-            'Тип заказа': order.get_order_start_display(),
             'Имя запуска': order.customer_product_name,
             'Номер шаблона': order.mask_name if order.mask_name else "Не указан",
             'Техпроцесс': order.technical_process.name_process if order.technical_process else "Не указано",

@@ -33,9 +33,9 @@
                             <li {% if section == "dashboard" %}class="selected"{% endif %}>
                                 <a href="{% url "dashboard" %}">Заказы</a>
                             </li>
-                            <li {% if section == "edit_platform" %}class="selected"{% endif %}>
+                            {% comment %} <li {% if section == "edit_platform" %}class="selected"{% endif %}>
                                 <a href="{% url "edit_platform" %}">Работа с техпроцессами</a>
-                            </li>
+                            </li> {% endcomment %}
                             <li {% if section == "feedback" %}class="selected"{% endif %}>
                                 <a href="{% url "feedback" %}">Обратная связь</a>
                             </li>

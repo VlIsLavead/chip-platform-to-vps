@@ -273,7 +273,7 @@ def my_documents(request):
     return render(request, 'account/client/my_documents.html', context)
     
 def all_documents(request):
-    profiles = Profile.objects.all()
+    profiles = Profile.objects.filter(role__name__in=['Заказчик', 'Исполнитель'])
 
     user_documents = {}
 
@@ -1094,7 +1094,7 @@ def topic_detail(request, topic_id):
             message.save()
 
             if topic.is_private:
-                topic.name = f'Чат {topic.related_order.order_number} | {localtime().strftime("%H:%M:%S")}'
+                topic.name = f'Чат по заказу {topic.related_order.order_number} | {localtime().strftime("%H:%M:%S")}'
                 topic.save(update_fields=['name'])
 
             for file in files:
@@ -1161,3 +1161,23 @@ def upload_files(request):
         return JsonResponse({'message': 'Файлы успешно загружены!', 'file_urls': file_urls})
 
     return JsonResponse({'error': 'Ошибка при загрузке файлов.'})
+
+
+def check_the_order(request, order_id):
+    order = Order.objects.get(id=order_id)
+    creator_name = order.creator.user.username
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+        
+    view_form = ViewOrderForm(instance=order)
+    order_items = view_form.get_order_data(order)
+
+    return render(
+        request,
+        'account/check_the_order.html',
+        {
+            'order': order_dict,
+            'creator_name': creator_name,
+            'view_form': view_form,
+            'order_items': order_items,
+        }
+    )

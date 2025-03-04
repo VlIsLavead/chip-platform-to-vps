@@ -28,6 +28,7 @@
                 <th scope="col">Дата оплаты</th>
                 <th scope="col">Договор</th>
                 <th scope="col">Счет</th>
+                <th scope="col">Действия</th>
             </tr>
             {% if not data.orders %}
             <tr>
@@ -60,16 +61,22 @@
                         </td>
                         <td>
                             {% if order.order_status == "OVK" %}
-                                <a href="{% url 'edit_order' order.id %}">Редактировать</a>
+                                <a href="{% url 'edit_order' order.id %}" class="button chat-button">Редактировать</a>
                             {% elif order.order_status == "CSA"%}
-                                <a href="{% url 'check_signing_curator' order.id %}">Проверка подписания договора</a>
+                                <a href="{% url 'check_signing_curator' order.id %}" class="button chat-button">Редактировать</a>
                             {% elif order.order_status == "CGDS"%}
-                                <a href="{% url 'check_gds_file_curator' order.id %}">Проверка подписания договора</a>
+                                <a href="{% url 'check_gds_file_curator' order.id %}" class="button chat-button">Редактировать</a>
                             {% elif order.order_status == "POK" %}
-                                <a href="{% url 'view_is_paid' order.id %}">Проверка оплаты</a>
+                                <a href="{% url 'view_is_paid' order.id %}" class="button chat-button">Редактировать</a>
                             {% elif order.order_status == "PS" %}
-                                <a href="{% url 'plates_shipped' order.id %}">Отправление пластин</a>
+                                <a href="{% url 'plates_shipped' order.id %}" class="button chat-button">Редактировать</a>
                             {% endif %}
+                            <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
+                                Перейти в чат
+                            </a>
+                            <a href="{% url 'check_the_order' order.id %}" class="button chat-button">
+                                Просмотр заказа
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}   

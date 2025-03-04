@@ -59,19 +59,24 @@
                         </td>
                         <td>
                             {% if order.order_status == "OVC" %}
-                                <a href="{% url 'order_view' order.id %}">Просмотр заказа</a>
+                                <a href="{% url 'order_view' order.id %}" class="button chat-button">Редактировать</a>
                             {% elif order.order_status == "ESA" %}
-                                <a href="{% url 'check_signing_exec' order.id %}">Проверка подписания договора</a>
+                                <a href="{% url 'check_signing_exec' order.id %}" class="button chat-button">Редактировать</a>
                             {% elif order.order_status == "EGDS" %}
-                                <a href="{% url 'check_gds_file_exec' order.id %}">Проверка GDS исполнителем</a>
+                                <a href="{% url 'check_gds_file_exec' order.id %}" class="button chat-button">Редактировать</a>
                             {% elif order.order_status == "POC" %}
-                                <a href="{% url 'view_is_paid_exec' order.id %}">Проверка оплаты</a>
+                                <a href="{% url 'view_is_paid_exec' order.id %}" class="button chat-button">Редактировать</a>
                             {% elif order.order_status == "MPO" %}
-                                <a href="{% url 'plates_in_stock' order.id %}">Пластины на складе</a>
+                                <a href="{% url 'plates_in_stock' order.id %}" class="button chat-button">Редактировать</a>
                             {% elif order.order_status == "SO" %}
-                                <a href="{% url 'shipping_is_confirm' order.id %}">Подтверждение отгрузки</a>
-                            {% else %}
+                                <a href="{% url 'shipping_is_confirm' order.id %}" class="button chat-button">Редактировать</a>
                             {% endif %}
+                            <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
+                                Перейти в чат
+                            </a>
+                            <a href="{% url 'check_the_order' order.id %}" class="button chat-button">
+                                Просмотр заказа
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

@@ -21,7 +21,7 @@ from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, \
 OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, \
 ViewOrderForm, RegistrationForm, AddContractForm, AddContractFileForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, \
-Thickness, Diameter, Topic, UserTopic, Message, File, Document
+Thickness, Diameter, Topic, UserTopic, Message, File, Document, TopicFileModel
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 
@@ -1027,6 +1027,7 @@ def download_excel_file_from_order_id(request, order_id):
 
 
 def feedback(request):
+    files = TopicFileModel.objects.all()
     user = request.user
     profile = user.profile
     general_topics = Topic.objects.filter(is_private=False)
@@ -1067,6 +1068,7 @@ def feedback(request):
         'general_topics': general_topics,
         'private_topics': private_topics,
         'sub_section': tab,
+        'files': files,
         'section': 'feedback',
     })
 

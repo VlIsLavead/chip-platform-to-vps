@@ -1,0 +1,18 @@
+[
+    {
+      "model": "account.topicfilemodel",
+      "pk": 1,
+      "fields": {
+        "name": "File 1",
+        "file": "help_files/helpFile.txt"
+      }
+    },
+    {
+      "model": "account.topicfilemodel",
+      "pk": 2,
+      "fields": {
+        "name": "File 2",
+        "file": "help_files/helpFile_2.txt"
+      }
+    }
+  ]

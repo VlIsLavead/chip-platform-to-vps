@@ -4,7 +4,7 @@
 <div id="header">
     <ul class="menu">
         <li {% if sub_section == "general" %}class="selected"{% endif %}>
-            <a href="{% url 'feedback' %}?tab=general">Общие вопросы</a>
+            <a href="{% url 'feedback' %}?tab=general">Инструкции и полезные материалы</a>
         </li>
         <li {% if sub_section == "support" %}class="selected"{% endif %}>
             <a href="{% url 'feedback' %}?tab=support">Вопросы по заказам</a>
@@ -16,50 +16,30 @@
 {% block content %}
 
 {% if sub_section == "general" %}
-    <h2>Общие вопросы</h2>
+    <h1>Инструкции и полезные материалы</h1>
     <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">
         <thead>
             <tr>
-                <th>Основные направления</th>
-                {% comment %} <th class="new-messages-th">Новые сообщения</th> {% endcomment %}
-                <th>Дата</th>
-            </tr>
+                <th>Название документа</th>
+                <th>Действие с документом</th>
         </thead>
         <tbody>
-            {% for topic in general_topics %}
+            {% for file in files %}
                 <tr>
-                    <td class="d-flex">
-                        <a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a> 
-                    </td>
-                    {% comment %} <td class="new-messages-th">
-                        <p class="center
-                            {% if topic.unread_count > 0 %}unread{% endif %}">
-                            {{ topic.unread_count }}
-                        </p>
-                    </td> {% endcomment %}
-                    <td>
-                        {% if topic.last_message_time %}
-                            {{ topic.last_message_time|date:"d-m-Y H:i" }}
-                        {% else %}
-                            Нет сообщений
-                        {% endif %}
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="2">Нет общих тем</td>
+                    <td>{{ file.name }}</td>
+                    <td><a href="{{ file.file.url }}" download>Скачать</a></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
     <br>
-    <form method="post" action="{% url 'create_general_topic' %}" style="margin: 0 0 20px 35% ">
+    {% comment %} <form method="post" action="{% url 'create_general_topic' %}" style="margin: 0 0 20px 35% ">
         {% csrf_token %}
         <input type="text" name="topic_name" class="input_text" placeholder="Введите название темы">
         <button type="submit" class="button">Создать новую тему</button>
-    </form>
+    </form> {% endcomment %}
 {% elif sub_section == "support" %}
-    <h2>Вопросы по заказам</h2>
+    <h1>Вопросы по заказам</h1>
     <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">
         <thead>
             <tr>

@@ -293,6 +293,14 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class TopicFileModel(models.Model):
+    name = models.CharField(max_length=255)
+    file = models.FileField(upload_to='help_files/')
+
+    def __str__(self):
+        return self.name
 
 
 class Message(models.Model):

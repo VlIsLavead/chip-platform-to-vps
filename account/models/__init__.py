@@ -35,6 +35,80 @@ class Profile(models.Model):
         return self.expiration_date and now() > self.expiration_date
     
 
+class CustomerProfile(models.Model):
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name="customer_profile")
+    class MarketName(models.TextChoices):
+        PS = 'PS', 'Госсектор',
+        CR = 'CR', 'Корпоративный',
+        CM = 'CM', 'Потребительский'
+        
+    class ContractForm(models.TextChoices):
+        SH = 'SH', 'СЧ ОКР',
+        SA = 'SA', 'Договор оказания услуг',
+        DA = 'DA', 'Договор поставки'
+        
+    class LaunchFormat(models.TextChoices):
+        MU = 'MU', 'Многопользовательский',
+        EF = 'EF', 'Инженерный',
+        DF = 'DF', 'Производственный'
+    
+    contact_technical_issues = models.TextField('Контактное лицо для обсуждения технических вопросов',\
+                                blank=False, null=True, max_length=2000,
+                                help_text='ФИО, тел. Электронная почта', )
+    contact_economic_issues = models.TextField('Контактное лицо для обсуждения экономических вопросов',\
+                                blank=False, null=True, max_length=2000,
+                                help_text='ФИО, тел. Электронная почта', )
+    market_name = models.CharField('Рынок, на который планируются поставки изделий',
+                                choices=MarketName.choices, default=MarketName.PS, blank=False,
+                                null=False, max_length=200, help_text=None)
+    head_customer = models.TextField('Головной заказчик (при наличии)',\
+                                blank=False, null=True, max_length=2000, help_text=None, )
+    contract_form = models.CharField('Форма организации договора',
+                                choices=ContractForm.choices, default=ContractForm.SH, blank=False,
+                                null=False, max_length=200, help_text=None)
+    competitive_procedures = models.TextField('Наличие конкурсных прроцедур',
+                                blank=False, null=True, max_length=2000,
+                                help_text='Указать площадку', )
+    vp_control = models.TextField('Контроль ВП, контроль ценообразования ВП, ориентировочный срок письма \
+                                в адрес 514 ВП о взятии под контроль ',\
+                                blank=False, null=True, max_length=2000,
+                                help_text=None, )
+    stage_selection = models.TextField('Количество и состав этапов выполнения работы и их взаимосвязь (могут \
+                                выполняться параллельно, только последовательно) ',
+                                blank=False, null=True, max_length=2000,
+                                help_text=None, )
+    manufacturing_technology = models.TextField('Технология изготовления с учетом технологических опций',
+                                blank=False, null=True, max_length=2000,
+                                help_text=None, )
+    pdk_version = models.TextField('Используемая версия PDK', blank=False, null=True, max_length=2000,
+                                help_text=None, )
+    hierarchry_structure = models.BooleanField('Иерархичность структуры топологии', blank=False,
+                                null=False, default=False, help_text="Да/нет")
+    project_name_and_abbreviation = models.TextField('Название проекта и аббревиатура (для заявки на фабрику)',
+                                blank=False, null=True, max_length=2000,
+                                help_text='Пример: Название проекта 1(аббревиатуры названия кристаллов)', )
+    description_project = models.TextField('Краткое описание проекта (функционал)',
+                                blank=False, null=True, max_length=2000,
+                                help_text='Пример: СВЧ широкополосный усилитель 0-8 ГГц, усиление 20 дБ…', )
+    scope_of_application = models.TextField('Область применения',
+                                blank=False, null=True, max_length=2000,
+                                help_text='Связь / радиолокация и т.п.', )
+    name_technology_process = models.TextField('Наименование технологического процесса',
+                                blank=False, null=True, max_length=2000,
+                                help_text=None, )
+    first_launch_date = models.DateTimeField('Планируемая дата первого запуска', blank=False, null=True, )
+    crystal_size = models.IntegerField('Размер кристалла (в мкм)', blank=False, null=True,
+                                validators=[MinValueValidator(1)], help_text=None, )
+    launch_format = models.CharField('В каком формате планируется запуск (для уточнения возможности реализации)',
+                                choices=LaunchFormat.choices, default=LaunchFormat.MU, blank=False,
+                                null=False, max_length=200, help_text=None)
+    production_plan = models.TextField('Производственный план на ближайшие 3-5 лет',
+                                blank=False, null=True, max_length=2000,
+                                help_text='год / тип запуска (количество кристаллов/пластин)', )
+
+    def __str__(self):
+        return f'Анкета заказчика {self.profile.user.username}'
+
 def document_upload_path(instance, filename):
     return f'uploads/{instance.document_type}/{filename}'
 

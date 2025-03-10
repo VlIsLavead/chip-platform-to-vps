@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
 {% block sub_tabs %}
 <div id="header">
@@ -20,24 +21,17 @@
     <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">
         <thead>
             <tr>
-                <th>Название документа</th>
-                <th>Действие с документом</th>
+                <th>Документ</th>
         </thead>
         <tbody>
             {% for file in files %}
                 <tr>
-                    <td>{{ file.name }}</td>
-                    <td><a href="{{ file.file.url }}" download>Скачать</a></td>
+                    <td><a href="{{ file.file.url }}" download>{{ file.file.name|filename }}</a></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
     <br>
-    {% comment %} <form method="post" action="{% url 'create_general_topic' %}" style="margin: 0 0 20px 35% ">
-        {% csrf_token %}
-        <input type="text" name="topic_name" class="input_text" placeholder="Введите название темы">
-        <button type="submit" class="button">Создать новую тему</button>
-    </form> {% endcomment %}
 {% elif sub_section == "support" %}
     <h1>Вопросы по заказам</h1>
     <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">

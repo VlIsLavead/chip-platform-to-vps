@@ -14,6 +14,8 @@ fixtures = [
     'account.substrate.json',
     'account.order.json',
     'account.topic.json',
+    'account.topicfilemodel.json',
+    'account.document.json',
 ]
 
 

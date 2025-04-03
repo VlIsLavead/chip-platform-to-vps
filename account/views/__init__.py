@@ -2,6 +2,7 @@ import datetime
 import os
 from io import BytesIO
 
+from django.core.mail import send_mail
 from urllib.parse import quote
 from django.conf import settings
 from django.forms.models import model_to_dict
@@ -93,33 +94,28 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            processing_data = form.cleaned_data.get('processing_data')
-            if not processing_data:
-                form.add_error('processing_data', 'Вы должны согласиться с обработкой персональных данных.')
-                messages.error(request, 'Вы должны согласиться с обработкой персональных данных.')
-            else:
-                form.save()
-                user_email = form.cleaned_data['mail']
-                subject = "Регистрация на chip platform"
-                body = """
-                    <html>
-                    <body>
-                        <h1>Регистрация на chip platform</h1>
-                        <p>Вы подали заявку на регистрацию на платформе chip platform.</p>
-                        <p>Ознакомьтесь с приложенными файлами, заполните данные и отправьте по адресу: <strong>ФИЗ.АДРЕС</strong></p>
-                    </body>
-                    </html>
-                """
-                sender_email = settings.EMAIL_HOST_USER
-                password = settings.EMAIL_HOST_PASSWORD
-                file_paths = [
-                    os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/file_one.txt'),
-                    os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/file_two.txt')
-                ]
+            form.save()
+            user_email = form.cleaned_data['mail']
+            subject = "Регистрация на chip platform"
+            body = """
+                <html>
+                <body>
+                    <h1>Регистрация на chip platform</h1>
+                    <p>Вы подали заявку на регистрацию на платформе chip platform.</p>
+                    <p>Ознакомьтесь с приложенными файлами, заполните данные и отправьте по адресу: <strong>ФИЗ.АДРЕС</strong></p>
+                </body>
+                </html>
+            """
+            sender_email = settings.EMAIL_HOST_USER
+            password = settings.EMAIL_HOST_PASSWORD
+            file_paths = [
+                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/file_one.txt'),
+                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/file_two.txt')
+            ]
 
-                send_email_with_attachments(sender_email, user_email, password, subject, body, file_paths)
-                messages.success(request, 'Регистрация прошла успешно!')
-                return render(request, 'account/registration_done.html')
+            send_email_with_attachments(sender_email, user_email, password, subject, body, file_paths)
+            messages.success(request, 'Регистрация прошла успешно!')
+            return render(request, 'account/registration_done.html')
         else:
             messages.error(request, 'Ошибка в заполнении данных')
     else:

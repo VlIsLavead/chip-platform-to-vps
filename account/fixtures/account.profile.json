@@ -103,5 +103,50 @@
       "created_at": "2024-07-18T11:44:39.863Z",
       "deleted_at": null
     }
+  },
+  {
+    "model": "account.profile",
+    "pk": 8,
+    "fields": {
+      "user": 8,
+      "date_of_birth": null,
+      "photo": "",
+      "role": 1,
+      "company_name": "ICV",
+      "is_nda_signed": true,
+      "expiration_date": null,
+      "created_at": "2024-07-18T11:44:39.863Z",
+      "deleted_at": null
+    }
+  },
+  {
+    "model": "account.profile",
+    "pk": 9,
+    "fields": {
+      "user": 9,
+      "date_of_birth": null,
+      "photo": "",
+      "role": 2,
+      "company_name": "KI",
+      "is_nda_signed": true,
+      "expiration_date": null,
+      "created_at": "2024-07-18T11:44:39.863Z",
+      "deleted_at": null
+    }
+  },
+  {
+    "model": "account.profile",
+    "pk": 10,
+    "fields": {
+      "user": 10,
+      "date_of_birth": null,
+      "photo": "",
+      "role": 3,
+      "company_name": "KI",
+      "is_nda_signed": true,
+      "expiration_date": null,
+      "created_at": "2024-07-18T11:44:39.863Z",
+      "deleted_at": null
+    }
   }
 ]

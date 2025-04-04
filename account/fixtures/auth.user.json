@@ -124,5 +124,59 @@
       "groups": [],
       "user_permissions": []
     }
+  },
+  {
+    "model": "auth.user",
+    "pk": 8,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$ioGRXpTblhnBuadlPM5YAf$gnFtRvXgbaCTuXFk/fuF3SXEiHszIw0gkICNAIcsAJc=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "Siomko V.O.",
+      "first_name": "Всеволод",
+      "last_name": "Сиомко",
+      "email": "svo@electron-engine.ru",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-26T08:01:45.736Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 9,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$CFVm64EhojuYOMHr8NqKyO$LceIojQmoEv7Cl30sAnTWQf33i+HmocWi6S4jzxu1v8=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "Perkova T.N.",
+      "first_name": "Тамара",
+      "last_name": "Перкова",
+      "email": "tomaperkova@mail.ru",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-26T08:01:45.736Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 10,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$xB4puQmF7pAlXrAKF3ddXA$up7BAsDMgNJJtqv/wj+WldLxPsdSWIaKi1pRjLh4eTA=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "Gladkich M.V.",
+      "first_name": "Михаил",
+      "last_name": "Гладких",
+      "email": "gmv@electron-engine.ru",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-26T08:01:45.736Z",
+      "groups": [],
+      "user_permissions": []
+    }
   }
 ]

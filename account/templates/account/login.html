@@ -18,10 +18,25 @@
     {% endif %}
     <div class="login-form">
         <form action="{% url 'login' %}" method="post">
-            {{ form.as_p }}
             {% csrf_token %}
+
+            <div class="form-field">
+                <label for="id_username">Логин:</label>
+                {{ form.username }}
+            </div>
+            
+            <div class="form-field">
+                <label for="id_password">Пароль:</label>
+                <div class="password-toggle">
+                    {{ form.password }}
+                    <button type="button" class="toggle-password" aria-label="Показать пароль">
+                        <span class="eye-icon"  style="filter: brightness(60%) saturate(10%)">👁️</span>
+                    </button>
+                </div>
+            </div>
+
             <input type="hidden" name="next" value="{{ next }}"/>
-            <p><input type="submit" value="Вход"></p>
+            <p><input type="submit" class="chat-button" value="Вход"></p>
         </form>
         <p>
             <a href="{% url "password_reset" %}">
@@ -29,4 +44,15 @@
             </a>
         </p>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.querySelector('.toggle-password');
+            const passwordField = document.querySelector('#id_password');
+            togglePassword.addEventListener('click', function() {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                this.querySelector('.eye-icon').textContent = type === 'password' ? '👁️' : '🔒';
+            });
+        });
+        </script>
 {% endblock %}

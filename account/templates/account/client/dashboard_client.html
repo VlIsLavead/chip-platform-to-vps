@@ -89,9 +89,9 @@
                         {% if order.order_status == "NFW" %}
                             <a href="{% url 'changes_in_order' order.id %}" class="button chat-button">Внести изменения в заказ</a>
                         {% elif order.order_status == "OA" or order.order_status == "SA" %}
-                            <a href="{% url 'signing_agreement' order.id %}" class="button chat-button">Подтверждение подписания договора</a>
+                            <a href="{% url 'signing_agreement' order.id %}" class="button chat-button">Подтвердить подписание договора</a>
                         {% elif order.order_status == "CR" %}
-                            <a href="{% url 'confirmation_receipt' order.id %}" class="button chat-button">Подтверждение получения пластин</a>
+                            <a href="{% url 'confirmation_receipt' order.id %}" class="button chat-button">Подтвердить получение пластин</a>
                         {% endif %}
                         <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                             Перейти в чат

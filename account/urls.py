@@ -42,11 +42,11 @@ urlpatterns = [
     path('shipping_is_confirm/<int:order_id>/', views.shipping_is_confirm, name='shipping_is_confirm'),
     path('plates_shipped/<int:order_id>/', views.plates_shipped, name='plates_shipped'),
     path('confirmation_receipt/<int:order_id>/', views.confirmation_receipt, name='confirmation_receipt'),
+    path('help_files/', views.help_files, name='help_files'),
     path('feedback/', views.feedback, name='feedback'),
     path('topic/<int:topic_id>/', views.topic_detail, name='topic_detail'),
     path('create_or_open_chat/<int:order_id>/', views.create_or_open_chat, name='create_or_open_chat'),
     path('check_the_order/<int:order_id>/', views.check_the_order, name='check_the_order'),
-    path('chat/create_general/', views.create_general_topic, name='create_general_topic'),
     path('upload/', views.upload_files, name='upload_files'),
 
     path('load-data/', views.load_data, name='load_data')  # AJAX

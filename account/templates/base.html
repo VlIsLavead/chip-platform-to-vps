@@ -29,6 +29,9 @@
                             <li {% if section == "all_documents" %}class="selected"{% endif %}>
                                 <a href="{% url "all_documents" %}">Личные документы</a>
                             </li>
+                            <li {% if section == "all_documents" %}class="selected"{% endif %}>
+                                <a href="{% url "all_documents" %}">Личные документы</a>
+                            </li>
                         {% elif user_role == "Исполнитель" %}
                             <li {% if section == "dashboard" %}class="selected"{% endif %}>
                                 <a href="{% url "dashboard" %}">Заказы</a>
@@ -44,7 +47,7 @@
                                 <a href="{% url "dashboard" %}">Заказы</a>
                             </li>
                             <li {% if section == "technical_materials" %}class="selected"{% endif %}>
-                                <a href="{% url "technical_materials" %}">Технические материалы</a>
+                                <a href="{% url "technical_materials" %}">КИП (ПДК)</a>
                             </li>
                             <li {% if section == "feedback" %}class="selected"{% endif %}>
                                 <a href="{% url "feedback" %}">Обратная связь</a>
@@ -52,13 +55,16 @@
                             <li {% if section == "my_documents" %}class="selected"{% endif %}>
                                 <a href="{% url "my_documents" %}">Мои документы</a>
                             </li>
+                            <li {% if section == "help_files" %}class="selected"{% endif %}>
+                                <a href="{% url "help_files" %}">Вспомогательные файлы</a>
+                            </li>
                         {% endif %}
                     {% endblock %}
                 </ul>
             {% endif %}
             <span class="user">
             {% if request.user.is_authenticated %}
-                Привет, {{ request.user.first_name|default:request.user.username }}!
+                <p>Привет, {{ request.user.first_name|default:request.user.username }}!</p>
                 <a href="{% url "logout" %}">Выйти</a>
             {% else %}
                 <a href="{% url "login" %}">Войти</a>

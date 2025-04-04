@@ -1,38 +1,6 @@
 {% extends "base.html" %}
-{% load custom_filters %}
-
-{% block sub_tabs %}
-<div id="header">
-    <ul class="menu">
-        <li {% if sub_section == "general" %}class="selected"{% endif %}>
-            <a href="{% url 'feedback' %}?tab=general">Инструкции и полезные материалы</a>
-        </li>
-        <li {% if sub_section == "support" %}class="selected"{% endif %}>
-            <a href="{% url 'feedback' %}?tab=support">Вопросы по заказам</a>
-        </li>
-    </ul>
-</div>
-{% endblock %}
 
 {% block content %}
-
-{% if sub_section == "general" %}
-    <h1>Инструкции и полезные материалы</h1>
-    <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">
-        <thead>
-            <tr>
-                <th>Документ</th>
-        </thead>
-        <tbody>
-            {% for file in files %}
-                <tr>
-                    <td><a href="{{ file.file.url }}" download>{{ file.file.name|filename }}</a></td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <br>
-{% elif sub_section == "support" %}
     <h1>Вопросы по заказам</h1>
     <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">
         <thead>
@@ -69,5 +37,4 @@
             {% endfor %}
         </tbody>
     </table>
-{% endif %}
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+{% block content %}
+
+<h1>Инструкции и полезные материалы</h1>
+    <table border="1" class="no-center" style="border-collapse: inherit; text-align: left;">
+        <thead>
+            <tr>
+                <th>Документ</th>
+        </thead>
+        <tbody>
+            {% for file in files %}
+                <tr>
+                    <td><a href="{{ file.file.url }}" download>{{ file.file.name|filename }}</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+{% endblock content %}

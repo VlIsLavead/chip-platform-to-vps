@@ -6,7 +6,6 @@
 <h2 class="topic_name">{{ topic.name }}</h2>
 
 <div class="chat-container">
-    <h3>Сообщения</h3>
     <div id="messages-container">
         {% for message in messages %}
             <div class="message" id="message-{{ message.id }}">
@@ -17,8 +16,6 @@
             </div>
         {% endfor %}
     </div>
-
-    <h3>Оставить сообщение</h3>
     <form method="post" enctype="multipart/form-data" class="message-form">
         {% csrf_token %}
         
@@ -30,6 +27,12 @@
         </div>
     </form>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var messagesContainer = document.getElementById("messages-container");
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    });
+</script>
 
 {% endblock %}
 

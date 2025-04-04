@@ -381,7 +381,7 @@ class TopicFileModel(models.Model):
 class Message(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     topic = models.ForeignKey(Topic, related_name="messages", on_delete=models.CASCADE)
-    text = models.TextField()
+    text = models.TextField(blank=True, null=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

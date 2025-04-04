@@ -1027,28 +1027,22 @@ def download_excel_file_from_order_id(request, order_id):
         return HttpResponse("Ошибка при создании файла.", status=400)
 
 
+def help_files(request):
+    files = TopicFileModel.objects.all()
+    return render(request, 'account/help_files.html', {
+        'files': files,
+        'section': 'help_files',
+    })
+
+
 def feedback(request):
     files = TopicFileModel.objects.all()
     user = request.user
     profile = user.profile
-    general_topics = Topic.objects.filter(is_private=False)
     private_topics = Topic.objects.filter(
         is_private=True,
         usertopic__user=profile
     )
-    
-    for topic in general_topics:
-        last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()
-        if last_read_message and last_read_message.last_read_message:
-            topic.unread_count = Message.objects.filter(
-                topic=topic,
-                id__gt=last_read_message.last_read_message.id
-            ).count()
-        else:
-            topic.unread_count = 0
-        
-        last_message = Message.objects.filter(topic=topic).order_by('-created_at').first()
-        topic.last_message_time = last_message.created_at if last_message else None
     
     for topic in private_topics:    
         last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()
@@ -1066,7 +1060,6 @@ def feedback(request):
     tab = request.GET.get('tab', 'general')
 
     return render(request, 'account/feedback.html', {
-        'general_topics': general_topics,
         'private_topics': private_topics,
         'sub_section': tab,
         'files': files,
@@ -1090,20 +1083,21 @@ def topic_detail(request, topic_id):
         message_form = MessageForm(request.POST)
         files = request.FILES.getlist('file')
 
-        if message_form.is_valid():
-            message = message_form.save(commit=False)
-            message.topic = topic
-            message.user = profile
+        message_text = request.POST.get('text', '').strip()  # Получаем текст из формы
+
+        if message_text or files:  # Разрешаем отправку только если есть текст или файлы
+            message = Message(topic=topic, user=profile, text=message_text if message_text else "")
             message.save()
+
+            for file in files:
+                File.objects.create(message=message, file=file)
 
             if topic.is_private:
                 topic.name = f'Чат по заказу {topic.related_order.order_number} | {localtime().strftime("%H:%M:%S")}'
                 topic.save(update_fields=['name'])
 
-            for file in files:
-                File.objects.create(message=message, file=file)
-
             return redirect('topic_detail', topic_id=topic.id)
+
     else:
         message_form = MessageForm()
 
@@ -1112,6 +1106,7 @@ def topic_detail(request, topic_id):
         'messages': messages,
         'message_form': message_form,
     })
+    
 
 def create_or_open_chat(request, order_id):
     order = Order.objects.get(id=order_id)
@@ -1138,18 +1133,18 @@ def create_or_open_chat(request, order_id):
     return redirect('topic_detail', topic_id=topic.id)
 
 
-def create_general_topic(request):
-    if request.method == 'POST':
-        topic_name = request.POST.get('topic_name')
-        if topic_name:  
-            topic = Topic.objects.create(
-                name=topic_name,
-                is_private=False
-            )
-            return redirect('topic_detail', topic_id=topic.id)
-        else:
-            messages.error(request, 'Название комнаты не может быть пустым.')
-    return redirect('feedback')
+# def create_general_topic(request):
+#     if request.method == 'POST':
+#         topic_name = request.POST.get('topic_name')
+#         if topic_name:  
+#             topic = Topic.objects.create(
+#                 name=topic_name,
+#                 is_private=False
+#             )
+#             return redirect('topic_detail', topic_id=topic.id)
+#         else:
+#             messages.error(request, 'Название комнаты не может быть пустым.')
+#     return redirect('feedback')
 
 
 def upload_files(request):

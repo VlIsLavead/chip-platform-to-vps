@@ -27,6 +27,8 @@ from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 
 
+def password_recovery(request):
+    return render(request, 'account/password_recovery.html')
 
 def filter_orders(orders, query):
     filtered_orders = orders.filter(

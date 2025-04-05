@@ -52,6 +52,12 @@ p {
     line-height: 1.8;
 }
 
+.p_center{
+    margin: 100px auto;
+    text-align: center;
+    font-size: 20px;
+}
+
 a {
     color: var(--main-other-bg);
     text-decoration: none;
@@ -160,6 +166,12 @@ table {
 /* forms */
 form {
     overflow:auto;
+}
+
+.form-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 form p {
@@ -755,4 +767,8 @@ form #id_special_note {
 .wide-table {
     width: 100%;
     max-width: 100%;
+}
+
+.password_mail {
+    color: blue;
 }

@@ -9,18 +9,20 @@
         <p>Номер заказа {{order.order_number}}</p>
         <p>Creator {{ request.user.first_name|default:request.user.username }}</p>
         {% for field in order_form %}
-            <p>
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                    <span class="help-icon" style="cursor: pointer;" onclick="showHelpText('{{ field.help_text|escapejs }}')">
-                        &#x3F;
-                    </span>
-                {% endif %}
-                {% for error in field.errors %}
-                    <span class="text-danger">{{ error }}</span>
-                {% endfor %}
-            </p>
+            <div id="field-{{ field.name }}" {% if field.name == 'mask_name' %}style="display: none;"{% endif %}>
+                <p>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <span class="help-icon" style="cursor: pointer;" onclick="showHelpText('{{ field.help_text|escapejs }}')">
+                            &#x3F;
+                        </span>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </p>
+            </div>
         {% endfor %}
         {% csrf_token %}
         <p><input type="submit" value="Сохранить"></p>
@@ -28,6 +30,28 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>
     $(document).ready(function () {
+        function toggleMaskNameField() {
+            const orderType = $("#id_order_type").val();
+            const maskNameField = $("#field-mask_name");
+            const maskNameInput = $("#id_mask_name");
+            
+            if (orderType === "REP") {
+                maskNameField.show();
+                maskNameInput.prop("required", true);
+                maskNameInput.css("display", "");
+            } else {
+                maskNameField.hide();
+                maskNameInput.prop("required", false);
+                maskNameInput.val("");
+            }
+        }
+
+        $("#id_order_type").change(function () {
+            toggleMaskNameField();
+        });
+
+        toggleMaskNameField();
+
         function toggleMultiplanFileField() {
             const choiceField = $("#id_multiplan_dicing_plan");
             const fileField = $("#id_multiplan_dicing_plan_file").closest("p");

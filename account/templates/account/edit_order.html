@@ -8,7 +8,6 @@
     <form method="post" action="{% url 'edit_order' order.id %}" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
         <p>Номер заказа: {{ order_number }}</p>
         <p>Создатель: {{ creator_name }}</p>
-        {{ form.as_p }}
         {% csrf_token %}
         <p class='bb'>Подробная информация о заказе:</p>
         <div class="order-table-wrapper">
@@ -40,7 +39,7 @@
         
         <p>
             <input type="submit" name="success" value="Подтвердить заказ">
-            <input type="submit" name="canselled" value="Вернуть заказ на доработку">
+            <input type="submit" name="cancelled" value="Вернуть заказ на доработку">
         <p>
     </form>
 {% endblock %}

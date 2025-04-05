@@ -55,7 +55,6 @@ class OrderEditForm(forms.ModelForm):
     class Meta:
         model = Order
         exclude = [
-            'mask_name',
             'order_number',
             'creator',
             'order_date',
@@ -68,6 +67,12 @@ class OrderEditForm(forms.ModelForm):
             'deleted_at',
             'GDS_file',
         ]
+        
+    mask_name = forms.CharField(
+        label='Номер шаблона',
+        required=False,
+        widget=forms.TextInput(),
+    )
 
     technical_process = forms.ModelChoiceField(
         queryset=TechnicalProcess.objects.none(),

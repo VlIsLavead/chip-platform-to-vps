@@ -464,36 +464,35 @@ def _dashboard_curator(request, message=''):
 def edit_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     creator_name = order.creator.user.username
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
 
     if request.method == 'POST':
-        form = OrderEditingForm(request.POST, request.FILES, instance=order)
-        if form.is_valid():
-            action = None
-            if 'success' in request.POST:
-                order.order_status = "OVC"
-                action = 'success'
-            elif 'canselled' in request.POST:
-                order.order_status = "NFW"
-                action = 'cancelled'
-            order.save()
-            return render(request, 'account/edit_order_success.html', {'order': order, 'action': action})
-    else:
-        form = OrderEditingForm(instance=order)
-        
-        
+        action = None
+        if 'success' in request.POST:
+            order.order_status = "OVC"
+            action = 'success'
+        elif 'cancelled' in request.POST:
+            order.order_status = "NFW"
+            action = 'cancelled'
+        order.save()
+
+        return render(
+            request, 'account/edit_order_success.html', {'order': order, 'action': action}
+            )
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-
-
-    return render(request, 'account/edit_order.html', {
-        'view_form': view_form,
-        'order_items': order_items,
-        'form': form,
-        'order_number': order.id,
-        'creator_name': creator_name,
-        'order': order_dict,
-    })
+    
+    return render(
+        request,
+        'account/edit_order.html',
+        {
+            'order': order,
+            'view_form': view_form,
+            'creator_name': creator_name,
+            'order_items': order_items,
+            'order_number': order.id,
+        }
+    )
     
     
 def check_signing_curator(request, order_id):
@@ -666,7 +665,6 @@ def order_view(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-    print(creator_name)
 
     if request.method == "POST":
         if 'save_changes' in request.POST:
@@ -876,25 +874,37 @@ def view_is_paid_exec(request, order_id):
 
 @login_required
 def plates_in_stock(request, order_id):
-    order = Order.objects.get(id=order_id)
-
+    order = get_object_or_404(Order, id=order_id)
+    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+    mask_name_empty = not order.mask_name or str(order.mask_name).strip() == ''
+    
     if request.method == 'POST':
+        if mask_name_empty:
+            form = OrderEditingForm(request.POST, request.FILES, instance=order)
+            if form.is_valid():
+                form.save()
+                mask_name_empty = False
+        else:
+            form = None
+
         action = None
         if 'success_confirmation' in request.POST:
-            order.is_paid = True
             order.order_status = "SO"
             action = 'success'
-        elif 'cansel_confirmation' in request.POST:
-            order.is_paid = False
+        elif 'cancel_confirmation' in request.POST:
             order.order_status = "POK"
             action = 'cancelled'
+        
         order.save()
-
-        return render(
-            request,
-            'account/plates_in_stock_success.html',
-            {'order': order, 'action': action}
-        )
+        
+        if action:
+            return render(
+                request,
+                'account/plates_in_stock_success.html',
+                {'order': order, 'action': action}
+            )
+    else:
+        form = OrderEditingForm(instance=order) if not order.mask_name else None
         
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
@@ -904,8 +914,11 @@ def plates_in_stock(request, order_id):
         'account/plates_in_stock.html',
         {
             'order': order,
+            'form': form,
+            'order_dict': order_dict,
             'view_form': view_form,
             'order_items': order_items,
+            'mask_name_empty': mask_name_empty,
         }
     )
 

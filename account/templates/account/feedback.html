@@ -6,25 +6,43 @@
         <thead>
             <tr>
                 <th>Номер заказа</th>
-                {% comment %} <th class="new-messages-th">Новые сообщения</th> {% endcomment %}
                 <th>Последнее сообщение</th>
             </tr>
         </thead>
         <tbody>
-            {% for topic in private_topics %}
+            {% comment %} {% for topic in private_topics %}
                 <tr>
                     <td>
                         <a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a>
                     </td>
-                    {% comment %} <td class="new-messages-th">
-                        <p class="center
-                            {% if topic.unread_count > 0 %}unread{% endif %}">
-                            {{ topic.unread_count }}
-                        </p>
-                    </td> {% endcomment %}
                     <td>
                         {% if topic.last_message_time %}
                             {{ topic.last_message_time|date:"d-m-Y H:i" }}
+                        {% else %}
+                            Нет сообщений
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Нет доступных частных чатов</td>
+                </tr>
+            {% endfor %} {% endcomment %}
+
+            {% for topic in private_topics %}
+                <tr>
+                    <td>
+                        {% if topic.unread_count > 0 %}
+                            <span class="new_message" title="Непрочитанные сообщения">●</span>
+                        {% endif %}
+                        <a href="{% url 'topic_detail' topic.id %}">{{ topic.name }}</a>
+                    </td>
+                    <td>
+                        {% if topic.last_message_time %}
+                            {{ topic.last_message_time|date:"d-m-Y H:i" }}
+                            {% if topic.unread_count > 0 %}
+                                <span style="color: red; margin-left: 8px;">({{ topic.unread_count }} новое)</span>
+                            {% endif %}
                         {% else %}
                             Нет сообщений
                         {% endif %}

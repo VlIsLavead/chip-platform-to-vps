@@ -24,7 +24,11 @@
                                 <a href="{% url "dashboard" %}">Заказы</a>
                             </li>
                             <li {% if section == "feedback" %}class="selected"{% endif %}>
-                                <a href="{% url "feedback" %}">Обратная связь</a>
+                                <a href="{% url "feedback" %}">Обратная связь
+                                    {% if has_unread_messages %}
+                                        <span class="unread-icon">✉️</span>
+                                    {% endif %}
+                                </a>
                             </li>
                             <li {% if section == "all_documents" %}class="selected"{% endif %}>
                                 <a href="{% url "all_documents" %}">Личные документы</a>
@@ -40,7 +44,11 @@
                                 <a href="{% url "edit_platform" %}">Работа с техпроцессами</a>
                             </li> {% endcomment %}
                             <li {% if section == "feedback" %}class="selected"{% endif %}>
-                                <a href="{% url "feedback" %}">Обратная связь</a>
+                                <a href="{% url "feedback" %}">Обратная связь
+                                    {% if has_unread_messages %}
+                                        <span class="unread-icon">✉️</span>
+                                    {% endif %}
+                                </a>
                             </li>
                         {% else %}
                             <li {% if section == "dashboard" %}class="selected"{% endif %}>
@@ -50,7 +58,11 @@
                                 <a href="{% url "technical_materials" %}">КИП (ПДК)</a>
                             </li>
                             <li {% if section == "feedback" %}class="selected"{% endif %}>
-                                <a href="{% url "feedback" %}">Обратная связь</a>
+                                <a href="{% url "feedback" %}">Обратная связь
+                                    {% if has_unread_messages %}
+                                        <span class="unread-icon">✉️</span>
+                                    {% endif %}
+                                </a>
                             </li>
                             <li {% if section == "my_documents" %}class="selected"{% endif %}>
                                 <a href="{% url "my_documents" %}">Мои документы</a>

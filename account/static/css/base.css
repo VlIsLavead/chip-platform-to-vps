@@ -67,9 +67,9 @@ a:hover {
     color: var(--main-other-bg-copy);
 }
 
-h1, h2, h3, h4, h5 , h6 { 
-    font-family: 'Muli', sans-serif; 
-    font-weight:normal; 
+h1, h2, h3, h4, h5 , h6 {
+    font-family: 'Muli', sans-serif;
+    font-weight:normal;
     color: var(--main-text-color);
 }
 
@@ -124,8 +124,9 @@ table {
 }
 
 #header ul.menu li {
-    float:left;
-    padding: 23px 10px;
+    float: left;
+    padding: 23px 12px;
+    text-align: center;
 
 }
 
@@ -188,7 +189,7 @@ label {
 #id_first_name,
 #id_last_name,
 #id_email {
-    /* width: 100%; */
+/* width: 100%; */
     border: 1px solid red;
     position: relative;
 
@@ -263,6 +264,16 @@ input[type=search] {
     background-color: var(--main-color);
     border-radius: 5px;
     border: 1px solid;
+}
+
+.function-button {
+    display: inline-block;
+    background: var(--main-search-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    margin: 5px;
 }
 
 .block_search{
@@ -470,7 +481,7 @@ img.user-detail {
 }
 
 .footer_logo>span>a{
-    color: var(--main-block-color); 
+    color: var(--main-block-color);
     font-size: 18px;
 }
 
@@ -487,7 +498,7 @@ img.user-detail {
     border-collapse: collapse;
 }
 
-.order-table th, 
+.order-table th,
 .order-table td {
     padding: 10px;
     text-align: center;
@@ -630,7 +641,7 @@ img.user-detail {
 }
 
 select#technical_process {
-    appearance: none; /* Убирает стандартный стиль браузера */ 
+    appearance: none; /* Убирает стандартный стиль браузера */
     width: 200px;
     max-width: 200px;
     padding: 10px 10px;
@@ -666,8 +677,8 @@ select#technical_process {
 form #id_special_note {
     display: block;
     margin-bottom: 5px;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 
-    'Lucida Grande', 'Lucida Sans Unicode', 
+    font-family:'Lucida Sans', 'Lucida Sans Regular',
+    'Lucida Grande', 'Lucida Sans Unicode',
     Geneva, Verdana, sans-serif;
 }
 
@@ -767,6 +778,18 @@ form #id_special_note {
 .wide-table {
     width: 100%;
     max-width: 100%;
+}
+
+.new_message {
+    color: red;
+    margin-right: 8px;
+}
+
+.unread-icon {
+    margin-left: 3px;
+    color: #ff5722;
+    font-size: 15px;
+    line-height: 1;
 }
 
 .password_mail {

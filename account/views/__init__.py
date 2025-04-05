@@ -8,7 +8,7 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Q, Value
+from django.db.models import Q, Max
 from django.db.models.functions import Lower
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -1057,7 +1057,9 @@ def feedback(request):
     private_topics = Topic.objects.filter(
         is_private=True,
         usertopic__user=profile
-    )
+    ).annotate(
+        last_message_time=Max('messages__created_at')
+    ).order_by('-last_message_time')
     
     for topic in private_topics:    
         last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()

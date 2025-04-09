@@ -1196,3 +1196,12 @@ def check_the_order(request, order_id):
             'order_items': order_items,
         }
     )
+    
+def set_theme(request):
+    theme = request.POST.get('theme', 'light')
+    
+    if theme in ['light', 'dark']:
+        request.session['theme'] = theme
+        return JsonResponse({'status': 'success', 'theme': theme})
+    
+    return JsonResponse({'status': 'error'}, status=400)

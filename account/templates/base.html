@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    {% load static %}
+    <meta name="theme-color" content="{% if current_theme == 'dark' %}#121212{% else %}#ffffff{% endif %}">
     <title>{% block title %}{% endblock %}</title>
     <link href="{% static "css/base.css" %}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
@@ -29,9 +31,6 @@
                                         <span class="unread-icon">✉️</span>
                                     {% endif %}
                                 </a>
-                            </li>
-                            <li {% if section == "all_documents" %}class="selected"{% endif %}>
-                                <a href="{% url "all_documents" %}">Личные документы</a>
                             </li>
                             <li {% if section == "all_documents" %}class="selected"{% endif %}>
                                 <a href="{% url "all_documents" %}">Личные документы</a>
@@ -90,12 +89,14 @@
             {% endblock %}
         </div>
         <div id="footer">
-            <div class="footer_logo">
-                <span class="logo">
-                    <a href="{% url "dashboard" %}">
-                        @ 2025 ООО«ИнноЦентр ВАО»
-                    </a>
-                </span>
+            <div class="footer_elements">
+                <div class="footer_logo">
+                    <span class="logo">
+                        <a href="{% url "dashboard" %}">
+                            @ 2025 ООО«ИнноЦентр ВАО»
+                        </a>
+                    </span>
+                </div>
             </div>
             <ul class="footer_list">
                 <li class="footer_list-element">
@@ -109,7 +110,17 @@
                     </a>
                 </li>
             </ul>
+            <div class="button-themes">
+                <button id="themeToggle" class="theme-toggle">
+                    {% if current_theme == 'dark' %}🌙{% else %}☀️{% endif %}
+                </button>
+            </div>
         </div>
     </div>
+    <script>
+        const THEME_API_URL = "{% url 'set_theme' %}";
+        const CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+    <script src="{% static 'js/base.js' %}"></script>
 </body>
 </html>

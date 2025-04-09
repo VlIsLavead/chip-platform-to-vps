@@ -30,3 +30,17 @@ def unread_messages(request):
                 break
     
     return {'has_unread_messages': has_unread}
+
+def theme(request):
+    theme = request.session.get('theme', 'light')
+    
+    if 'theme' not in request.session:
+        if request.META.get('HTTP_USER_AGENT', '').lower() != 'djdt':
+            if request.headers.get('Sec-CH-Prefers-Color-Scheme') == 'dark':
+                theme = 'dark'
+                request.session['theme'] = 'dark'
+    
+    return {
+        'current_theme': theme,
+        'theme_stylesheet': f'css/{theme}_theme.css'
+    }

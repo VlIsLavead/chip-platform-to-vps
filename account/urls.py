@@ -13,6 +13,7 @@ urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('', views.dashboard, name='dashboard'),
     # TODO unify search urls, they shouldn't lead to different endpoints
+    path('set-theme/', views.set_theme, name='set_theme'),
     path('search/', views.generic_search_clients, name='generic_search_clients'),
     path('search_c/', views.generic_search_curator, name='generic_search_curator'),
     path('search_e/', views.generic_search_executor, name='generic_search_executor'),

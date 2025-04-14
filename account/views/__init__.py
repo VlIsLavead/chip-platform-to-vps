@@ -2,7 +2,6 @@ import datetime
 import os
 from io import BytesIO
 
-from django.core.mail import send_mail
 from urllib.parse import quote
 from django.conf import settings
 from django.forms.models import model_to_dict
@@ -116,6 +115,48 @@ def registration(request):
             ]
 
             send_email_with_attachments(sender_email, user_email, password, subject, body, file_paths)
+            
+            
+            curator_users = User.objects.filter(
+                profile__role__name="Куратор",  # Фильтруем по роли через профиль
+                profile__deleted_at__isnull=True,  # Только активные профили
+                is_active=True  # Только активные пользователи
+            ).distinct()
+
+            # Проверяем, есть ли кураторы
+            if not curator_users.exists():
+                print("Предупреждение: не найдено активных кураторов для уведомления")
+
+            for curator in curator_users:
+                if not curator.email:  # Пропускаем если email не указан
+                    print(f"Пропуск: у куратора {curator.username} не указан email")
+                    continue
+                    
+                curator_subject = "Новая заявка на регистрацию"
+                curator_body = f"""
+                    <html>
+                    <body>
+                        <h1>Новая заявка на регистрацию</h1>
+                        <p>Пользователь {form.cleaned_data['name']} ({user_email}) подал заявку на регистрацию.</p>
+                        <p>Компания: {form.cleaned_data['company']}</p>
+                        <p>Телефон: {form.cleaned_data['number']}</p>
+                    </body>
+                    </html>
+                """
+                try:
+                    send_email_with_attachments(
+                        sender_email,
+                        curator.email,
+                        password,
+                        curator_subject,
+                        curator_body,
+                        file_paths  # Можно изменить вложения для кураторов
+                    )
+                    print(f"Уведомление отправлено куратору: {curator.email}")
+                except Exception as e:
+                    print(f"Ошибка при отправке письма куратору {curator.email}: {e}")
+            
+            
             messages.success(request, 'Регистрация прошла успешно!')
             return render(request, 'account/registration_done.html')
         else:
@@ -180,7 +221,11 @@ def account_expired(request):
 
 
 def _dashboard_client(request, message=''):
+    profile = request.user.profile
     orders = Order.objects.filter(creator_id=request.user.id)
+    
+    platform = Platform.objects.get(platform_code=profile.company_name)
+    platform_name = platform.platform_name
 
     return render(
         request,
@@ -188,8 +233,9 @@ def _dashboard_client(request, message=''):
         {
             'section': 'dashboard',
             'data': {
+                'platform_name': platform_name,
                 'orders': orders,
-                'profile': {'company': 'рога и копыта'},
+                'profile': profile,
             }
         },
     )
@@ -447,7 +493,11 @@ def confirmation_receipt(request, order_id):
 
 
 def _dashboard_curator(request, message=''):
+    profile = request.user.profile
     orders = Order.objects.all()
+    
+    platform = Platform.objects.get(platform_code=profile.company_name)
+    platform_name = platform.platform_name
 
     return render(
         request,
@@ -455,8 +505,9 @@ def _dashboard_curator(request, message=''):
         {
             'section': 'dashboard',
             'data': {
+                'platform_name': platform_name,
                 'orders': orders,
-                'profile': {'company': 'рога и копыта'},
+                'profile': profile,
             },
         }
     )
@@ -647,6 +698,7 @@ def _dashboard_executor(request, message=''):
     code_company = Platform.objects.get(platform_code=profile.company_name)
     orders = Order.objects.filter(platform_code_id=code_company)
     name_platform = Platform.objects.filter(platform_code=code_company).values_list('platform_name', flat=True).first()
+    print(name_platform)
 
     return render(
         request,
@@ -657,7 +709,7 @@ def _dashboard_executor(request, message=''):
                 'orders': orders,
                 'name_platform': name_platform,
                 'code_company': code_company,
-                'profile': {'company': 'рога и копыта'},
+                'profile': profile,
             }
         })
 

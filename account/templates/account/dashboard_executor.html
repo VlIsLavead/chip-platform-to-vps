@@ -3,13 +3,12 @@
 {% block title %}Личный кабинет исполнителя{% endblock %}
 
 {% block content %}
-    <h1>Личный кабинет исполнителя</h1>
-    <h2>Компания: {{ data.company }}</h2>
+    <h1>Личный кабинет <span class="caps">технологической площадки</span></h1>
+    <h2>Компания: {{ data.name_platform }}</h2>
     <div class="header_content">
     </div>
     <br>
-    <h2>Заказы для компании: {{ data.name_platform }}</h2>
-    <h3 class="platform_name">Код платформы: {{ data.code_company }}</h3>
+    <h2>Перечень заказов:</h2>
     <div class="block_search">
         <form method="get" action="{% url 'generic_search_executor' %}">
             <input type="text" name="q" class="input_text" placeholder="Поиск по любым параметрам заказа" value="{{ request.GET.q }}">

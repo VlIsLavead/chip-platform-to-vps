@@ -4,8 +4,9 @@
 
 {% block content %}
 
-<h1>Личный кабинет заказчика</h1>
-<h2>Компания {{ data.profile.company }}</h2>
+<h1>Личный кабинет<span class="caps">заказчика</span></h1>
+<h2>Компания: {{ data.platform_name }}</h2>
+<h2>Код заказчика: {{data.profile.id}}</h2>
 
 <div class="header_content">
 </div>
@@ -96,8 +97,8 @@
                         <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                             Перейти в чат
                         </a>
-                        <a href="{% url 'download_excel_from_order_id' order.id %}" class="button chat-button">
-                            Скачать Excel файл
+                        <a href="{% url 'check_the_order' order.id %}" class="button chat-button">
+                            Просмотр заказа
                         </a>
                     </td>
                 </tr>

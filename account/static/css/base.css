@@ -147,8 +147,9 @@ table {
 }
 
 #header .logo {
-    font-family: 'Muli', sans-serif;
-    float:left;
+    font-family: var(--main-font-family);
+    font-weight: 700;
+    float: left;
     color: var(--main-block-color);
     font-size: 25px;
     margin-right: 12%;
@@ -233,7 +234,7 @@ label {
 .info_first_name {
     position: absolute;
     width: 200px;
-    top: 258px;
+    top: 285px;
     left: 335px;
     color: red;
 }
@@ -241,7 +242,7 @@ label {
 .info_last_name {
     position: absolute;
     width: 200px;
-    top: 315px;
+    top: 342px;
     left: 375px;
     color: red;
 }
@@ -249,8 +250,8 @@ label {
 .email {
     position: absolute;
     width: 200px;
-    top: 372px;
-    left: 500px;
+    top: 398px;
+    left: 515px;
     color: red;
 }
 
@@ -258,10 +259,14 @@ label {
 input, textarea {
     clear:both;
     margin:0 0 10px;
-    background:#efefef;
+    background:#FFFFFF;
     border:0;
     padding:6px 10px;
     font-size:14px;
+    box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 input[type=submit], a.button {
@@ -271,6 +276,15 @@ input[type=submit], a.button {
     padding:10px 20px;
     font-size:14px;
     text-transform:uppercase;
+    cursor: pointer;
+}
+
+a.button:hover {
+    background-color: var(--main-bg-hover);
+}
+
+.chat-button:hover {
+    background-color: var(--main-bg-hover);
 }
 
 .button {
@@ -304,7 +318,7 @@ input[type=search] {
 
 .function-button {
     display: inline-block;
-    background: var(--main-search-color);
+    background: var(--main-bg-button);
     color: #fff;
     text-decoration: none;
     border-radius: 5px;
@@ -313,7 +327,7 @@ input[type=search] {
 }
 
 .function-button:hover {
-    background: var(--main-search-color-hover);
+    background: var(--main-bg-button-hover);
 }
 
 .block_search{
@@ -326,10 +340,11 @@ input[type=search] {
     width: 100px;
     height: 35px;
     padding: 5px 15px;
-    background: var(--main-search-color);
+    background: var(--main-bg-button);
     border: none;
     border-radius: 5px;
     padding-bottom: 3px;
+    cursor: pointer;
 }
 
 .platform_name{
@@ -349,6 +364,10 @@ input.search-button {
     padding:10px 20px;
     font-size:14px;
     text-transform:uppercase;
+}
+
+.search-button:hover {
+    background-color: var(--main-bg-hover);
 }
 .errorlist {
     color:#cc0033;
@@ -557,7 +576,7 @@ img.user-detail {
 
 .chat-button {
     display: inline-block;
-    background-color: #007bff;
+    background-color: var(--main-bg-button);
     color: #fff;
     text-decoration: none;
     border-radius: 5px;
@@ -622,12 +641,11 @@ img.user-detail {
     padding: 10px 20px;
     font-size: 0.9rem;
     text-align: center;
-    background-color: #007bff;
+    background-color: var(--main-bg-button);
     color: #fff;
     text-decoration: none;
     border-radius: 5px;
-    transition: background-color 0.2s ease;
-    width: fit-content; /* Подстраивает ширину под контент */
+    width: fit-content;
 }
 
 /* Формы */
@@ -640,7 +658,6 @@ img.user-detail {
 
 /* Поле ввода сообщений */
 .message-input {
-    width: 1683px;
     height: 150px;
     padding: 10px;
     font-size: 14px;
@@ -661,15 +678,15 @@ img.user-detail {
 .submit-btn {
     padding: 10px 20px;
     font-size: 1rem;
-    background-color: #28a745;
     color: white;
+    background-color: var(--main-bg-button);
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
 .submit-btn:hover {
-    background-color: #218838;
+    background-color: var(--main-bg-hover);
 }
 
 /* Кнопка загрузки файлов */
@@ -888,3 +905,17 @@ form #id_special_note {
   [data-theme="dark"] .dark-icon {
     display: block;
   }
+
+.center-block {
+    display: block;
+    margin: 0 auto;
+}
+
+.caps{
+    margin-left: 0.5%;
+    text-transform: uppercase;
+}
+
+.fins{
+    color: var(--main-other-bg-copy);
+}

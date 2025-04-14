@@ -249,7 +249,6 @@ class Order(models.Model):
 
     class DCRFProbingEMap(models.TextChoices):
         DC = 'DC Probing', 'DC проверка',
-        RF = 'RF Probing', 'RF проверка',
         DR = 'DC + RF Probing', 'DC + RF проверка',
         NO = 'No', 'Без проверки'
 

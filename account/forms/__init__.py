@@ -49,6 +49,10 @@ class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['date_of_birth']
+        
+    date_of_birth = forms.CharField(
+        label='Дата рождения',
+    )
 
 
 class OrderEditForm(forms.ModelForm):
@@ -66,6 +70,7 @@ class OrderEditForm(forms.ModelForm):
             'invoice_file',
             'deleted_at',
             'GDS_file',
+            'formation_frame_by_customer',
         ]
         
     mask_name = forms.CharField(
@@ -113,7 +118,7 @@ class OrderEditForm(forms.ModelForm):
     field_order = [
         'customer_product_name', 'technical_process',
         'platform_code', 'order_type', 'product_count',
-        'formation_frame_by_customer', 'substrate_type', 'selected_thickness', 'selected_diameter',
+        'substrate_type', 'selected_thickness', 'selected_diameter',
         'experimental_structure', 'dc_rf_probing_e_map', 'dc_rf_probing_inking',
         'visual_inspection_inking', 'parametric_monitor_control', 'dicing_method', 'tape_uv_support',
         'wafer_deliver_format', 'container_for_crystals', 'multiplan_dicing_plan', 'multiplan_dicing_plan_file',
@@ -136,10 +141,12 @@ class OrderEditForm(forms.ModelForm):
                 field.help_text = None
                 
 
-        self.fields['selected_thickness'].queryset = Thickness.objects.none()
-        self.fields['selected_diameter'].queryset = Diameter.objects.none()
-        self.fields['technical_process'].queryset = TechnicalProcess.objects.all()
-        self.fields['platform_code'].queryset = Platform.objects.all()
+    def load_instance_data(self):
+        if self.instance.platform_code:
+            self.fields['selected_diameter'].queryset = Diameter.objects.filter(platform=self.instance.platform_code)
+        
+        if hasattr(self.instance, 'wafer_deliver_format'):
+            self._update_container_for_crystals_choices(self.instance.wafer_deliver_format)
 
         if 'platform_code' in self.data:
             try:

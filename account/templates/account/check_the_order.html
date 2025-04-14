@@ -30,4 +30,7 @@
     </table>
 </div>
 <a href="{% url "dashboard" %}" class="button chat-button">Вернуться в личный кабинет</a>
+<a href="{% url 'download_excel_from_order_id' order.id %}" class="button chat-button">
+    Скачать Excel файл
+</a>
 {% endblock content %}

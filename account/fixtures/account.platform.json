@@ -3,7 +3,7 @@
     "model": "account.platform",
     "pk": 1,
     "fields": {
-      "platform_name": "Курчатов",
+      "platform_name": "НИЦ 'Курчатовский институт'",
       "platform_code": "KI"
     }
   },
@@ -11,8 +11,8 @@
     "model": "account.platform",
     "pk": 2,
     "fields": {
-      "platform_name": "МИЭТ",
-      "platform_code": "MT"
+      "platform_name": "АО 'ЗНТЦ'",
+      "platform_code": "CZ"
     }
   }
 ]

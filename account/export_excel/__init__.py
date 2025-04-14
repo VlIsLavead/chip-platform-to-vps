@@ -61,9 +61,9 @@ def generate_excel_file(request, session_data=None, order_id=None):
         'Число проектов в кадре':
             session_data.get('product_count')
             if not order_id else order.product_count,
-        'Формирование кадра заказчиком':
-            session_data.get('formation_frame_by_customer')
-            if not order_id else order.formation_frame_by_customer,
+        # 'Формирование кадра заказчиком':
+        #     session_data.get('formation_frame_by_customer')
+        #     if not order_id else order.formation_frame_by_customer,
         'Тип толщины подложки':
             order.get_substrate_type_display(),
         'Толщина подложки':

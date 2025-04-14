@@ -1003,40 +1003,59 @@ def edit(request):
                    'profile_form': profile_form})
 
 
-def load_data(request):
-    substrate_type = request.GET.get('substrate_type')
 
-    if substrate_type not in [Substrate.STANDARD, Substrate.NON_STANDARD]:
-        return JsonResponse({'error': 'Invalid substrate type'}, status=400)
+def get_diameters_by_platform(platform_id):
+    #Хелпер для получения диаметров по платформе
+    try:
+        diameters = Diameter.objects.filter(platform_id=platform_id)
+        return JsonResponse({
+            'diameters': [{'id': d.id, 'value': d.value} for d in diameters]
+        })
+    except (ValueError, Platform.DoesNotExist):
+        return JsonResponse({'error': 'Invalid platform'}, status=400)
 
-    thicknesses = Thickness.objects.filter(type=substrate_type)
-    thickness_data = [{'id': t.id, 'value': t.value} for t in thicknesses]
+def get_all_thicknesses():
+    #Хелпер для получения всех толщин
+    thicknesses = Thickness.objects.all()
+    return JsonResponse({
+        'thicknesses': [{'id': t.id, 'value': t.value} for t in thicknesses]
+    })
 
-    diameters = Diameter.objects.filter(type=substrate_type)
-    diameter_data = [{'id': d.id, 'value': d.value} for d in diameters]
-
-    wafer_deliver_format = request.GET.get('wafer_deliver_format')
-
+def get_containers_by_format(wafer_deliver_format):
+    #Хелпер для получения контейнеров по формату доставки
     if wafer_deliver_format == 'Пластины неразделенные':
-        container_for_crystals_choices = [
+        choices = [
             {'id': Order.ContainerForCrystals.СontainerForCrystalls, 'value': 'Тара для пластин'}
         ]
     elif wafer_deliver_format == 'Пластина разделенная на полимерном носителе':
-        container_for_crystals_choices = [
+        choices = [
             {'id': Order.ContainerForCrystals.PlasticCells, 'value': 'Пластмассовые ячейки'}
         ]
     elif wafer_deliver_format == 'Кристаллы в таре':
-        container_for_crystals_choices = [
+        choices = [
             {'id': Order.ContainerForCrystals.GelPack, 'value': 'Gel-Pak'}
         ]
     else:
-        container_for_crystals_choices = []
+        choices = []
+    
+    return JsonResponse({'container_for_crystals': choices})
 
-    return JsonResponse({
-        'thicknesses': thickness_data,
-        'diameters': diameter_data,
-        'container_for_crystals': container_for_crystals_choices
-    })
+
+def load_data(request):
+    #Использование хелперов на выбор load_data
+    platform_id = request.GET.get('platform_id')
+    if platform_id:
+        return get_diameters_by_platform(platform_id)
+
+    substrate_type = request.GET.get('substrate_type')
+    if substrate_type:
+        return get_all_thicknesses()
+
+    wafer_deliver_format = request.GET.get('wafer_deliver_format')
+    if wafer_deliver_format:
+        return get_containers_by_format(wafer_deliver_format)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
 

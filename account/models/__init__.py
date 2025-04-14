@@ -152,71 +152,53 @@ class TechnicalProcess(models.Model):
 
 
 class Thickness(models.Model):
-    STANDARD = 'standard'
-    NON_STANDARD = 'non_standard'
-    TYPE_CHOICES = [
-        (STANDARD, 'Стандартная'),
-        (NON_STANDARD, 'Нестандартная'),
-    ]
-
-    type = models.CharField(
-        max_length=15,
-        choices=TYPE_CHOICES,
-        default=STANDARD
-    )
-    value = models.IntegerField()
+    value = models.TextField('Толщина (мкм)', unique=True)
 
     def __str__(self):
-        return f"{self.value} мкм"
+        return f"{self.value}"
     
     
 
 class Diameter(models.Model):
-    STANDARD = 'standard'
-    NON_STANDARD = 'non_standard'
-    TYPE_CHOICES = [
-        (STANDARD, 'Стандартный'),
-        (NON_STANDARD, 'Нестандартный'),
-    ]
-
-    type = models.CharField(
-        max_length=15,
-        choices=TYPE_CHOICES,
-        default=STANDARD
+    platform = models.ForeignKey(
+        Platform,
+        on_delete=models.CASCADE,
+        related_name='diameters',
+        verbose_name='Платформа'
     )
-    value = models.IntegerField()
+    value = models.IntegerField('Диаметр (мм)')
+
+    class Meta:
+        unique_together = ('platform', 'value')
 
     def __str__(self):
-        return f"{self.value} мм"
+        return f"{self.value} мм)"
     
     
 
 class Substrate(models.Model):
-    STANDARD = 'standard'
-    NON_STANDARD = 'non_standard'
-    THICKNESS_TYPE_CHOICES = [
-        (STANDARD, 'Стандартная толщина подложки'),
-        (NON_STANDARD, 'Нестандартная толщина подложки'),
+    MATERIAL_CHOICES = [
+        ('Si(Кремний)', 'Si(Кремний)'),
     ]
     
-    thickness_type = models.CharField(
-        'Тип подложки',
+    material = models.CharField(
+        'Тип материала подложки',
         max_length=15,
-        choices=THICKNESS_TYPE_CHOICES,
-        default=STANDARD
+        choices=MATERIAL_CHOICES,
+        default='Si'
     )
-
+    
     def __str__(self):
-        return self.thickness_type
+        return self.get_material_display()
 
 
 class Order(models.Model):
-    STANDARD = 'standard'
-    NON_STANDARD = 'non_standard'
-    THICKNESS_TYPE_CHOICES = [
-        (STANDARD, 'Стандартная толщина подложки'),
-        (NON_STANDARD, 'Нестандартная толщина подложки'),
-    ]
+    # STANDARD = 'standard'
+    # NON_STANDARD = 'non_standard'
+    # THICKNESS_TYPE_CHOICES = [
+    #     (STANDARD, 'Стандартная толщина подложки'),
+    #     (NON_STANDARD, 'Нестандартная толщина подложки'),
+    # ]
     
     class OrderStart(models.TextChoices):
         NEW = 'NEW', 'Новый заказ'
@@ -281,17 +263,17 @@ class Order(models.Model):
                                             verbose_name='Техпроцесс')
     platform_code = models.ForeignKey(Platform, on_delete=models.CASCADE, null=False, 
                                       verbose_name='Площадка', 
-                                      help_text="Предприятие, на котором будет запущено производство пластин")
+                                      help_text="Выбор доступных технологических площадок: KI - НИЦ 'Курчатовский институт', ZC - АО 'ЗНТЦ'")
     order_type = models.CharField('Тип запуска', choices=OrderType.choices, default=OrderType.ENG, blank=False,
-                                  null=False, max_length=200, help_text="Пояснение для типа запуска")
-    product_count = models.IntegerField('Число проектов в кадре', blank=False, null=True,
+                                  null=False, max_length=200, )
+    product_count = models.IntegerField('Число проектов в запуске', blank=False, null=True,
                                         validators=[MinValueValidator(1)], 
-                                        help_text="Количество уникальных структур в кадре")
+                                        help_text="Количество уникальных проектов на пластине")
     formation_frame_by_customer = models.BooleanField('Формирование кадра заказчиком', blank=False,
                                                       null=False, default=False, 
                                                       help_text="Заказчик самостоятельно определяем расположение структур в кадре")
-    substrate_type = models.CharField(max_length=15, choices=THICKNESS_TYPE_CHOICES, default=STANDARD,
-                                      verbose_name='Тип толщины подложки', help_text="Пояснение для типа подложки")
+    substrate_type = models.CharField(max_length=15, choices=Substrate.MATERIAL_CHOICES, default='Si', verbose_name='Тип толщины подложки',
+                                            help_text="Пояснение для типа подложки")
     selected_thickness = models.ForeignKey(Thickness, on_delete=models.CASCADE, verbose_name='Толщина')
     selected_diameter = models.ForeignKey(Diameter, on_delete=models.CASCADE, verbose_name='Диаметр')
     dc_rf_probing_e_map = models.CharField('Контроль электрических параметров на пластине',

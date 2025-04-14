@@ -1,34 +1,18 @@
 [
-    {
-        "model": "account.diameter",
-        "pk": 1,
-        "fields": {
-          "type": "standard",
-          "value": 200
-        }
-      },
-      {
-        "model": "account.diameter",
-        "pk": 2,
-        "fields": {
-          "type": "standard",
-          "value": 250
-        }
-      },
-      {
-        "model": "account.diameter",
-        "pk": 3,
-        "fields": {
-          "type": "non_standard",
-          "value": 150
-        }
-      },
-      {
-        "model": "account.diameter",
-        "pk": 4,
-        "fields": {
-          "type": "non_standard",
-          "value": 500
-        }
+  {
+      "model": "account.diameter",
+      "pk": 1,
+      "fields": {
+          "platform": 1, 
+          "value": 100
       }
-    ]
+  },
+  {
+      "model": "account.diameter",
+      "pk": 2,
+      "fields": {
+          "platform": 2,
+          "value": 150
+      }
+  }
+]

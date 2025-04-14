@@ -82,16 +82,17 @@ class OrderEditForm(forms.ModelForm):
     technical_process = forms.ModelChoiceField(
         queryset=TechnicalProcess.objects.none(),
         label='Техпроцесс',
-        help_text='Технология, по которой будет изготовлен проект',
+        help_text='Выбор доступных техпроцессов',
     )
 
     substrate_type = forms.ChoiceField(
-        choices=Order.THICKNESS_TYPE_CHOICES,
+        choices=Substrate.MATERIAL_CHOICES,
+        initial='Si',
         label='Тип подложки',
     )
 
     selected_thickness = forms.ModelChoiceField(
-        queryset=Thickness.objects.none(),
+        queryset=Thickness.objects.all(),
         label='Толщина подложки, мкм'
     )
 
@@ -134,12 +135,20 @@ class OrderEditForm(forms.ModelForm):
     }
 
     def __init__(self, *args, **kwargs):
-        super(OrderEditForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         
-        for field_name, field in self.fields.items():
+        for field in self.fields.values():
             if not field.help_text:
                 field.help_text = None
-                
+
+        self.fields['technical_process'].queryset = TechnicalProcess.objects.all()
+        self.fields['selected_thickness'].initial = 2
+        # 2 - значение диаметра 100, которое подставляется первым(подгружается из фикстуры)
+        
+        if self.data:
+            self.handle_ajax_requests()
+        elif self.instance.pk:
+            self.load_instance_data()
 
     def load_instance_data(self):
         if self.instance.platform_code:
@@ -148,58 +157,62 @@ class OrderEditForm(forms.ModelForm):
         if hasattr(self.instance, 'wafer_deliver_format'):
             self._update_container_for_crystals_choices(self.instance.wafer_deliver_format)
 
-        if 'platform_code' in self.data:
-            try:
+        self.update_container_choices()
+
+    def handle_ajax_requests(self):
+        #Обработка AJAX-запросов: обновляет поля technical_process и selected_diameter 
+        #на основе выбранной платформы.
+        
+        # Динамическое обновление данных поля Техпроцесса
+        try:
+            if 'platform_code' in self.data:
                 platform_id = int(self.data.get('platform_code'))
-                self.fields['technical_process'].queryset = TechnicalProcess.objects.filter(platform_id=platform_id)
-            except (ValueError, TypeError):
-                pass
+                self.fields['technical_process'].queryset = TechnicalProcess.objects.filter(
+                    platform_id=platform_id
+                )
+            # Динамическое обновление данных поля диаметра 
+            if 'platform_code' in self.data:
+                platform_id = int(self.data.get('platform_code'))
+                self.fields['selected_diameter'].queryset = Diameter.objects.filter(
+                    platform_id=platform_id
+                )
+                
+        except (ValueError, TypeError):
+            pass
 
-        if 'substrate_type' in self.data:
-            try:
-                substrate_type = self.data.get('substrate_type')
-                self.fields['selected_thickness'].queryset = Thickness.objects.filter(type=substrate_type)
+    def load_instance_data(self):
+        # Загрузка данных для существующего заказа, обновление queryset полей формы
+        if self.instance.platform_code:
+            self.fields['selected_diameter'].queryset = Diameter.objects.filter(
+                platform_code=self.instance.platform_code
+            )
+        
+        if hasattr(self.instance, 'wafer_deliver_format'):
+            self._update_container_for_crystals_choices(self.instance.wafer_deliver_format)
 
-                self.fields['selected_diameter'].queryset = Diameter.objects.filter(type=substrate_type)
-            except (ValueError, TypeError):
-                pass 
-            
-        elif self.instance.pk:
-            self.fields['selected_thickness'].queryset = Thickness.objects.filter(type=self.instance.substrate_type)
-            self.fields['selected_diameter'].queryset = Diameter.objects.filter(type=self.instance.substrate_type)
-            
+    def update_container_choices(self):
         if 'wafer_deliver_format' in self.data:
-            wafer_deliver_format = self.data.get('wafer_deliver_format')
-            self._update_container_for_crystals_choices(wafer_deliver_format)
-        elif self.instance.pk:
-            wafer_deliver_format = self.instance.wafer_deliver_format
-            self._update_container_for_crystals_choices(wafer_deliver_format)
-            
+            self._update_container_for_crystals_choices(self.data.get('wafer_deliver_format'))
 
     def clean(self):
         cleaned_data = super().clean()
-        wafer_deliver_format = cleaned_data.get('wafer_deliver_format')
-
-        if wafer_deliver_format:
-            self._update_container_for_crystals_choices(wafer_deliver_format)
-
+        if 'wafer_deliver_format' in cleaned_data:
+            self._update_container_for_crystals_choices(cleaned_data['wafer_deliver_format'])
         return cleaned_data
 
     def _update_container_for_crystals_choices(self, wafer_deliver_format):
-        if wafer_deliver_format == Order.WaferDeliverFormat.NotCut:
-            self.fields['container_for_crystals'].choices = [
+        choices = {
+            Order.WaferDeliverFormat.NotCut: [
                 (Order.ContainerForCrystals.СontainerForCrystalls, 'Тара для пластин'),
-            ]
-        elif wafer_deliver_format == Order.WaferDeliverFormat.Cut:
-            self.fields['container_for_crystals'].choices = [
+            ],
+            Order.WaferDeliverFormat.Cut: [
                 (Order.ContainerForCrystals.PlasticCells, 'Пластмассовые ячейки'),
-            ]
-        elif wafer_deliver_format == Order.WaferDeliverFormat.Container:
-            self.fields['container_for_crystals'].choices = [
+            ],
+            Order.WaferDeliverFormat.Container: [
                 (Order.ContainerForCrystals.GelPack, 'Gel-Pak'),
             ]
-        else:
-            self.fields['container_for_crystals'].choices = []
+        }
+        self.fields['container_for_crystals'].choices = choices.get(wafer_deliver_format, [])
             
             
             

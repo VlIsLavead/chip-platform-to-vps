@@ -3,8 +3,7 @@
 {% block title %}Редактировать профиль{% endblock %}
 
 {% block content %}
-    <h1>Создать новый заказ</h1>
-    <p>Заполните форму и прикрепите документы</p>
+    <h1>Форма запроса нового заказа</h1>
     <form method="post" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
         <p>Номер заказа: {{order_number}}</p>
         <p>Заказчик: {{profile}}</p>
@@ -35,13 +34,12 @@
         </p>
         {% endif %}
         {% csrf_token %}
-        <p><input type="submit" value="Сохранить"></p>
+        <p><input class="chat-button" type="submit" value="Сохранить"></p>
     </form>
 
     <div id="helpModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <h4>Подсказка</h4>
         <p id="helpText"></p>
-        <button id="closeHelpBtn">Закрыть</button>
+        <button class="chat-button center-block" id="closeHelpBtn">Закрыть</button>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -62,23 +60,10 @@
                     maskNameInput.val("");
                 }
             }
-
-            $("#id_order_type").change(function () {
-                toggleMaskNameField();
-            });
-
+    
+            $("#id_order_type").change(toggleMaskNameField);
             toggleMaskNameField();
-
-
-            window.showHelpText = function(text) {
-                document.getElementById('helpText').innerText = text;
-                document.getElementById('helpModal').style.display = 'block';
-            }
-
-            $('#closeHelpBtn').click(function () {
-                $('#helpModal').hide();
-            });
-
+    
             function toggleMultiplanFileField() {
                 const choiceField = $("#id_multiplan_dicing_plan");
                 const fileField = $("#id_multiplan_dicing_plan_file").closest("p");
@@ -88,101 +73,102 @@
                     fileField.hide();
                 }
             }
-        
+            $("#id_multiplan_dicing_plan").change(toggleMultiplanFileField);
             toggleMultiplanFileField();
-
-            $("#id_multiplan_dicing_plan").change(function () {
-                toggleMultiplanFileField();
+    
+            window.showHelpText = function(text) {
+                document.getElementById('helpText').innerText = text;
+                document.getElementById('helpModal').style.display = 'block';
+            }
+            $('#closeHelpBtn').click(function() { $('#helpModal').hide(); });
+    
+            function loadFormData() {
+                const platformId = $("#id_platform_code").val();
+                const substrateType = $("#id_substrate_type").val();
+                const waferFormat = $("#id_wafer_deliver_format").val();
+    
+                if (platformId) {
+                    $.ajax({
+                        url: $("#orderForm").attr("data-url"),
+                        data: { 'platform_id': platformId },
+                        success: function(data) {
+                            const $diameterField = $("#id_selected_diameter");
+                            $diameterField.empty().append('<option value="">---------</option>');
+                            if (data.diameters) {
+                                data.diameters.forEach(d => {
+                                    $diameterField.append(`<option value="${d.id}">${d.value} мм</option>`);
+                                });
+                            }
+                            
+                            if (localStorage.getItem('diameter')) {
+                                $diameterField.val(localStorage.getItem('diameter'));
+                            }
+                        }
+                    });
+                }
+    
+                if (substrateType) {
+                    $.ajax({
+                        url: $("#orderForm").attr("data-url"),
+                        data: { 'substrate_type': substrateType },
+                        success: function(data) {
+                            const $thicknessField = $("#id_selected_thickness");
+                            $thicknessField.empty().append('<option value="">---------</option>');
+                            if (data.thicknesses) {
+                                data.thicknesses.forEach(t => {
+                                    $thicknessField.append(`<option value="${t.id}">${t.value} мкм</option>`);
+                                });
+                            }
+                            
+                            if (localStorage.getItem('thickness')) {
+                                $thicknessField.val(localStorage.getItem('thickness'));
+                            }
+                        }
+                    });
+                }
+    
+                if (waferFormat) {
+                    $.ajax({
+                        url: $("#orderForm").attr("data-url"),
+                        data: { 'wafer_deliver_format': waferFormat },
+                        success: function(data) {
+                            const $containerField = $("#id_container_for_crystals");
+                            $containerField.empty().append('<option value="">---------</option>');
+                            if (data.container_for_crystals) {
+                                data.container_for_crystals.forEach(c => {
+                                    $containerField.append(`<option value="${c.id}">${c.value}</option>`);
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+    
+            $("#id_platform_code").change(function() {
+                loadFormData();
+                localStorage.setItem('platform_code', $(this).val());
             });
-
-            function loadSubstrates() {
-                const substrate_type = $("#id_substrate_type").val();
-                const url = $("#orderForm").attr("data-url");
-
-                $.ajax({
-                    url: url,
-                    data: {
-                        'substrate_type': substrate_type
-                    },
-                    success: function (data) {
-                        $("#id_selected_thickness").html('<option value="">---------</option>');
-                        $("#id_selected_diameter").html('<option value="">---------</option>');
-                        data.thicknesses.forEach(function (thickness) {
-                            $("#id_selected_thickness").append(
-                                '<option value="' + thickness.id + '">' + thickness.value + '</option>'
-                            );
-                        });
-
-                        data.diameters.forEach(function (diameter) {
-                            $("#id_selected_diameter").append(
-                                '<option value="' + diameter.id + '">' + diameter.value + '</option>'
-                            );
-                        });
-                    },
-                    error: function () {
-                        $("#id_selected_thickness").html('<option value="">---------</option>');
-                        $("#id_selected_diameter").html('<option value="">---------</option>');
-                    }
-                });
-            }
-
-            function loadContainerForCrystals() {
-                const wafer_deliver_format = $("#id_wafer_deliver_format").val();
-                const substrate_type = $("#id_substrate_type").val();
-                const url = $("#orderForm").attr("data-url");
-
-                $.ajax({
-                    url: url,
-                    data: {
-                        'wafer_deliver_format': wafer_deliver_format,
-                        'substrate_type': substrate_type
-                    },
-                    success: function (data) {
-                        $("#id_container_for_crystals").html('<option value="">---------</option>');
-                        data.container_for_crystals.forEach(function (container) {
-                            $("#id_container_for_crystals").append(
-                                '<option value="' + container.id + '">' + container.value + '</option>'
-                            );
-                        });
-                    },
-                    error: function () {
-                        $("#id_container_for_crystals").html('<option value="">---------</option>');
-                    }
-                });
-            }
-
-            $("#id_wafer_deliver_format").change(function () {
-                loadContainerForCrystals();
-            });
-
-            $("#id_substrate_type").change(function () {
-                loadSubstrates();
-            });
-            
-            if ($("#id_wafer_deliver_format").val()) {
-                loadContainerForCrystals();
-            }
-
-            if ($("#id_substrate_type").val()) {
-                loadSubstrates();
-            }
-
-            if (localStorage.getItem('substrate_type')) {
-                const substrate_type = localStorage.getItem('substrate_type');
-                $("#id_substrate_type").val(substrate_type).trigger("change");
-            }
-
-            $("#id_substrate_type").change(function () {
+    
+            $("#id_substrate_type").change(function() {
+                loadFormData();
                 localStorage.setItem('substrate_type', $(this).val());
             });
-
-            $("#id_selected_thickness").change(function () {
+    
+            $("#id_wafer_deliver_format").change(function() {
+                loadFormData();
+            });
+    
+            $("#id_selected_thickness").change(function() {
                 localStorage.setItem('thickness', $(this).val());
             });
-
-            $("#id_selected_diameter").change(function () {
+    
+            $("#id_selected_diameter").change(function() {
                 localStorage.setItem('diameter', $(this).val());
             });
+    
+            if (localStorage.getItem('substrate_type')) {
+                $("#id_substrate_type").val(localStorage.getItem('substrate_type'));
+            }
         });
     </script>
 {% endblock %}

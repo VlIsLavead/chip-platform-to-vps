@@ -1,34 +1,23 @@
 [
-    {
+  {
       "model": "account.thickness",
       "pk": 1,
       "fields": {
-        "type": "standard",
-        "value": 100
+          "value": "75 (опц)"
       }
-    },
-    {
+  },
+  {
       "model": "account.thickness",
       "pk": 2,
       "fields": {
-        "type": "standard",
-        "value": 150
+          "value": "100"
       }
-    },
-    {
+  },
+  {
       "model": "account.thickness",
       "pk": 3,
       "fields": {
-        "type": "non_standard",
-        "value": 300
+          "value": "150 (опц)"
       }
-    },
-    {
-      "model": "account.thickness",
-      "pk": 4,
-      "fields": {
-        "type": "non_standard",
-        "value": 500
-      }
-    }
+  }
 ]

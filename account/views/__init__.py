@@ -110,8 +110,8 @@ def registration(request):
             sender_email = settings.EMAIL_HOST_USER
             password = settings.EMAIL_HOST_PASSWORD
             file_paths = [
-                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/file_one.txt'),
-                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/file_two.txt')
+                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/Instruction_for_user.pdf'),
+                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/Confidentiality_agreement.pdf')
             ]
 
             send_email_with_attachments(sender_email, user_email, password, subject, body, file_paths)

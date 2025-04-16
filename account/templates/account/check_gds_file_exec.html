@@ -32,8 +32,8 @@
     <form method="post" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
         {% csrf_token %}
         <p>
-            <input type="submit" name="success_gds" value="Подтвердить GDS файл">
-            <input type="submit" name="cancel_gds" value="Отменить подтверждение">
+            <input class="chat-button" type="submit" name="success_gds" value="Подтвердить GDS файл">
+            <input class="chat-button" type="submit" name="cancel_gds" value="Отменить подтверждение">
         <p>
     </form>
 {% endblock %}

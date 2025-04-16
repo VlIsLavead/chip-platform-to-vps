@@ -6,7 +6,7 @@
         <form method="post" id="orderForm" data-url="{% url 'load_data' %}">
             {{ form.as_p }}
             {% csrf_token %}
-            <p><input type="submit" value="Сохранить изменения"></p>
+            <p><input class="chat-button" type="submit" value="Сохранить изменения"></p>
         </form>
         <p>Подробная информация о заказе:</p>
         <div class="order-table-wrapper">

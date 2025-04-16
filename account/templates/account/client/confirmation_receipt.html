@@ -9,8 +9,8 @@
     <form method="post" action="{% url 'confirmation_receipt' order.id %}">
         {% csrf_token %}
         <p>
-            <input type="submit" name="receipt_success" value="Подтвердить отправление">
-            <input type="submit" name="receipt_cancel" value="Отменить отправление">
+            <input class="chat-button" type="submit" name="receipt_success" value="Подтвердить отправление">
+            <input class="chat-button" type="submit" name="receipt_cancel" value="Отменить отправление">
         <p>
     </form>
     <p>Подробная информация о заказе:</p>

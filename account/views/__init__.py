@@ -1008,6 +1008,7 @@ def get_diameters_by_platform(platform_id):
     #Хелпер для получения диаметров по платформе
     try:
         diameters = Diameter.objects.filter(platform_id=platform_id)
+        print(f"Diameters: {[d.value for d in diameters]}")
         return JsonResponse({
             'diameters': [{'id': d.id, 'value': d.value} for d in diameters]
         })
@@ -1041,11 +1042,43 @@ def get_containers_by_format(wafer_deliver_format):
     return JsonResponse({'container_for_crystals': choices})
 
 
+def get_technical_processes_by_platform(request):
+    # Хелпер для получения доступных техпроцессов по выбранной платформе
+    platform_id = request.GET.get('platform_id')
+    if platform_id:
+        try:
+            platform = Platform.objects.get(id=platform_id)
+            technical_processes = platform.technicalprocess_set.all()
+            technical_processes_data = [
+                {"id": tp.id, "name_process": tp.name_process} for tp in technical_processes
+            ]
+            return JsonResponse({"technical_processes": technical_processes_data})
+        except Platform.DoesNotExist:
+            return JsonResponse({"error": "Platform not found"}, status=404)
+    return JsonResponse({"technical_processes": []})
+
+
 def load_data(request):
     #Использование хелперов на выбор load_data
     platform_id = request.GET.get('platform_id')
     if platform_id:
-        return get_diameters_by_platform(platform_id)
+        try:
+            diameters_qs = Diameter.objects.filter(platform_id=platform_id)
+            diameters = [{'id': d.id, 'value': d.value} for d in diameters_qs]
+        except (ValueError, Platform.DoesNotExist):
+            diameters = []
+        try:
+            platform = Platform.objects.get(id=platform_id)
+            tech_qs = platform.technicalprocess_set.all()
+            technical_processes = [{'id': tp.id, 'name_process': tp.name_process} for tp in tech_qs]
+        except Platform.DoesNotExist:
+            technical_processes = []
+        return JsonResponse({
+            'diameters': diameters,
+            'technical_processes': technical_processes
+        })
+        
+    #TODO В будущем разобраться с двойным вызовом
 
     substrate_type = request.GET.get('substrate_type')
     if substrate_type:

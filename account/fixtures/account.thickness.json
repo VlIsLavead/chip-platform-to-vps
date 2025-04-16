@@ -3,21 +3,21 @@
       "model": "account.thickness",
       "pk": 1,
       "fields": {
-          "value": "75 (опц)"
+          "value": "75 мкм(опц)"
       }
   },
   {
       "model": "account.thickness",
       "pk": 2,
       "fields": {
-          "value": "100"
+          "value": "100 мкм"
       }
   },
   {
       "model": "account.thickness",
       "pk": 3,
       "fields": {
-          "value": "150 (опц)"
+          "value": "150 мкм(опц)"
       }
   }
 ]

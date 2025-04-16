@@ -69,7 +69,7 @@ def generate_excel_file(request, session_data=None, order_id=None):
         'Толщина подложки':
             order.selected_thickness.value,
         'Диаметр подложки':
-            order.selected_diameter.value,
+            str(order.selected_diameter.value) + " мм",
         'Экспериментальная структура':
             session_data.get('experimental_structure')
             if not order_id else order.experimental_structure,

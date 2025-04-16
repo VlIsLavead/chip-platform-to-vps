@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Min
 from django.contrib.auth.models import User
 from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, \
 Thickness, Diameter, Message, Topic, File, RegistrationRequest
@@ -117,8 +118,8 @@ class OrderEditForm(forms.ModelForm):
     )
 
     field_order = [
-        'customer_product_name', 'technical_process',
-        'platform_code', 'order_type', 'product_count',
+        'customer_product_name', 'technical_process', 
+        'platform_code','order_type', 'product_count',
         'substrate_type', 'selected_thickness', 'selected_diameter',
         'experimental_structure', 'dc_rf_probing_e_map', 'dc_rf_probing_inking',
         'visual_inspection_inking', 'parametric_monitor_control', 'dicing_method', 'tape_uv_support',
@@ -141,7 +142,6 @@ class OrderEditForm(forms.ModelForm):
             if not field.help_text:
                 field.help_text = None
 
-        self.fields['technical_process'].queryset = TechnicalProcess.objects.all()
         self.fields['selected_thickness'].initial = 2
         # 2 - значение диаметра 100, которое подставляется первым(подгружается из фикстуры)
         
@@ -150,33 +150,26 @@ class OrderEditForm(forms.ModelForm):
         elif self.instance.pk:
             self.load_instance_data()
 
-    def load_instance_data(self):
-        if self.instance.platform_code:
-            self.fields['selected_diameter'].queryset = Diameter.objects.filter(platform=self.instance.platform_code)
-        
-        if hasattr(self.instance, 'wafer_deliver_format'):
-            self._update_container_for_crystals_choices(self.instance.wafer_deliver_format)
-
         self.update_container_choices()
 
     def handle_ajax_requests(self):
-        #Обработка AJAX-запросов: обновляет поля technical_process и selected_diameter 
-        #на основе выбранной платформы.
-        
-        # Динамическое обновление данных поля Техпроцесса
         try:
             if 'platform_code' in self.data:
                 platform_id = int(self.data.get('platform_code'))
-                self.fields['technical_process'].queryset = TechnicalProcess.objects.filter(
-                    platform_id=platform_id
+                
+                # Получение только уникальные техпроцессы для выбранной платформе
+                unique_ids = (
+                    TechnicalProcess.objects
+                    .filter(platform_id=platform_id)
+                    .values('name_process')
+                    .annotate(min_id=Min('id'))
+                    .values_list('min_id', flat=True)
                 )
-            # Динамическое обновление данных поля диаметра 
-            if 'platform_code' in self.data:
-                platform_id = int(self.data.get('platform_code'))
+                self.fields['technical_process'].queryset = TechnicalProcess.objects.filter(id__in=unique_ids)
+
                 self.fields['selected_diameter'].queryset = Diameter.objects.filter(
                     platform_id=platform_id
                 )
-                
         except (ValueError, TypeError):
             pass
 
@@ -184,9 +177,18 @@ class OrderEditForm(forms.ModelForm):
         # Загрузка данных для существующего заказа, обновление queryset полей формы
         if self.instance.platform_code:
             self.fields['selected_diameter'].queryset = Diameter.objects.filter(
-                platform_code=self.instance.platform_code
+                platform=self.instance.platform_code
             )
-        
+            # Загружаем уникальные техпроцессы для текущей платформы
+            unique_ids = (
+                TechnicalProcess.objects
+                .filter(platform_id=self.instance.platform_code.id)
+                .values('name_process')
+                .annotate(min_id=Min('id'))
+                .values_list('min_id', flat=True)
+            )
+            self.fields['technical_process'].queryset = TechnicalProcess.objects.filter(id__in=unique_ids)
+
         if hasattr(self.instance, 'wafer_deliver_format'):
             self._update_container_for_crystals_choices(self.instance.wafer_deliver_format)
 

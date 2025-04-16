@@ -152,7 +152,7 @@ class TechnicalProcess(models.Model):
 
 
 class Thickness(models.Model):
-    value = models.TextField('Толщина (мкм)', unique=True)
+    value = models.TextField('Толщина', unique=True)
 
     def __str__(self):
         return f"{self.value}"
@@ -172,7 +172,7 @@ class Diameter(models.Model):
         unique_together = ('platform', 'value')
 
     def __str__(self):
-        return f"{self.value} мм)"
+        return f"{self.value} мм"
     
     
 

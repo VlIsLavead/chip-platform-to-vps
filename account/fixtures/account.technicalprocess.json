@@ -7,5 +7,14 @@
       "PDK_file": "uploads/pdk/file.txt",
       "platform": 1
     }
+  },
+  {
+    "model": "account.technicalprocess",
+    "pk": 2,
+    "fields": {
+      "name_process": "GSi025",
+      "PDK_file": "uploads/pdk/file.txt",
+      "platform": 2
+    }
   }
 ]

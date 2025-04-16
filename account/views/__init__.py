@@ -224,8 +224,9 @@ def _dashboard_client(request, message=''):
     profile = request.user.profile
     orders = Order.objects.filter(creator_id=request.user.id)
     
-    platform = Platform.objects.get(platform_code=profile.company_name)
-    platform_name = platform.platform_name
+    platform = Profile.objects.get(id=request.user.id)
+    platform_name = platform.company_name
+    # platform_name = platform.platform_name
 
     return render(
         request,

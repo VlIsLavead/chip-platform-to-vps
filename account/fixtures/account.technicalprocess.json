@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name_process": "GSi025",
-      "PDK_file": "uploads/pdk/file.txt",
+      "PDK_file": "uploads/pdk/GSi025_KIP_rev_1.4.0.0.0.zip",
       "platform": 1
     }
   },
@@ -13,7 +13,7 @@
     "pk": 2,
     "fields": {
       "name_process": "GSi025",
-      "PDK_file": "uploads/pdk/file.txt",
+      "PDK_file": "uploads/pdk/GSi025_KIP_rev_1.4.0.0.0.zip",
       "platform": 2
     }
   }

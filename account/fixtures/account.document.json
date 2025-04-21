@@ -4,8 +4,8 @@
       "pk": 1,
       "fields": {
         "document_type": "NDA",
-        "file_path": "uploads/NDA/sample1.pdf",
-        "owner": 5,
+        "file_path": "uploads/NDA/Соглашение_о_конфиденциальности_Платформа.pdf",
+        "owner": 1,
         "created_at": "2024-02-20T12:00:00Z",
         "deleted_at": null,
         "expiration_date": "2025-02-20T12:00:00Z"
@@ -16,8 +16,8 @@
       "pk": 2,
       "fields": {
         "document_type": "consumer_request",
-        "file_path": "uploads/consumer_request/sample2.pdf",
-        "owner": 5,
+        "file_path": "uploads/consumer_request/Форма_запроса_на_доступ_к_ЛК_+_анкета_заказчика.docx",
+        "owner": 1,
         "created_at": "2024-02-20T13:00:00Z",
         "deleted_at": null,
         "expiration_date": "2025-02-20T13:00:00Z"
@@ -28,8 +28,114 @@
       "pk": 3,
       "fields": {
         "document_type": "consumer_form",
-        "file_path": null,
-        "owner": 5,
+        "file_path": "uploads/NDA/Соглашение_о_конфиденциальности_Платформа.pdf",
+        "owner": 1,
+        "created_at": "2024-02-20T12:00:00Z",
+        "deleted_at": null,
+        "expiration_date": "2025-02-20T12:00:00Z"
+      }
+    },
+    {
+      "model": "account.document",
+      "pk": 4,
+      "fields": {
+        "document_type": "NDA",
+        "file_path": "uploads/NDA/Соглашение_о_конфиденциальности_Платформа.pdf",
+        "owner": 2,
+        "created_at": "2024-02-20T12:00:00Z",
+        "deleted_at": null,
+        "expiration_date": "2025-02-20T12:00:00Z"
+      }
+    },
+    {
+      "model": "account.document",
+      "pk": 5,
+      "fields": {
+        "document_type": "consumer_request",
+        "file_path": "uploads/consumer_request/Форма_запроса_на_доступ_к_ЛК_+_анкета_заказчика.docx",
+        "owner": 2,
+        "created_at": "2024-02-20T13:00:00Z",
+        "deleted_at": null,
+        "expiration_date": "2025-02-20T13:00:00Z"
+      }
+    },
+    {
+      "model": "account.document",
+      "pk": 6,
+      "fields": {
+        "document_type": "consumer_form",
+        "file_path": "uploads/NDA/Соглашение_о_конфиденциальности_Платформа.pdf",
+        "owner": 2,
+        "created_at": "2024-02-20T12:00:00Z",
+        "deleted_at": null,
+        "expiration_date": "2025-02-20T12:00:00Z"
+      }
+    },{
+      "model": "account.document",
+      "pk": 7,
+      "fields": {
+        "document_type": "NDA",
+        "file_path": "uploads/NDA/Соглашение_о_конфиденциальности_Платформа.pdf",
+        "owner": 3,
+        "created_at": "2024-02-20T12:00:00Z",
+        "deleted_at": null,
+        "expiration_date": "2025-02-20T12:00:00Z"
+      }
+    },
+    {
+      "model": "account.document",
+      "pk": 8,
+      "fields": {
+        "document_type": "consumer_request",
+        "file_path": "uploads/consumer_request/Форма_запроса_на_доступ_к_ЛК_+_анкета_заказчика.docx",
+        "owner": 3,
+        "created_at": "2024-02-20T13:00:00Z",
+        "deleted_at": null,
+        "expiration_date": "2025-02-20T13:00:00Z"
+      }
+    },
+    {
+      "model": "account.document",
+      "pk": 9,
+      "fields": {
+        "document_type": "consumer_form",
+        "file_path": "uploads/NDA/Соглашение_о_конфиденциальности_Платформа.pdf",
+        "owner": 3,
+        "created_at": "2024-02-20T12:00:00Z",
+        "deleted_at": null,
+        "expiration_date": "2025-02-20T12:00:00Z"
+      }
+    },{
+      "model": "account.document",
+      "pk": 10,
+      "fields": {
+        "document_type": "NDA",
+        "file_path": "uploads/NDA/Соглашение_о_конфиденциальности_Платформа.pdf",
+        "owner": 4,
+        "created_at": "2024-02-20T12:00:00Z",
+        "deleted_at": null,
+        "expiration_date": "2025-02-20T12:00:00Z"
+      }
+    },
+    {
+      "model": "account.document",
+      "pk": 11,
+      "fields": {
+        "document_type": "consumer_request",
+        "file_path": "uploads/consumer_request/Форма_запроса_на_доступ_к_ЛК_+_анкета_заказчика.docx",
+        "owner": 4,
+        "created_at": "2024-02-20T13:00:00Z",
+        "deleted_at": null,
+        "expiration_date": "2025-02-20T13:00:00Z"
+      }
+    },
+    {
+      "model": "account.document",
+      "pk": 12,
+      "fields": {
+        "document_type": "consumer_form",
+        "file_path": "uploads/NDA/Соглашение_о_конфиденциальности_Платформа.pdf",
+        "owner": 4,
         "created_at": "2024-02-20T12:00:00Z",
         "deleted_at": null,
         "expiration_date": "2025-02-20T12:00:00Z"

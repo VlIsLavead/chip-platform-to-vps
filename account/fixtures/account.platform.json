@@ -12,7 +12,15 @@
     "pk": 2,
     "fields": {
       "platform_name": "АО 'ЗНТЦ'",
-      "platform_code": "CZ"
+      "platform_code": "ZC"
+    }
+  },
+    {
+    "model": "account.platform",
+    "pk": 3,
+    "fields": {
+      "platform_name": "НИУ МИЭТ",
+      "platform_code": "MT"
     }
   }
 ]

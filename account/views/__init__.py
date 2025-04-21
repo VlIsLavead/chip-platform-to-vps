@@ -505,8 +505,8 @@ def _dashboard_curator(request, message=''):
     profile = request.user.profile
     orders = Order.objects.all()
     
-    platform = Platform.objects.get(platform_code=profile.company_name)
-    platform_name = platform.platform_name
+    platform = Profile.objects.get(id=request.user.id)
+    platform_name = platform.company_name
 
     return render(
         request,

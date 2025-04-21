@@ -14,5 +14,13 @@
           "platform": 2,
           "value": 150
       }
-  }
+  },
+  {
+    "model": "account.diameter",
+    "pk": 3,
+    "fields": {
+        "platform": 3,
+        "value": 100
+    }
+}
 ]

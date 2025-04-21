@@ -110,7 +110,7 @@ def registration(request):
             sender_email = settings.EMAIL_HOST_USER
             password = settings.EMAIL_HOST_PASSWORD
             file_paths = [
-                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/Instruction_for_user.pdf'),
+                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/access_request_form.docx'),
                 os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/Confidentiality_agreement.pdf')
             ]
 
@@ -245,13 +245,21 @@ def _dashboard_client(request, message=''):
 @login_required
 def new_order(request):
     profile = request.user.profile.company_name
-    last_order = Order.objects.latest("created_at")
-    date_last_order, number_last_order = last_order.order_number[1:9], int(last_order.order_number[9:])
-    if date_last_order == datetime.datetime.today().strftime("%Y%m%d"):
-        new_number = str(number_last_order + 1).zfill(5)
+    
+    
+    today = datetime.datetime.today().strftime("%Y%m%d")
+    today_orders_count = Order.objects.filter(
+        order_number__startswith=f"F{today}"
+    ).count()
+
+    if today_orders_count > 0:
+        new_number = str(today_orders_count + 1).zfill(5)  # +1 и дополняем нулями
     else:
-        new_number = '00001'
-    order_number = str('F' + datetime.datetime.today().strftime("%Y%m%d") + new_number)
+        new_number = "00001"  # первый заказ за день
+
+    order_number = f"F{today}{new_number}"
+    
+    
     technical_processes = TechnicalProcess.objects.all()
 
     if request.method == 'POST':

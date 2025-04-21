@@ -324,7 +324,7 @@ class Order(models.Model):
                                                     null=False, help_text="Запуск шаблонов вне общей очереди ")
     delivery_premium_plate = models.BooleanField("Ускоренный запуск производства пластин", blank=False, null=False,
                                                  help_text="Запуск производстся пластин вне общей очереди")
-    special_note = models.TextField('Заметка', blank=False, null=True, max_length=2000, help_text=None, )
+    special_note = models.TextField('Заметка', blank=True, null=True, max_length=2000, help_text=None, )
     order_date = models.DateTimeField('Дата оплаты', blank=False, null=True)
     deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=True)
     is_paid = models.BooleanField('Заказ оплачен?', blank=True, null=True, default=False)

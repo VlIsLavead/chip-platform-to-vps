@@ -118,8 +118,8 @@ class OrderEditForm(forms.ModelForm):
     )
 
     field_order = [
-        'customer_product_name', 'technical_process', 
-        'platform_code','order_type', 'product_count',
+        'customer_product_name', 'platform_code', 
+        'technical_process', 'order_type', 'product_count',
         'substrate_type', 'selected_thickness', 'selected_diameter',
         'experimental_structure', 'dc_rf_probing_e_map', 'dc_rf_probing_inking',
         'visual_inspection_inking', 'parametric_monitor_control', 'dicing_method', 'tape_uv_support',
@@ -266,13 +266,13 @@ class ViewOrderForm(forms.ModelForm):
             'Ускоренный запуск производства фотошаблонов': "Да" if order.delivery_premium_template else "Нет",
             'Ускоренный запуск производства пластин': "Да" if order.delivery_premium_plate else "Нет",
             'Заметка': order.special_note if order.special_note else "Нет заметки",
-            'Дата оплаты': order.order_date.strftime('%Y-%m-%d %H:%M:%S') if order.order_date else "Не указана",
-            'Срок выполнения по договору': order.deadline_date.strftime('%Y-%m-%d %H:%M:%S') if order.deadline_date else "Не указана",
-            'Заказ оплачен?': "Да" if order.is_paid else "Нет",
-            'Статус заказа': order.get_order_status_display(),
-            'Файл договора': order.contract_file.url if order.contract_file else "Нет файла",
-            'Файл счета': order.invoice_file.url if order.invoice_file else "Нет файла",
-            'Файл GDS': order.GDS_file.url if order.GDS_file else "Нет файла",
+            # 'Дата оплаты': order.order_date.strftime('%Y-%m-%d %H:%M:%S') if order.order_date else "Не указана",
+            # 'Срок выполнения по договору': order.deadline_date.strftime('%Y-%m-%d %H:%M:%S') if order.deadline_date else "Не указана",
+            # 'Заказ оплачен?': "Да" if order.is_paid else "Нет",
+            # 'Статус заказа': order.get_order_status_display(),
+            # 'Файл договора': order.contract_file.url if order.contract_file else "Нет файла",
+            # 'Файл счета': order.invoice_file.url if order.invoice_file else "Нет файла",
+            # 'Файл GDS': order.GDS_file.url if order.GDS_file else "Нет файла",
         }
         
         order_items = [(field, value) for field, value in order_data.items()]

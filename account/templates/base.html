@@ -64,7 +64,7 @@
                                 </a>
                             </li>
                             <li {% if section == "my_documents" %}class="selected"{% endif %}>
-                                <a href="{% url "my_documents" %}">Мои документы</a>
+                                <a href="{% url "my_documents" request.user.id %}">Мои документы</a>
                             </li>
                             <li {% if section == "help_files" %}class="selected"{% endif %}>
                                 <a href="{% url "help_files" %}">Полезные материалы</a>

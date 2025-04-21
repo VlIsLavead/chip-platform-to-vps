@@ -312,14 +312,14 @@ def technical_materials(request):
         'section': 'technical_materials',
     })
     
+def my_documents(request, id):
+    nda_documents = Document.objects.filter(document_type='NDA', owner=id)
+    consumer_request_documents = Document.objects.filter(document_type='consumer_request', owner=id)
+    consumer_form_documents = Document.objects.filter(document_type='consumer_form', owner=id)
     
-def my_documents(request):
-    nda_documents = Document.objects.filter(document_type='NDA')
-    consumer_request_documents = Document.objects.filter(document_type='consumer_request')
-    consumer_form_documents = Document.objects.filter(document_type='consumer_form')
-    
-    contract_documents = Order.objects.filter(contract_file__isnull=False)  # Фильтруем заказы с наличием файла contract_file
-    invoice_documents = Order.objects.filter(invoice_file__isnull=False)
+    profile_id = Profile.objects.get(user_id = id)
+    contract_documents = Order.objects.filter(contract_file__isnull=False, creator = profile_id)  # Фильтруем заказы с наличием файла contract_file
+    invoice_documents = Order.objects.filter(invoice_file__isnull=False, creator = profile_id)
 
     context = {
         'nda_documents': nda_documents,

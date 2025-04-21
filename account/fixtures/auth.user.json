@@ -6,7 +6,7 @@
       "password": "pbkdf2_sha256$1000000$jEgJO6hHyMudl1XQldpc3a$UekPThf7hG4OPPDtuqZ2ETuDspunUudBT8Tr4rS68P0=",
       "last_login": null,
       "is_superuser": false,
-      "username": "Gladkich M.V.",
+      "username": "Gladkich_MV",
       "first_name": "Михаил",
       "last_name": "Гладких",
       "email": "gmv@icvao.ru",
@@ -21,7 +21,7 @@
     "model": "auth.user",
     "pk": 2,
     "fields": {
-      "password": "pbkdf2_sha256$1000000$QvPQGoX4hCFZbZN5aJYkOi$sBNZQx60XiSdeDwFIi4kGCvH9mgiO6CKO6f8+barMMA=",
+      "password": "pbkdf2_sha256$1000000$8HjzQgGJxzMEyDm9OYcwvw$MPEmYxy8W01y7+AUfO/N+YXLx+uPzAUCl6njGp8ftjg=",
       "last_login": null,
       "is_superuser": false,
       "username": "Курчатовский",

@@ -47,7 +47,7 @@ def generate_excel_file(request, session_data=None, order_id=None):
             session_data.get('client_code')
             if not order_id else order.creator.id,
         'Номер шаблона':
-            'Определяется куратором',
+            order.mask_name,
         # TODO если номер шаблона есть, возвращать его, если 0, не возвращать
         'Техпроцесс':
             session_data.get('process_name')
@@ -107,7 +107,7 @@ def generate_excel_file(request, session_data=None, order_id=None):
         'Примечания':
             order.special_note,
         'Форму заполнил':
-            '@mail',
+            request.user.email,
     }
 
     row = 3
@@ -115,6 +115,8 @@ def generate_excel_file(request, session_data=None, order_id=None):
         if isinstance(value, bool):
             value = 'да'
         elif value is None:
+            value = 'нет'
+        elif isinstance(value, str) and not value.strip():
             value = 'нет'
 
         header_cell = ws.cell(row=row, column=1, value=header)

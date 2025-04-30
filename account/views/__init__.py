@@ -140,6 +140,7 @@ def registration(request):
                         <p>Пользователь {form.cleaned_data['name']} ({user_email}) подал заявку на регистрацию.</p>
                         <p>Компания: {form.cleaned_data['company']}</p>
                         <p>Телефон: {form.cleaned_data['number']}</p>
+                        <p>Почта: {form.cleaned_data['mail']}</p>
                     </body>
                     </html>
                 """
@@ -150,7 +151,7 @@ def registration(request):
                         password,
                         curator_subject,
                         curator_body,
-                        file_paths  # Можно изменить вложения для кураторов
+                        file_paths=[]
                     )
                     print(f"Уведомление отправлено куратору: {curator.email}")
                 except Exception as e:

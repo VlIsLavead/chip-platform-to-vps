@@ -235,12 +235,12 @@ def registration(request):
 
 def download_privacy_file(request):
     """Скачивание файла конфиденциальности"""
-    file_path = os.path.join(settings.MEDIA_ROOT, 'uploads/privacy_file/privacy_file.txt')
+    file_path = os.path.join(settings.MEDIA_ROOT, 'uploads/privacy_file/Политика_в_отношении_обработки_персональных_данных.pdf')
 
     if not os.path.exists(file_path):
         raise Http404("Файл не найден")
 
-    return FileResponse(open(file_path, 'rb'), as_attachment=True, filename="privacy_file.txt")
+    return FileResponse(open(file_path, 'rb'), as_attachment=True, filename="Политика_в_отношении_обработки_персональных_данных.pdf")
 
 
 

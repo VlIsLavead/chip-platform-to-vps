@@ -7,7 +7,7 @@
         {% csrf_token %}
         {{ form.as_p }}
         <p>
-            📄 <button type="button" id="downloadBtn">Соглашение о конфиденциальности</button>
+            📄 <button type="button" id="downloadBtn">Политика в отношении обработки персональных данных</button>
         </p>
 
         <p><input class="chat-button" type="submit" value="Отправить запрос"></p>
@@ -19,7 +19,7 @@
             .then(blob => {
                 let link = document.createElement("a");
                 link.href = URL.createObjectURL(blob);
-                link.download = "privacy_file.txt";
+                link.download = "Политика_в_отношении_обработки_персональных_данных.pdf";
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);

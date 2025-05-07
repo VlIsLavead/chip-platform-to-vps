@@ -49,11 +49,8 @@ class UserEditForm(forms.ModelForm):
 class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['date_of_birth']
-        
-    date_of_birth = forms.CharField(
-        label='Дата рождения',
-    )
+        fields = ['company_name', 'patronymic']
+
 
 
 class OrderEditForm(forms.ModelForm):

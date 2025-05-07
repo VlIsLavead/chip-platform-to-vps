@@ -10,9 +10,36 @@
     <br>
     <h2>Перечень заказов:</h2>
     <div class="block_search">
-        <form method="get" action="{% url 'generic_search_executor' %}">
+        <form method="get" action="{% url 'executor_orders' %}">
             <input type="text" name="q" class="input_text" placeholder="Поиск по любым параметрам заказа" value="{{ request.GET.q }}">
             <button class="search-button" type="submit">Поиск</button>
+        </form>
+    </div>
+    <div class="filter-block">
+        <form method="get" action="{% url 'executor_orders' %}" class="filter-form">
+            {% if request.GET.q %}
+                <input type="hidden" name="q" value="{{ request.GET.q }}">
+            {% endif %}
+            
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label class="filter-label">Сортировать по:</label>
+                    <select name="filter_by" class="filter-select">
+                        <option value="">Выберите фильтр...</option>
+                        <option value="order_number" {% if request.GET.filter_by == "order_number" %}selected{% endif %}>По номеру заказа</option>
+                        <option value="status" {% if request.GET.filter_by == "status" %}selected{% endif %}>По статусу заказа</option>
+                        <option value="created_at" {% if request.GET.filter_by == "created_at" %}selected{% endif %}>По дате создания</option>
+                    </select>
+                </div>        
+                <div class="filter-actions">
+                    <button type="submit" class="apply-button">Применить</button>
+                    {% if request.GET.filter_by or request.GET.q %}
+                        <a href="{% url 'executor_orders' %}" class="reset-button">
+                            Сбросить фильтры
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
         </form>
     </div>
     <div class="order-table-wrapper">

@@ -7,7 +7,7 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Q, Max
+from django.db.models import Q, Max, Case, When, IntegerField
 from django.db.models.functions import Lower
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -89,6 +89,69 @@ def generic_search_executor(request):
         'orders': filtered_orders,
     }
     return render(request, 'account/dashboard_executor.html', {'data': data})
+
+
+def filter_orders(base_queryset, request):
+    # TODO refactor: вытащить request из области видимости функции
+    query = request.GET.get('q', '')
+    filter_by = request.GET.get('filter_by', '')
+    # TODO вытащить константы в область видимости файла
+    ORDER_STATUS_PRIORITY = [
+        'NFW', 'OVK', 'OVC', 'OA', 'CSA', 'ESA', 'SA', 'CGDS', 'EGDS', 'OGDS',
+        'POK', 'POC', 'PO', 'MPO', 'SO', 'PS', 'CR', 'EO'
+    ]
+
+    if query:
+        base_queryset = base_queryset.filter(client__name__icontains=query)
+
+    if filter_by == 'order_number':
+        base_queryset = base_queryset.order_by('-order_number')
+    elif filter_by == 'created_at':
+        base_queryset = base_queryset.order_by('-created_at')
+    elif filter_by == 'status':
+        whens = [When(order_status=status, then=pos) for pos, status in enumerate(ORDER_STATUS_PRIORITY)]
+        base_queryset = base_queryset.annotate(
+            status_priority=Case(*whens, output_field=IntegerField())
+        ).order_by('status_priority')
+
+    return base_queryset
+
+
+def client_orders_view(request):
+    base_qs = Order.objects.filter(creator_id=request.user.id)
+    orders = filter_orders(base_qs, request)
+    return render(request, 'account/client/dashboard_client.html', {
+        'data': {
+            'orders': orders,
+        }
+    })
+
+
+def curator_orders_view(request):
+    base_qs = Order.objects.all()
+    orders = filter_orders(base_qs, request)
+    platform = Profile.objects.get(id=request.user.id)
+    platform_name = platform.company_name
+    return render(request, 'account/dashboard_curator.html', {
+        'data': {
+            'orders': orders,
+            'platform_name': platform_name,
+        }
+    })
+
+
+def executor_orders_view(request):
+    profile = request.user.profile
+    code_company = Platform.objects.get(platform_code=profile.company_name)
+    name_platform = Platform.objects.filter(platform_code=code_company).values_list('platform_name', flat=True).first()
+    base_qs = Order.objects.filter(platform_code_id=code_company)
+    orders = filter_orders(base_qs, request)
+    return render(request, 'account/dashboard_executor.html', {
+        'data': {
+            'orders': orders,
+            'name_platform': name_platform,
+        }
+    })
 
 
 def registration(request):

@@ -45,6 +45,12 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Очищаем сохраненные данные при загрузке страницы
+            localStorage.removeItem('platform_code');
+            localStorage.removeItem('substrate_type');
+            localStorage.removeItem('thickness');
+            localStorage.removeItem('diameter');
+        
             function toggleMaskNameField() {
                 const orderType = $("#id_order_type").val();
                 const maskNameField = $("#field-mask_name");
@@ -99,14 +105,10 @@
                                     $diameterField.append(`<option value="${d.id}">${d.value} мм</option>`);
                                 });
                             }
-                            
-                            if (localStorage.getItem('diameter')) {
-                                $diameterField.val(localStorage.getItem('diameter'));
-                            }
                         }
                     });
                 }
-    
+        
                 if (substrateType) {
                     $.ajax({
                         url: $("#orderForm").attr("data-url"),
@@ -119,14 +121,10 @@
                                     $thicknessField.append(`<option value="${t.id}">${t.value}</option>`);
                                 });
                             }
-                            
-                            if (localStorage.getItem('thickness')) {
-                                $thicknessField.val(localStorage.getItem('thickness'));
-                            }
                         }
                     });
                 }
-    
+        
                 if (waferFormat) {
                     $.ajax({
                         url: $("#orderForm").attr("data-url"),
@@ -170,33 +168,11 @@
                     $("#id_technical_process").empty().append('<option value="">Выберите платформу</option>');
                 }
             });
-
-            // Загружаем данные при изменении платформы
-            $("#id_platform_code").change(function() {
-                loadFormData();
-                localStorage.setItem('platform_code', $(this).val());
-            });
-    
-            $("#id_substrate_type").change(function() {
-                loadFormData();
-                localStorage.setItem('substrate_type', $(this).val());
-            });
-    
-            $("#id_wafer_deliver_format").change(function() {
-                loadFormData();
-            });
-    
-            $("#id_selected_thickness").change(function() {
-                localStorage.setItem('thickness', $(this).val());
-            });
-    
-            $("#id_selected_diameter").change(function() {
-                localStorage.setItem('diameter', $(this).val());
-            });
-    
-            if (localStorage.getItem('substrate_type')) {
-                $("#id_substrate_type").val(localStorage.getItem('substrate_type'));
-            }
+        
+            // Обработчики изменений полей без сохранения в localStorage
+            $("#id_platform_code").change(loadFormData);
+            $("#id_substrate_type").change(loadFormData);
+            $("#id_wafer_deliver_format").change(loadFormData);
         });
     </script>
 {% endblock %}

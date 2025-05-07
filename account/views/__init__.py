@@ -343,13 +343,15 @@ def new_order(request):
                 if not isinstance(value, (str, int, float, bool, type(None))):
                     order_data[key] = str(value)
 
-            request.session['form_data'] = order_data
+            # request.session['form_data'] = order_data
 
             return render(request, 'account/client/new_order_success.html')
         else:
             messages.error(request, 'Ошибка в заполнении данных для заказа')
     else:
-        order_form = OrderEditForm(initial=request.session.get('form_data', {}))
+        # Заполнение данных для заполнения с предыдущего заказа
+        # order_form = OrderEditForm(initial=request.session.get('form_data', {}))
+        order_form = OrderEditForm()
 
     return render(
         request,

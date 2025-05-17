@@ -140,7 +140,7 @@ class Platform(models.Model):
     platform_code = models.CharField('Код платформы', blank=False, null=False, max_length=5)
 
     def __str__(self):
-        return self.platform_code
+        return self.platform_name
 
 
 class TechnicalProcess(models.Model):

@@ -1007,7 +1007,12 @@ form #id_special_note {
     align-items: center;
 }
 
-/* Иконки */
 .fas {
     margin-right: 5px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

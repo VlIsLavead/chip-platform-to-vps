@@ -45,7 +45,11 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Очищаем сохраненные данные при загрузке страницы
+            document.getElementById('id_product_count').addEventListener('keydown', function(e) {
+                if (['-', 'e', '+', '.'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
             localStorage.removeItem('platform_code');
             localStorage.removeItem('substrate_type');
             localStorage.removeItem('thickness');

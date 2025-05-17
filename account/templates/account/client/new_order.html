@@ -92,6 +92,18 @@
             }
             $('#closeHelpBtn').click(function() { $('#helpModal').hide(); });
     
+            function toggleFields() {
+                const probingVal = $('#id_dc_rf_probing_e_map').val();
+                if (probingVal === 'No') {
+                    $('#id_dc_rf_probing_inking').prop('disabled', true).prop('checked', false);
+                    $('#id_visual_inspection_inking').prop('disabled', true).prop('checked', false);
+                } else {
+                    $('#id_dc_rf_probing_inking').prop('disabled', false);
+                    $('#id_visual_inspection_inking').prop('disabled', false);
+                }
+            }
+            toggleFields();
+
             function loadFormData() {
                 const platformId = $("#id_platform_code").val();
                 const substrateType = $("#id_substrate_type").val();
@@ -173,10 +185,13 @@
                 }
             });
         
-            // Обработчики изменений полей без сохранения в localStorage
             $("#id_platform_code").change(loadFormData);
             $("#id_substrate_type").change(loadFormData);
             $("#id_wafer_deliver_format").change(loadFormData);
+
+            $('#id_dc_rf_probing_e_map').change(function () {
+                toggleFields();
+            });
         });
     </script>
 {% endblock %}

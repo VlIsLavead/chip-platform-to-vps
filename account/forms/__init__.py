@@ -113,6 +113,13 @@ class OrderEditForm(forms.ModelForm):
         help_text='Выбор тары, в которой будут \
         поставляться структуры после разделения пластины'
     )
+    
+    parametric_monitor_control = forms.BooleanField(
+        label='Предоставление данных контроля \
+            параметрического монитора',
+        help_text='Пояснение для данных контроля \
+            параметрического монитора'
+    )
 
     field_order = [
         'customer_product_name', 'platform_code', 

@@ -286,8 +286,7 @@ class Order(models.Model):
     visual_inspection_inking = models.BooleanField('Визуальный контроль и маркировка брака', blank=False,
                                                    null=False, help_text="Визуальный контроль структур на пластине с последующей маркировкой бракованных")
     parametric_monitor_control = models.BooleanField('Предоставление данных контроля параметрического монитора',
-                                                     blank=False, null=False, default=False, 
-                                                     help_text="Пояснение для данных контроля параметрического монитора")
+                                                     blank=False, null=False, default=False, )
     experimental_structure = models.BooleanField('Экспериментальная структура', blank=False,
                                                  null=False, default=False, 
                                                 help_text="Запуск экспериментальных структур заказчика, \

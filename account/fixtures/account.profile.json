@@ -4,7 +4,6 @@
     "pk": 1,
     "fields": {
       "user": 1,
-      "date_of_birth": null,
       "photo": "",
       "role": 2,
       "company_name": "ICV",
@@ -19,7 +18,6 @@
     "pk": 2,
     "fields": {
       "user": 2,
-      "date_of_birth": null,
       "photo": "",
       "role": 3,
       "company_name": "KI",
@@ -34,7 +32,6 @@
     "pk": 3,
     "fields": {
       "user": 3,
-      "date_of_birth": null,
       "photo": "",
       "role": 3,
       "company_name": "ZC",
@@ -49,7 +46,6 @@
     "pk": 4,
     "fields": {
       "user": 4,
-      "date_of_birth": null,
       "photo": "",
       "role": 3,
       "company_name": "MT",

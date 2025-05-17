@@ -19,7 +19,6 @@ class Role(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     patronymic = models.CharField('Отчество', max_length=150, blank=True)
-    date_of_birth = models.DateField(blank=True, null=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True)
     company_name = models.CharField('Наименование компании заказчика', blank=False, null=False, max_length=200)

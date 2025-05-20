@@ -15,10 +15,10 @@
             </div>
         {% endfor %}
     </div>
-    <form method="post" enctype="multipart/form-data" class="message-form">
+    <form method="post" enctype="multipart/form-data" class="message-form" id="message-form">
         {% csrf_token %}
         
-        <textarea name="text" class="message-input" placeholder="Введите ваше сообщение..."></textarea>
+        <textarea name="text" class="message-input" id="message-input" placeholder="Введите ваше сообщение..."></textarea>
 
         <div class="file-upload-container">
             <input type="file" name="file" multiple class="file-input" />
@@ -30,8 +30,19 @@
     document.addEventListener("DOMContentLoaded", function() {
         var messagesContainer = document.getElementById("messages-container");
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Добавляем обработчик нажатия клавиш в текстовое поле
+        var messageInput = document.getElementById("message-input");
+        var messageForm = document.getElementById("message-form");
+        
+        messageInput.addEventListener("keydown", function(e) {
+            // Проверяем, что нажата клавиша Enter без Shift
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault(); // Предотвращаем перенос строки
+                messageForm.submit(); // Отправляем форму
+            }
+        });
     });
 </script>
 
 {% endblock %}
-

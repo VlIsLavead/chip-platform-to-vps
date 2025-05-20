@@ -5,8 +5,8 @@
     <form method="post" action="{% url 'view_is_paid_exec' order.id %}">
         {% csrf_token %}
         <p>
-            <input class="chat-button" type="submit" name="paid_confirmation" value="Подтвердить оплату">
-            <input class="chat-button" type="submit" name="paid_cansel" value="Отменить подтверждение">
+            <input class="chat-button" type="submit" name="paid_confirmation" value="Подтвердить изменения">
+            <input class="chat-button" type="submit" name="paid_cansel" value="Отправить на доработку">
         <p>
     </form>
     <p>Подробная информация о заказе:</p>

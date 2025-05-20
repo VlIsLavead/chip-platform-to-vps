@@ -7,8 +7,8 @@
         {% csrf_token %}
         <a href="{{ data.order.GDS_file.url }}" class="button" download>Скачать GDS файл</a> 
         <p>
-            <input type="submit" name="success_gds" value="Подтвердить GDS файл">
-            <input type="submit" name="cansel_gds" value="Отменить подтверждение">
+            <input type="submit" name="success_gds" value="Сохранить изменения">
+            <input type="submit" name="cansel_gds" value="Отправить на доработку">
         <p>
     </form>
 {% endblock %}

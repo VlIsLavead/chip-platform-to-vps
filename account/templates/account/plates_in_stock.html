@@ -9,16 +9,16 @@
             {% csrf_token %}
             {{ form.as_p }}
             <div>
-                <input class="chat-button" type="submit" name="success_confirmation" value="Подтвердить окончание производства">
-                <input class="chat-button" type="submit" name="cancel_confirmation" value="Отменить подтверждение">
+                <input class="chat-button" type="submit" name="success_confirmation" value="Подтвердить изменения">
+                <input class="chat-button" type="submit" name="cancel_confirmation" value="Отправить на доработку">
             </div>
         </form>
     {% else %}
         <form method="post" action="{% url 'plates_in_stock' order.id %}">
             {% csrf_token %}
             <div>
-                <input class="chat-button" type="submit" name="success_confirmation" value="Подтвердить окончание производства">
-                <input class="chat-button" type="submit" name="cancel_confirmation" value="Отменить подтверждение">
+                <input class="chat-button" type="submit" name="success_confirmation" value="Подтвердить изменения">
+                <input class="chat-button" type="submit" name="cancel_confirmation" value="Отправить на доработку">
             </div>
         </form>
         {% if order.mask_name %}

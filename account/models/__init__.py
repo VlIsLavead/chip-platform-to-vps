@@ -317,7 +317,7 @@ class Order(models.Model):
     multiplan_dicing_plan_file = models.FileField('Файл ', upload_to='uploads/dicing_plan/%Y/%m/%d/', blank=True,
                                                   null=True,
                                                   default='')
-    package_servce = models.BooleanField("Корпусирование силами производителя", blank=False, null=False, 
+    package_servce = models.BooleanField("Корпусирование силами фабрики", blank=False, null=False, 
                                         help_text="Заказ сборки и корпусирования микросхем силами производителя")
     delivery_premium_template = models.BooleanField("Ускоренный запуск производства фотошаблонов", blank=False,
                                                     null=False, help_text="Запуск шаблонов вне общей очереди ")

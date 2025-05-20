@@ -4,7 +4,8 @@
 
 {% block content %}
     <h1>Личный кабинет <span class="caps">технологической площадки</span></h1>
-    <h2>Компания: {{ data.name_platform }}</h2>
+    {# TODO: ошибка в модели, в code_company лежит значение name_company и наоборот #}
+    <h2>Компания: {{ data.code_company }}</h2>
     <div class="header_content">
     </div>
     <br>

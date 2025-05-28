@@ -277,7 +277,7 @@ class ViewOrderForm(forms.ModelForm):
             # 'Статус заказа': order.get_order_status_display(),
             # 'Файл договора': order.contract_file.url if order.contract_file else "Нет файла",
             # 'Файл счета': order.invoice_file.url if order.invoice_file else "Нет файла",
-            # 'Файл GDS': order.GDS_file.url if order.GDS_file else "Нет файла",
+            'Файл GDS': order.GDS_file.url if order.GDS_file else "Нет файла",
         }
         
         order_items = [(field, value) for field, value in order_data.items()]

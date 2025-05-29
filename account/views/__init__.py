@@ -24,6 +24,7 @@ from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, \
 Thickness, Diameter, Topic, UserTopic, Message, File, Document, TopicFileModel
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
+from ..utils.generate_messages import add_file_message
 
 
 def password_recovery(request):
@@ -476,12 +477,18 @@ def add_gds(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-
+    old_file = order.GDS_file.name
+    
     if request.method == 'POST':
         form = AddGDSFile(request.POST, request.FILES, instance=order)
         if form.is_valid():
             order.order_status = "CGDS"
             form.save()
+            
+            new_file = order.GDS_file.name
+            if old_file != new_file:
+                add_file_message(order, 'GDS_file', request.user.profile)
+                
             return render(request, 'account/client/add_gds_success.html', )
     else:
         form = AddGDSFile(instance=order)
@@ -628,6 +635,7 @@ def check_signing_curator(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
+    old_contract = order.contract_file.name or ''
     
     if request.method == 'POST':
         form = AddContractFileForm(request.POST,  request.FILES, instance=order)
@@ -640,6 +648,11 @@ def check_signing_curator(request, order_id):
             action = 'cancelled'
         if form.is_valid():
             form.save()
+            
+            new_file = order.contract_file.name or ''
+            if old_contract != new_file and new_file != '' and action == 'success':
+                add_file_message(order, 'contract_file', request.user.profile)
+                
             return render(request, 'account/check_signing_success.html', 
                           {'order': order, 'action': action})
     else:
@@ -664,7 +677,8 @@ def check_signing_curator(request, order_id):
 @login_required
 def view_is_paid(request, order_id):
     order = Order.objects.get(id=order_id)
-
+    old_invoice = order.invoice_file.name or ''
+    
     if request.method == 'POST':
         form = EditPaidForm(request.POST, request.FILES, instance=order)
         if form.is_valid():
@@ -678,6 +692,10 @@ def view_is_paid(request, order_id):
                 order.order_status = "PO"
                 action = 'cancelled'
             order.save()
+            new_file = order.invoice_file.name or ''
+            if old_invoice != new_file and new_file != '' and action == 'success':
+                add_file_message(order, 'invoice_file', request.user.profile)
+        
             return render(
                 request,
                 'account/view_is_paid_success.html',
@@ -865,7 +883,8 @@ def check_signing_exec(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-
+    old_contract = order.contract_file.name
+    
     if request.method == "POST":
         action = None
         if 'success' in request.POST:
@@ -874,7 +893,12 @@ def check_signing_exec(request, order_id):
         elif 'cancel' in request.POST:
             order.order_status = "CSA"
             action = 'cancelled'
-        order.save()      
+        order.save()
+        
+        new_file = order.contract_file.name
+        if old_contract != new_file and action == 'success':
+            add_file_message(order, 'contract_file', request.user.profile)
+                    
         return render(
             request,
             'account/check_signing_success.html',
@@ -901,7 +925,8 @@ def check_gds_file_curator(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-
+    old_file = order.GDS_file.name
+    
     if request.method == 'POST':
         action = None
         if 'success_gds' in request.POST:
@@ -911,6 +936,10 @@ def check_gds_file_curator(request, order_id):
             order.order_status = "OGDS"
             action = 'cancelled'
         order.save()
+        
+        new_file = order.GDS_file.name
+        if old_file != new_file and 'success_gds' in request.POST:
+            add_file_message(order, 'GDS_file', request.user.profile)
 
         return render(
             request,
@@ -936,7 +965,8 @@ def check_gds_file_exec(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-
+    old_file = order.GDS_file.name
+    
     if request.method == 'POST':
         action = None
         if 'success_gds' in request.POST:
@@ -946,6 +976,9 @@ def check_gds_file_exec(request, order_id):
             order.order_status = "CGDS"
             action = 'cancelled'
         order.save()
+        new_file = order.GDS_file.name
+        if old_file != new_file and 'success_gds' in request.POST:
+            add_file_message(order, 'GDS_file', request.user.profile)
 
         return render(
             request,
@@ -969,7 +1002,8 @@ def check_gds_file_exec(request, order_id):
 @login_required
 def view_is_paid_exec(request, order_id):
     order = Order.objects.get(id=order_id)
-
+    old_invoice = order.invoice_file.name
+    
     if request.method == 'POST':
         action = None
         if 'paid_confirmation' in request.POST:
@@ -981,6 +1015,10 @@ def view_is_paid_exec(request, order_id):
             order.order_status = "POK"
             action = 'cancelled'
         order.save()
+        
+        new_file = order.invoice_file.name
+        if old_invoice != new_file and action == 'success':
+            add_file_message(order, 'invoice_file', request.user.profile)
 
         return render(
             request,

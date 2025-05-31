@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -139,5 +140,9 @@ AUTHENTICATION_BACKENDS = [
     'account.authentication.EmailAuthBackend',
 ]
 
+CAPTCHA_LENGTH = 6
+CAPTCHA_FONT_SIZE = 30
+CAPTCHA_IMAGE_SIZE = (150, 50)
+CAPTCHA_TIMEOUT = 5
 
 

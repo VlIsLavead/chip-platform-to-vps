@@ -9,6 +9,7 @@ urlpatterns = [
     path('', lambda _: redirect('account/')),
     # path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
+    path('captcha/', include('captcha.urls')),
 ]
 
 if settings.DEBUG:

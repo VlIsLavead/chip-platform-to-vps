@@ -3,6 +3,7 @@ from django.db.models import Min
 from django.contrib.auth.models import User
 from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, \
 Thickness, Diameter, Message, Topic, File, RegistrationRequest
+from captcha.fields import CaptchaField
 
 
 class LoginForm(forms.Form):
@@ -16,10 +17,10 @@ class LoginForm(forms.Form):
 
 
 class RegistrationForm(forms.ModelForm):
+    captcha = CaptchaField(label='Введите код с картинки:')
     class Meta:
         model = RegistrationRequest
         fields = ['name', 'mail', 'number', 'company', 'processing_data']
-        
         exclude = [
             'privacy_file'
         ]

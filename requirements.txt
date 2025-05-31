@@ -2,3 +2,4 @@ Django
 Pillow
 openpyxl
 python-dotenv
+django-simple-captcha

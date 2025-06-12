@@ -820,8 +820,11 @@ def order_view(request, order_id):
             order.save()
             return redirect(reverse('order_view_success') + '?success_type=saved')
         elif 'cancel_changes' in request.POST:
-            pass
-        return redirect(reverse('order_view_success') + '?success_type=canceled')
+            order.order_status = "OVK"
+            order.save()
+            return redirect(reverse('order_view_success') + '?success_type=canceled')
+        else:
+            raise RuntimeError('unknown order status command')
 
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)

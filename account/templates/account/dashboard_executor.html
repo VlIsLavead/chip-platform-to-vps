@@ -86,17 +86,17 @@
                         </td>
                         <td>
                             {% if order.order_status == "OVC" %}
-                                <a href="{% url 'order_view' order.id %}" class="button chat-button">Проверить заполнение заказа</a>
+                                <a href="{% url 'order_view' order.id %}" class="button function-button">Проверить заполнение заказа</a>
                             {% elif order.order_status == "ESA" %}
-                                <a href="{% url 'check_signing_exec' order.id %}" class="button chat-button">Проверить подписание договора</a>
+                                <a href="{% url 'check_signing_exec' order.id %}" class="button function-button">Проверить подписание договора</a>
                             {% elif order.order_status == "EGDS" %}
-                                <a href="{% url 'check_gds_file_exec' order.id %}" class="button chat-button">Проверить файл GDS</a>
+                                <a href="{% url 'check_gds_file_exec' order.id %}" class="button function-button">Проверить файл GDS</a>
                             {% elif order.order_status == "POC" %}
-                                <a href="{% url 'view_is_paid_exec' order.id %}" class="button chat-button">Проверка оплаты заказа</a>
+                                <a href="{% url 'view_is_paid_exec' order.id %}" class="button function-button">Проверка оплаты заказа</a>
                             {% elif order.order_status == "MPO" %}
-                                <a href="{% url 'plates_in_stock' order.id %}" class="button chat-button">Передать заказ на производство</a>
+                                <a href="{% url 'plates_in_stock' order.id %}" class="button function-button">Передать заказ на производство</a>
                             {% elif order.order_status == "SO" %}
-                                <a href="{% url 'shipping_is_confirm' order.id %}" class="button chat-button">Начать отгрузку пластин</a>
+                                <a href="{% url 'shipping_is_confirm' order.id %}" class="button function-button">Начать отгрузку пластин</a>
                             {% endif %}
                             <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                                 Перейти в чат

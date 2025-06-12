@@ -90,13 +90,13 @@
                             {% if order.order_status == "OVK" %}
                                 <a href="{% url 'edit_order' order.id %}" class="button function-button">Проверить заполнение заказа</a>
                             {% elif order.order_status == "CSA"%}
-                                <a href="{% url 'check_signing_curator' order.id %}" class="button chat-button">Проверить подписание договора</a>
+                                <a href="{% url 'check_signing_curator' order.id %}" class="button function-button">Проверить подписание договора</a>
                             {% elif order.order_status == "CGDS"%}
-                                <a href="{% url 'check_gds_file_curator' order.id %}" class="button chat-button">Проверить файл GDS</a>
+                                <a href="{% url 'check_gds_file_curator' order.id %}" class="button function-button">Проверить файл GDS</a>
                             {% elif order.order_status == "POK" %}
-                                <a href="{% url 'view_is_paid' order.id %}" class="button chat-button">Проверка оплаты заказа</a>
+                                <a href="{% url 'view_is_paid' order.id %}" class="button function-button">Проверка оплаты заказа</a>
                             {% elif order.order_status == "PS" %}
-                                <a href="{% url 'plates_shipped' order.id %}" class="button chat-button">Подтвердить отправление пластин</a>
+                                <a href="{% url 'plates_shipped' order.id %}" class="button function-button">Подтвердить отправление пластин</a>
                             {% endif %}
                             <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                                 Перейти в чат

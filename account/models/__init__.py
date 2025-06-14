@@ -245,6 +245,7 @@ class Order(models.Model):
 
     class ContainerForCrystals(models.TextChoices):
         СontainerForCrystalls = 'Тара для пластин', 'Тара для пластин'
+        EmFrame = 'Пяльцы', 'Пяльцы'
         PlasticCells = 'Пластмассовые ячейки', 'Пластмассовые ячейки',
         GelPack = 'Gel-Pak', 'Gel-Pak',
 

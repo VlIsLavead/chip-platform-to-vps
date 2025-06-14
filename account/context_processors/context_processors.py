@@ -6,30 +6,38 @@ def user_role(request):
         return {"user_role": role}
     return {"user_role": None}
 
+
 def unread_messages(request):
     if not request.user.is_authenticated:
-        return {'has_unread_messages': False}
+        return {'has_unread_messages_by_order_id': {}}
     
     profile = request.user.profile
-    has_unread = False
-    
+    unread_by_order = {}
+
     private_topics = Topic.objects.filter(
         is_private=True,
         usertopic__user=profile
-    )
-    
+    ).select_related('related_order')
+
     for topic in private_topics:
-        last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()
-        if last_read_message and last_read_message.last_read_message:
-            unread_count = Message.objects.filter(
+        order_id = topic.related_order_id
+        if not order_id:
+            continue
+
+        user_topic = UserTopic.objects.filter(user=profile, topic=topic).first()
+        if user_topic and user_topic.last_read_message:
+            has_unread = Message.objects.filter(
                 topic=topic,
-                id__gt=last_read_message.last_read_message.id
-            ).count()
-            if unread_count > 0:
-                has_unread = True
-                break
-    
-    return {'has_unread_messages': has_unread}
+                id__gt=user_topic.last_read_message.id
+            ).exists()
+        else:
+            has_unread = Message.objects.filter(topic=topic).exists()
+
+        if has_unread:
+            unread_by_order[order_id] = True
+
+    return {'has_unread_messages_by_order_id': unread_by_order}
+
 
 def theme(request):
     theme = request.session.get('theme', 'light')

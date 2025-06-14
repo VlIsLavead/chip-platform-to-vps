@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load custom_filters %}
 {% block title %}Личный кабинет{% endblock %}
 
 {% block content %}
@@ -125,7 +125,7 @@
                         {% endif %}
                         <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                             Перейти в чат
-                            {% if has_unread_messages %}
+                            {% if has_unread_messages_by_order_id|dict_get:order.id %}
                                 <span class="unread-icon">✉️</span>
                             {% endif %}
                         </a>

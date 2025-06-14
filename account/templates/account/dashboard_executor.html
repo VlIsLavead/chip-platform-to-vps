@@ -72,14 +72,14 @@
                         <td>{{ order.order_date|default:"нет" }}</td>
                         <td>
                             {% if order.contract_file %}
-                                <a class="chat-button" href="{{ order.contract_file.url }}" download>скачать</a>
+                                <a class="function-button" href="{{ order.contract_file.url }}" download>скачать</a>
                             {% else %}
                                 <span>отсутствует</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if order.invoice_file %}
-                                <a class="chat-button" href="{{ order.invoice_file.url }}" download>скачать</a>
+                                <a class="function-button" href="{{ order.invoice_file.url }}" download>скачать</a>
                             {% else %}
                                 <span>отсутствует</span>
                             {% endif %}
@@ -100,7 +100,7 @@
                             {% endif %}
                             <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                                 Перейти в чат
-                                {% if has_unread_messages %}
+                                {% if has_unread_messages_by_order_id|dict_get:order.id %}
                                     <span class="unread-icon">✉️</span>
                                 {% endif %}
                             </a>

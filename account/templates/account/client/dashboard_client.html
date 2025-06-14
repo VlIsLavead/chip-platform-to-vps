@@ -77,7 +77,7 @@
 
                     <td>
                         {% if order.contract_file %}
-                            <a class="chat-button" href="{{ order.contract_file.url }}" download>Скачать</a>
+                            <a class="function-button" href="{{ order.contract_file.url }}" download>Скачать</a>
                         {% else %}
                             <span>Отсутствует</span>
                         {% endif %}
@@ -85,7 +85,7 @@
 
                     <td>
                         {% if order.invoice_file %}
-                            <a class="chat-button" href="{{ order.invoice_file.url }}" download>Скачать</a>
+                            <a class="function-button" href="{{ order.invoice_file.url }}" download>Скачать</a>
                         {% else %}
                             <span>Отсутствует</span>
                         {% endif %}
@@ -96,7 +96,7 @@
                             <a class="function-button" href="{% url 'add_gds' order.id %}">Загрузить GDS файл</a>
                         {% else %}
                             {% if order.GDS_file %}
-                                <a class="chat-button" href="{{ order.GDS_file.url }}" download>Скачать</a>
+                                <a class="function-button" href="{{ order.GDS_file.url }}" download>Скачать</a>
                             {% else %}
                                 <span>GDS не загружен</span>
                             {% endif %}
@@ -105,7 +105,7 @@
 
                     <td>
                         {% if order.order_status == "PO" %}
-                            <a class="chat-button" href="{% url 'is_paid' order.id %}">Оплатить</a>    
+                            <a class="function-button" href="{% url 'is_paid' order.id %}">Оплатить</a>    
                         {% else %}
                             {% if order.is_paid == False %}
                                 <span>Оплата недоступна</span>

@@ -520,11 +520,8 @@ def order_paid(request, order_id):
             order.order_status = "POK"
             order.order_date = timezone.now()
             action = 'success'
-        elif 'paid_cansel' in request.POST:
-            order.is_paid = False
-            order.order_status = "PO"
-            order.order_date = None
-            action = 'cancelled'
+        else:
+            pass
         order.save()
 
         return render(

@@ -173,9 +173,10 @@ class OrderEditForm(forms.ModelForm):
                 )
                 self.fields['technical_process'].queryset = TechnicalProcess.objects.filter(id__in=unique_ids)
 
-                self.fields['selected_diameter'].queryset = Diameter.objects.filter(
-                    platform_id=platform_id
-                )
+                self.fields['selected_diameter'].queryset = Diameter.objects.filter(platform_id=platform_id)
+                selected_diameter_val = self.data.get('selected_diameter')
+                if selected_diameter_val and self.fields['selected_diameter'].queryset.filter(pk=selected_diameter_val).exists():
+                    self.initial['selected_diameter'] = selected_diameter_val
         except (ValueError, TypeError):
             pass
 
@@ -214,9 +215,10 @@ class OrderEditForm(forms.ModelForm):
                 (Order.ContainerForCrystals.СontainerForCrystalls, 'Тара для пластин'),
             ],
             Order.WaferDeliverFormat.Cut: [
-                (Order.ContainerForCrystals.PlasticCells, 'Пластмассовые ячейки'),
+                (Order.ContainerForCrystals.EmFrame, 'Пяльцы'),
             ],
             Order.WaferDeliverFormat.Container: [
+                (Order.ContainerForCrystals.PlasticCells, 'Пластмассовые ячейки'),
                 (Order.ContainerForCrystals.GelPack, 'Gel-Pak'),
             ]
         }

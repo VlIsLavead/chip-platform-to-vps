@@ -1147,10 +1147,11 @@ def get_containers_by_format(wafer_deliver_format):
         ]
     elif wafer_deliver_format == 'Пластина разделенная на полимерном носителе':
         choices = [
-            {'id': Order.ContainerForCrystals.PlasticCells, 'value': 'Пластмассовые ячейки'}
+            {'id': Order.ContainerForCrystals.EmFrame, 'value': 'Пяльцы'}
         ]
     elif wafer_deliver_format == 'Кристаллы в таре':
         choices = [
+            {'id': Order.ContainerForCrystals.PlasticCells, 'value': 'Пластмассовые ячейки'},
             {'id': Order.ContainerForCrystals.GelPack, 'value': 'Gel-Pak'}
         ]
     else:

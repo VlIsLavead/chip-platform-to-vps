@@ -30,6 +30,16 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>
     $(document).ready(function () {
+        document.getElementById('id_product_count').addEventListener('keydown', function(e) {
+            if (['-', 'e', '+', '.'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+        localStorage.removeItem('platform_code');
+        localStorage.removeItem('substrate_type');
+        localStorage.removeItem('thickness');
+        localStorage.removeItem('diameter');
+    
         function toggleMaskNameField() {
             const orderType = $("#id_order_type").val();
             const maskNameField = $("#field-mask_name");
@@ -79,31 +89,62 @@
         }
         toggleFields();
 
-        function loadFormData() {
-            const platformId = $("#id_platform_code").val();
-            const substrateType = $("#id_substrate_type").val();
-            const waferFormat = $("#id_wafer_deliver_format").val();
+        function toggleFieldsForContainer() {
+            const tabContainer = $('#id_wafer_deliver_format').val();
+            const tabContainerValue = 'Кристаллы в таре';
+            console.log(tabContainer)
+            if (tabContainer === tabContainerValue) {
+                $('#id_package_servce').prop('disabled', true).prop('checked', false);
+            } else {
+                $('#id_package_servce').prop('disabled', false);
+            }
+        }
+        toggleFieldsForContainer();
 
+        function loadTechnicalProcesses(platformId) {
             if (platformId) {
                 $.ajax({
                     url: $("#orderForm").attr("data-url"),
                     data: { 'platform_id': platformId },
                     success: function(data) {
+                        const $select = $("#id_technical_process");
+                        $select.empty().append('<option value="">Выберите техпроцесс</option>');
+                        if (data.technical_processes) {
+                            data.technical_processes.forEach(p => {
+                                $select.append($('<option></option>').val(p.id).text(p.name_process));
+                            });
+                        } else {
+                            $select.append('<option value="">Нет доступных техпроцессов</option>');
+                        }
+                    }
+                });
+
+                $.ajax({
+                    url: $("#orderForm").attr("data-url"),
+                    data: { 'platform_id': platformId },
+                    success: function(data) {
                         const $diameterField = $("#id_selected_diameter");
+                        const currentValue = $diameterField.val();
                         $diameterField.empty().append('<option value="">---------</option>');
                         if (data.diameters) {
                             data.diameters.forEach(d => {
                                 $diameterField.append(`<option value="${d.id}">${d.value} мм</option>`);
                             });
                         }
-                        
-                        if (localStorage.getItem('diameter')) {
-                            $diameterField.val(localStorage.getItem('diameter'));
+                        if (currentValue && $diameterField.find(`option[value="${currentValue}"]`).length) {
+                            $diameterField.val(currentValue);
+                        } else {
+                            $diameterField.val('');
                         }
                     }
                 });
+            } else {
+                $("#id_technical_process").empty().append('<option value="">Выберите платформу</option>');
+                $("#id_selected_diameter").empty().append('<option value="">---------</option>');
             }
+        }
 
+        function loadThicknesses(substrateType) {
             if (substrateType) {
                 $.ajax({
                     url: $("#orderForm").attr("data-url"),
@@ -116,14 +157,14 @@
                                 $thicknessField.append(`<option value="${t.id}">${t.value}</option>`);
                             });
                         }
-                        
-                        if (localStorage.getItem('thickness')) {
-                            $thicknessField.val(localStorage.getItem('thickness'));
-                        }
                     }
                 });
+            } else {
+                $("#id_selected_thickness").empty().append('<option value="">---------</option>');
             }
+        }
 
+        function loadContainerOptions(waferFormat) {
             if (waferFormat) {
                 $.ajax({
                     url: $("#orderForm").attr("data-url"),
@@ -138,66 +179,34 @@
                         }
                     }
                 });
-            }
-        }
-
-        // Динамическая загрузка техпроцессов по выбранной платформе
-        $("#id_platform_code").on("change", function () {
-            const platformId = $(this).val();
-
-            if (platformId) {
-                $.ajax({
-                    url: $("#orderForm").attr("data-url"),
-                    data: { 'platform_id': platformId },
-                    success: function(data) {
-                        const $technicalProcessSelect = $("#id_technical_process");
-                        $technicalProcessSelect.empty().append('<option value="">Выберите техпроцесс</option>');
-                        if (data.technical_processes && data.technical_processes.length > 0) {
-                            data.technical_processes.forEach(function (process) {
-                                $technicalProcessSelect.append(
-                                    $('<option></option>').val(process.id).text(process.name_process)
-                                );
-                            });
-                        } else {
-                            $technicalProcessSelect.append('<option value="">Нет доступных техпроцессов</option>');
-                        }
-                    }
-                });
             } else {
-                $("#id_technical_process").empty().append('<option value="">Выберите платформу</option>');
+                $("#id_container_for_crystals").empty().append('<option value="">---------</option>');
             }
-        });
-
-        // Загружаем данные при изменении платформы
-        $("#id_platform_code").change(function() {
-            loadFormData();
-            localStorage.setItem('platform_code', $(this).val());
-        });
-
-        $("#id_substrate_type").change(function() {
-            loadFormData();
-            localStorage.setItem('substrate_type', $(this).val());
-        });
-
-        $("#id_wafer_deliver_format").change(function() {
-            loadFormData();
-        });
-
-        $("#id_selected_thickness").change(function() {
-            localStorage.setItem('thickness', $(this).val());
-        });
-
-        $("#id_selected_diameter").change(function() {
-            localStorage.setItem('diameter', $(this).val());
-        });
-
-        if (localStorage.getItem('substrate_type')) {
-            $("#id_substrate_type").val(localStorage.getItem('substrate_type'));
         }
+
+        $("#id_platform_code").change(function () {
+            const platformId = $(this).val();
+            loadTechnicalProcesses(platformId);
+        });
+
+        $("#id_substrate_type").change(function () {
+            const substrateType = $(this).val();
+            loadThicknesses(substrateType);
+        });
+
+        $("#id_wafer_deliver_format").change(function () {
+            const waferFormat = $(this).val();
+            loadContainerOptions(waferFormat);
+            toggleFieldsForContainer();
+        });
 
         $('#id_dc_rf_probing_e_map').change(function () {
             toggleFields();
         });
+
+        loadTechnicalProcesses($("#id_platform_code").val());
+        loadThicknesses($("#id_substrate_type").val());
+        loadContainerOptions($("#id_wafer_deliver_format").val());
     });
 </script>
 {% endblock %}

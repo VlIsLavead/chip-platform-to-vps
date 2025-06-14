@@ -104,27 +104,62 @@
             }
             toggleFields();
 
-            function loadFormData() {
-                const platformId = $("#id_platform_code").val();
-                const substrateType = $("#id_substrate_type").val();
-                const waferFormat = $("#id_wafer_deliver_format").val();
-    
+            function toggleFieldsForContainer() {
+                const tabContainer = $('#id_wafer_deliver_format').val();
+                const tabContainerValue = 'Кристаллы в таре';
+                console.log(tabContainer)
+                if (tabContainer === tabContainerValue) {
+                    $('#id_package_servce').prop('disabled', true).prop('checked', false);
+                } else {
+                    $('#id_package_servce').prop('disabled', false);
+                }
+            }
+            toggleFieldsForContainer();
+
+            function loadTechnicalProcesses(platformId) {
                 if (platformId) {
                     $.ajax({
                         url: $("#orderForm").attr("data-url"),
                         data: { 'platform_id': platformId },
                         success: function(data) {
+                            const $select = $("#id_technical_process");
+                            $select.empty().append('<option value="">Выберите техпроцесс</option>');
+                            if (data.technical_processes) {
+                                data.technical_processes.forEach(p => {
+                                    $select.append($('<option></option>').val(p.id).text(p.name_process));
+                                });
+                            } else {
+                                $select.append('<option value="">Нет доступных техпроцессов</option>');
+                            }
+                        }
+                    });
+
+                    $.ajax({
+                        url: $("#orderForm").attr("data-url"),
+                        data: { 'platform_id': platformId },
+                        success: function(data) {
                             const $diameterField = $("#id_selected_diameter");
+                            const currentValue = $diameterField.val();
                             $diameterField.empty().append('<option value="">---------</option>');
                             if (data.diameters) {
                                 data.diameters.forEach(d => {
                                     $diameterField.append(`<option value="${d.id}">${d.value} мм</option>`);
                                 });
                             }
+                            if (currentValue && $diameterField.find(`option[value="${currentValue}"]`).length) {
+                                $diameterField.val(currentValue);
+                            } else {
+                                $diameterField.val('');
+                            }
                         }
                     });
+                } else {
+                    $("#id_technical_process").empty().append('<option value="">Выберите платформу</option>');
+                    $("#id_selected_diameter").empty().append('<option value="">---------</option>');
                 }
-        
+            }
+
+            function loadThicknesses(substrateType) {
                 if (substrateType) {
                     $.ajax({
                         url: $("#orderForm").attr("data-url"),
@@ -139,8 +174,12 @@
                             }
                         }
                     });
+                } else {
+                    $("#id_selected_thickness").empty().append('<option value="">---------</option>');
                 }
-        
+            }
+
+            function loadContainerOptions(waferFormat) {
                 if (waferFormat) {
                     $.ajax({
                         url: $("#orderForm").attr("data-url"),
@@ -155,43 +194,34 @@
                             }
                         }
                     });
+                } else {
+                    $("#id_container_for_crystals").empty().append('<option value="">---------</option>');
                 }
             }
 
-            // Динамическая загрузка техпроцессов по выбранной платформе
-            $("#id_platform_code").on("change", function () {
+            $("#id_platform_code").change(function () {
                 const platformId = $(this).val();
-
-                if (platformId) {
-                    $.ajax({
-                        url: $("#orderForm").attr("data-url"),
-                        data: { 'platform_id': platformId },
-                        success: function(data) {
-                            const $technicalProcessSelect = $("#id_technical_process");
-                            $technicalProcessSelect.empty().append('<option value="">Выберите техпроцесс</option>');
-                            if (data.technical_processes && data.technical_processes.length > 0) {
-                                data.technical_processes.forEach(function (process) {
-                                    $technicalProcessSelect.append(
-                                        $('<option></option>').val(process.id).text(process.name_process)
-                                    );
-                                });
-                            } else {
-                                $technicalProcessSelect.append('<option value="">Нет доступных техпроцессов</option>');
-                            }
-                        }
-                    });
-                } else {
-                    $("#id_technical_process").empty().append('<option value="">Выберите платформу</option>');
-                }
+                loadTechnicalProcesses(platformId);
             });
-        
-            $("#id_platform_code").change(loadFormData);
-            $("#id_substrate_type").change(loadFormData);
-            $("#id_wafer_deliver_format").change(loadFormData);
+
+            $("#id_substrate_type").change(function () {
+                const substrateType = $(this).val();
+                loadThicknesses(substrateType);
+            });
+
+            $("#id_wafer_deliver_format").change(function () {
+                const waferFormat = $(this).val();
+                loadContainerOptions(waferFormat);
+                toggleFieldsForContainer();
+            });
 
             $('#id_dc_rf_probing_e_map').change(function () {
                 toggleFields();
             });
+
+            loadTechnicalProcesses($("#id_platform_code").val());
+            loadThicknesses($("#id_substrate_type").val());
+            loadContainerOptions($("#id_wafer_deliver_format").val());
         });
     </script>
 {% endblock %}

@@ -176,7 +176,8 @@ def registration(request):
             password = settings.EMAIL_HOST_PASSWORD
             file_paths = [
                 os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/access_request_form.docx'),
-                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/Confidentiality_agreement.pdf')
+                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/Confidentiality_agreement.pdf'),
+                os.path.join(settings.MEDIA_ROOT, 'uploads/for_send/Инструкция_пользователя_Платформы_Исполнитель.pdf')
             ]
 
             send_email_with_attachments(sender_email, user_email, password, subject, body, file_paths)

@@ -115,7 +115,7 @@ def document_upload_path(instance, filename):
   
 class Document(models.Model):
     DOCUMENT_TYPES = [
-        ('NDA', 'NDA'),
+        #('NDA', 'NDA'),
         ('consumer_request', 'consumer_request'),
         ('consumer_form', 'consumer_form'),
     ]

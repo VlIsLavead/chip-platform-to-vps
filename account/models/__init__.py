@@ -36,7 +36,7 @@ class Profile(models.Model):
     
 
 class CustomerProfile(models.Model):
-    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name="customer_profile")
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='customer_profile')
     class MarketName(models.TextChoices):
         PS = 'PS', 'Госсектор',
         CR = 'CR', 'Корпоративный',
@@ -83,7 +83,7 @@ class CustomerProfile(models.Model):
     pdk_version = models.TextField('Используемая версия PDK', blank=False, null=True, max_length=2000,
                                 help_text=None, )
     hierarchry_structure = models.BooleanField('Иерархичность структуры топологии', blank=False,
-                                null=False, default=False, help_text="Да/нет")
+                                null=False, default=False, help_text='Да/нет')
     project_name_and_abbreviation = models.TextField('Название проекта и аббревиатура (для заявки на фабрику)',
                                 blank=False, null=True, max_length=2000,
                                 help_text='Пример: Название проекта 1(аббревиатуры названия кристаллов)', )
@@ -155,7 +155,7 @@ class Thickness(models.Model):
     value = models.TextField('Толщина', unique=True)
 
     def __str__(self):
-        return f"{self.value}"
+        return f'{self.value}'
     
     
 
@@ -172,13 +172,13 @@ class Diameter(models.Model):
         unique_together = ('platform', 'value')
 
     def __str__(self):
-        return f"{self.value} мм"
+        return f'{self.value} мм'
     
     
 
 class Substrate(models.Model):
     MATERIAL_CHOICES = [
-        ('Si(Кремний)', 'Si(Кремний)'),
+        ('Si (Кремний)', 'Si (Кремний)'),
     ]
     
     material = models.CharField(
@@ -205,7 +205,7 @@ class Order(models.Model):
         REP = 'REP', 'Повтор заказа'
     
     class OrderType(models.TextChoices):
-        MPW = 'MPW', 'MPW',
+        MPW = 'MPW', 'Многопроектный (MPW)',
         REP = 'REP', 'Повтор',
         ENG = 'ENG', 'Инженерный'
 
@@ -255,7 +255,7 @@ class Order(models.Model):
     order_number = models.CharField(blank=False, null=False, max_length=14)
     creator = models.ForeignKey(Profile, on_delete=models.CASCADE, null=False)
     customer_product_name = models.CharField('Имя запуска', blank=False, null=False, max_length=200,
-                                            help_text="Пояснение для имени запуска")
+                                            help_text='Любое имя на усмотрение Заказчика')
     # order_start = models.CharField('Тип заказа',choices=OrderStart.choices,
     #                                  default=OrderStart.NEW, blank=False, null=False, 
     #                                  max_length=200)
@@ -264,67 +264,66 @@ class Order(models.Model):
                                             verbose_name='Техпроцесс')
     platform_code = models.ForeignKey(Platform, on_delete=models.CASCADE, null=False, 
                                       verbose_name='Площадка', 
-                                      help_text="Выбор доступных технологических площадок: KI - НИЦ 'Курчатовский институт', ZC - АО 'ЗНТЦ'")
+                                      help_text=('Выбор технологической площадки: НИЦ «Курчатовский институт», АО «ЗНТЦ» (в разработке)' ))
     order_type = models.CharField('Тип запуска', choices=OrderType.choices, default=OrderType.ENG, blank=False,
                                   null=False, max_length=200, )
     product_count = models.IntegerField('Число проектов в запуске', blank=False, null=True,
                                         validators=[MinValueValidator(1)], 
-                                        help_text="Количество уникальных проектов на пластине")
+                                        help_text='Количество уникальных проектов на пластине')
     formation_frame_by_customer = models.BooleanField('Формирование кадра заказчиком', blank=False,
                                                       null=False, default=False, 
-                                                      help_text="Заказчик самостоятельно определяем расположение структур в кадре")
+                                                      help_text='Заказчик самостоятельно определяем расположение структур в кадре')
     substrate_type = models.CharField(max_length=15, choices=Substrate.MATERIAL_CHOICES, default='Si', verbose_name='Тип толщины подложки',
-                                            help_text="Пояснение для типа подложки")
+                                            help_text='Пояснение для типа подложки')
     selected_thickness = models.ForeignKey(Thickness, on_delete=models.CASCADE, verbose_name='Толщина')
     selected_diameter = models.ForeignKey(Diameter, on_delete=models.CASCADE, verbose_name='Диаметр')
     dc_rf_probing_e_map = models.CharField('Контроль электрических параметров на пластине',
                                            choices=DCRFProbingEMap.choices,
                                            default=DCRFProbingEMap.NO, blank=False,
                                            null=False, max_length=200,
-                                           help_text="Будет ли проводиться зондовый контроль параметров на структурах, его тип")
+                                           help_text='Возможность контроля электрических характеристик на зондах')
     dc_rf_probing_inking = models.BooleanField('Маркировка брака по электрическим параметрам', blank=False,
-                                               null=False, help_text="Маркировка баркованных структур по результатам зондового контроля")
+                                               null=False, help_text='Маркировка баркованных структур по результатам зондового контроля')
     visual_inspection_inking = models.BooleanField('Визуальный контроль и маркировка брака', blank=False,
-                                                   null=False, help_text="Визуальный контроль структур на пластине с последующей маркировкой бракованных")
+                                                   null=False, help_text='Визуальный контроль структур на пластине с последующей маркировкой бракованных')
     parametric_monitor_control = models.BooleanField('Предоставление данных контроля параметрического монитора',
                                                      blank=False, null=False, default=False, )
     experimental_structure = models.BooleanField('Экспериментальная структура', blank=False,
                                                  null=False, default=False, 
-                                                help_text="Запуск экспериментальных структур заказчика, \
-                                                        выходящих за рамки библиотеки стандартных элементов, без \
-                                                        гарантии работоспособности таких структур.")
+                                                help_text='Экспериментальные структуры Заказчика, выходящие за рамки библиотек , \
+                                                    стандартных элементов без гарантии работоспособности таких структур.')
     dicing_method = models.CharField('Способ разделения пластины на кристаллы', choices=DicingMethod.choices,
                                      default=DicingMethod.DC, blank=False,
                                      null=False, max_length=200)
     tape_uv_support = models.BooleanField('УФ засветка полимерного носителя', blank=False,
-                                        null=False, help_text="Засветка полимерного носителя, на который наклеена \
+                                        null=False, help_text='Засветка полимерного носителя, на который наклеена \
                                             пластина  для ослабления его клеющей способности для последующего \
-                                            самостоятельного съёма структур силами потребителя")
+                                            самостоятельного съёма структур силами потребителя')
     wafer_deliver_format = models.CharField('Вид поставки пластин', choices=WaferDeliverFormat.choices,
-                                            default=WaferDeliverFormat.NotCut, blank=False,
-                                            null=False, max_length=200, help_text="Выбор вида разделения пластины на \
-                                            отдельные структуры перед отгрузкой, либо его отсутсвие")
+                                            default=WaferDeliverFormat.Container, blank=False,
+                                            null=False, max_length=200, help_text='Выбор вида разделения пластины на \
+                                            отдельные структуры перед отгрузкой, либо его отсутсвие')
     container_for_crystals = models.CharField('Вид тары для кристаллов', choices=ContainerForCrystals.choices,
                                             default=ContainerForCrystals.GelPack, blank=False,
-                                            null=False, max_length=200, help_text="Выбор тары, в которой будут \
-                                            поставляться структуры после разделения пластины")
+                                            null=False, max_length=200, help_text='Выбор тары, в которой будут \
+                                            поставляться структуры после разделения пластины')
     parametric_monitor_control = models.BooleanField('Предоставление данных контроля параметрического монитора',
                                                      blank=False,
                                                      null=False, default=False, )
     # Разделение пластины на кристаллы по схеме заказчика(значение pdf по нажатию чекбокса)
-    multiplan_dicing_plan = models.BooleanField("Разделение пластины на кристаллы по схеме заказчика", blank=False,
-                                                null=False, help_text="Потребитель сам определяет схему разделения \
-                                                пластины на структуры и предоставляет на фабрику")
+    multiplan_dicing_plan = models.BooleanField('Разделение пластины на кристаллы по схеме заказчика', blank=False,
+                                                null=False, help_text='Потребитель сам определяет схему разделения \
+                                                пластины на структуры и предоставляет на фабрику')
     multiplan_dicing_plan_file = models.FileField('Файл ', upload_to='uploads/dicing_plan/%Y/%m/%d/', blank=True,
                                                   null=True,
                                                   default='')
-    package_servce = models.BooleanField("Корпусирование силами фабрики", blank=False, null=False, 
-                                        help_text="Заказ сборки и корпусирования микросхем силами производителя")
-    delivery_premium_template = models.BooleanField("Ускоренный запуск производства фотошаблонов", blank=False,
-                                                    null=False, help_text="Запуск шаблонов вне общей очереди ")
-    delivery_premium_plate = models.BooleanField("Ускоренный запуск производства пластин", blank=False, null=False,
-                                                 help_text="Запуск производстся пластин вне общей очереди")
-    special_note = models.TextField('Заметка', blank=True, null=True, max_length=2000, help_text=None, )
+    package_servce = models.BooleanField('Корпусирование силами фабрики', blank=False, null=False, 
+                                        help_text='Заказ сборки и корпусирования микросхем силами производителя')
+    delivery_premium_template = models.BooleanField('Ускоренный запуск производства фотошаблонов', blank=False,
+                                                    null=False, help_text='Запуск шаблонов вне общей очереди ')
+    delivery_premium_plate = models.BooleanField('Ускоренный запуск производства пластин', blank=False, null=False,
+                                                 help_text='Запуск производстся пластин вне общей очереди')
+    special_note = models.TextField('Комментарии', blank=True, null=True, max_length=2000, help_text=None, )
     order_date = models.DateTimeField('Дата оплаты', blank=False, null=True)
     deadline_date = models.DateTimeField('Срок выполнения по договору', blank=False, null=True)
     is_paid = models.BooleanField('Заказ оплачен?', blank=True, null=True, default=False)
@@ -361,20 +360,20 @@ class TopicFileModel(models.Model):
 
 class Message(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    topic = models.ForeignKey(Topic, related_name="messages", on_delete=models.CASCADE)
-    text = models.TextField(blank=True, null=True, default="")
+    topic = models.ForeignKey(Topic, related_name='messages', on_delete=models.CASCADE)
+    text = models.TextField(blank=True, null=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Message by {self.user.username} in {self.topic.name}"
+        return f'Message by {self.user.username} in {self.topic.name}'
 
 
 class File(models.Model):
-    message = models.ForeignKey(Message, related_name="files", on_delete=models.CASCADE)
+    message = models.ForeignKey(Message, related_name='files', on_delete=models.CASCADE)
     file = models.FileField(upload_to='topic_files/')
 
     def __str__(self):
-        return f"File attached to {self.message.id}"
+        return f'File attached to {self.message.id}'
 
 
 class UserTopic(models.Model):
@@ -388,7 +387,7 @@ class UserTopic(models.Model):
         unique_together = ('user', 'topic')
 
     def __str__(self):
-        return f"{self.user.username} in topic {self.topic.name}"
+        return f'{self.user.username} in topic {self.topic.name}'
     
     
 class RegistrationRequest(models.Model):

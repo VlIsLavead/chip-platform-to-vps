@@ -118,8 +118,9 @@ class OrderEditForm(forms.ModelForm):
     parametric_monitor_control = forms.BooleanField(
         label='Предоставление данных контроля \
             параметрического монитора',
-        help_text='Пояснение для данных контроля \
-            параметрического монитора',
+        help_text='Результаты зондовых измерений \
+            элементов параметрического монитора \
+            на соответствие нормам на пластинах',
         required=False
     )
 

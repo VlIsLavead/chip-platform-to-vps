@@ -105,7 +105,8 @@ class OrderEditForm(forms.ModelForm):
         label='Вид поставки пластин',
         help_text='Выбор вида разделения пластины \
         на отдельные структуры перед отгрузкой, \
-        либо его отсутсвие'
+        либо его отсутсвие',
+        initial=Order.WaferDeliverFormat.Container
     )
 
     container_for_crystals = forms.ChoiceField(
@@ -129,8 +130,9 @@ class OrderEditForm(forms.ModelForm):
         'technical_process', 'order_type', 'product_count',
         'substrate_type', 'selected_thickness', 'selected_diameter',
         'experimental_structure', 'dc_rf_probing_e_map', 'dc_rf_probing_inking',
-        'visual_inspection_inking', 'parametric_monitor_control', 'dicing_method', 'tape_uv_support',
-        'wafer_deliver_format', 'container_for_crystals', 'multiplan_dicing_plan', 'multiplan_dicing_plan_file',
+        'visual_inspection_inking', 'parametric_monitor_control', 'dicing_method', 
+        'wafer_deliver_format', 'tape_uv_support', 'wafer_deliver_format', 
+        'container_for_crystals', 'multiplan_dicing_plan', 'multiplan_dicing_plan_file', 
         'package_servce', 'delivery_premium_template', 'delivery_premium_plate', 'special_note',
     ]
 

@@ -16,14 +16,5 @@
       "PDK_file": "uploads/pdk/GSi025_KIP_rev_1.4.0.0.0.zip",
       "platform": 2
     }
-  },
-  {
-    "model": "account.technicalprocess",
-    "pk": 3,
-    "fields": {
-      "name_process": "GSi025",
-      "PDK_file": "uploads/pdk/GSi025_KIP_rev_1.4.0.0.0.zip",
-      "platform": 3
-    }
   }
 ]

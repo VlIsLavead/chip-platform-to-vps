@@ -116,6 +116,15 @@
             }
             toggleFieldsForContainer();
 
+            function checkExperimentalStructureBlock() {
+                $('#id_experimental_structure').prop('disabled', true).prop('checked', false);
+                $('#id_multiplan_dicing_plan').prop('disabled', true).prop('checked', false);
+                $('#id_package_servce').prop('disabled', true).prop('checked', false);
+                $('#id_delivery_premium_template').prop('disabled', true).prop('checked', false);
+                $('#id_delivery_premium_plate').prop('disabled', true).prop('checked', false);
+            }
+            checkExperimentalStructureBlock();
+
             function loadTechnicalProcesses(platformId) {
                 if (platformId) {
                     $.ajax({
@@ -172,6 +181,7 @@
                                     $thicknessField.append(`<option value="${t.id}">${t.value}</option>`);
                                 });
                             }
+                            disableCertainThicknessOptions();
                         }
                     });
                 } else {
@@ -192,10 +202,31 @@
                                     $containerField.append(`<option value="${c.id}">${c.value}</option>`);
                                 });
                             }
+                            checkTapeUvSupport();
                         }
                     });
                 } else {
                     $("#id_container_for_crystals").empty().append('<option value="">---------</option>');
+                }
+            }
+
+            function checkTapeUvSupport() {
+                const checkbox = $('#id_tape_uv_support');
+                const select = $('#id_wafer_deliver_format');
+                const waferFormatValue = select.val();
+            
+                select.find('option').each(function () {
+                    if ($(this).text().trim() === 'Кристаллы в таре') {
+                        $(this).prop('disabled', false);
+                    } else {
+                        $(this).prop('disabled', true);
+                    }
+                });
+            
+                if (waferFormatValue === 'Пластина разделенная на полимерном носителе') {
+                    checkbox.prop('disabled', false);
+                } else {
+                    checkbox.prop('disabled', true).prop('checked', false);
                 }
             }
 
@@ -222,6 +253,47 @@
             loadTechnicalProcesses($("#id_platform_code").val());
             loadThicknesses($("#id_substrate_type").val());
             loadContainerOptions($("#id_wafer_deliver_format").val());
+
+            //В loadThicknesses
+            function disableCertainThicknessOptions() {
+                const select = document.querySelector("select[name='selected_thickness']");
+                if (select) {
+                    for (let option of select.options) {
+                        if (option.value === "1" || option.value === "3") {
+                            option.disabled = true;
+                            option.style.color = 'gray';
+                        }
+                    }
+                }
+            }
+
+            function disableSelectOptions(selectName, disableConditions) {
+                const select = document.querySelector(`select[name='${selectName}']`);
+                if (select) {
+                    for (let option of select.options) {
+                        if (disableConditions(option)) {
+                            option.disabled = true;
+                            option.style.color = 'gray';
+                        }
+                    }
+                }
+            }
+
+            disableSelectOptions('platform_code', option =>
+                option.text.includes('ЗНТЦ') || option.text.includes('ZC')
+            );
+
+            disableSelectOptions('selected_thickness', option =>
+                option.value === '1' || option.value === '3'
+            );
+
+            disableSelectOptions('dicing_method', option =>
+                option.value === 'LS'
+            );
+
+            disableSelectOptions('dc_rf_probing_e_map', option =>
+                option.value === 'DC Probing' || option.value === 'DC + RF Probing'
+            );
         });
     </script>
 {% endblock %}

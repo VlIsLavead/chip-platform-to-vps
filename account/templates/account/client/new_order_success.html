@@ -5,9 +5,9 @@
 {% block content %}
     <h1>Заказ добавлен успешно</h1>
 
-        <a href="{% url 'download_excel_from_session' %}" class="button chat-button">
-            Скачать Excel файл
-        </a>
-
+    <a href="{% url 'download_excel_from_order_id' order_id=order.id %}" class="button chat-button">
+        Скачать Excel файл
+    </a>
+    
     <p><a href="{% url "dashboard" %}">Вернуться</a> в личный кабинет</p>
 {% endblock %}

@@ -347,7 +347,7 @@ def new_order(request):
 
             # request.session['form_data'] = order_data
 
-            return render(request, 'account/client/new_order_success.html')
+            return render(request, 'account/client/new_order_success.html', {'order': order_in_progress})
         else:
             messages.error(request, 'Ошибка в заполнении данных для заказа')
     else:

@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Role(models.Model):
@@ -398,3 +399,10 @@ class RegistrationRequest(models.Model):
     privacy_file = models.FileField('Файл конфиденциальности', upload_to='uploads/privacy_file/', blank=True, null=True,)
     processing_data = models.BooleanField('Я согласен на обработку персональных данных', blank=False, null=False)
     
+    
+class LoginLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    login_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} (роль: {self.user.profile.role.name} вошёл в {self.login_time}'

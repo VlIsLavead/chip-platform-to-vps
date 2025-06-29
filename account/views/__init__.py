@@ -21,7 +21,8 @@ from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, \
 OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, \
 ViewOrderForm, RegistrationForm, AddContractForm, AddContractFileForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, \
-Thickness, Diameter, Topic, UserTopic, Message, File, Document, TopicFileModel
+Thickness, Diameter, Topic, UserTopic, Message, File, Document, TopicFileModel, \
+LoginLog
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 from ..utils.generate_messages import add_file_message
@@ -1425,3 +1426,9 @@ def set_theme(request):
         return JsonResponse({'status': 'success', 'theme': theme})
     
     return JsonResponse({'status': 'error'}, status=400)
+
+
+@login_required
+def login_log_view(request):
+    logs = LoginLog.objects.all().order_by('-login_time')
+    return render(request, 'account/login_logs.html', {'logs': logs})

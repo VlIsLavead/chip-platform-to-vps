@@ -516,7 +516,7 @@ img.user-detail {
 #footer {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     height: 90px;
     padding: 20px 100px 20px 100px;
     font-size: 14px;
@@ -527,11 +527,13 @@ img.user-detail {
 }
 
 .footer_list{
-    margin-right: 350px;
-}
+    margin-right: 0px;
+    width: 250px;
+} 
 
 .footer_list>li{
     list-style-type: none;
+    
 }
 
 .footer_list>li>a{
@@ -542,12 +544,21 @@ img.user-detail {
 .footer_logo{
     display: flex;
     flex-direction: row;
+    width: 300px;
     margin-top: 20px;
+    margin-right: 400px;
 }
 
 .footer_logo>span>a{
     color: var(--main-text-color); 
     font-size: 18px;
+}
+
+.footer_red_text {
+    width: 750px;
+    color: var(--main-color-for);
+    font-size: 18px;
+    margin-left: 100px;
 }
 
 

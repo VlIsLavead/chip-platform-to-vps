@@ -1213,42 +1213,13 @@ def new_order_success_view(request):
     return render(request, 'new_order_success.html')
 
 
-def download_excel_file_from_session(request):
-    form_data = request.session.get('form_data', {})
-    order_id = form_data.get('id')
-    if not order_id:
-        print('Ошибка: не найден order_id в form_data сессии.')
-        return HttpResponse("Ошибка: не найден order_id в form_data сессии.", status=400)
-
-    session_data = dict(request.session)
-    try:
-        wb = generate_excel_file(request, session_data=session_data, order_id=order_id)
-    except Exception as e:
-        print('Ошибка генерации Excel:', e)
-        return HttpResponse("Ошибка при создании файла.", status=500)
-
-    if wb:
-        output = BytesIO()
-        wb.save(output)
-        output.seek(0)
-
-        filename = f"Детали_заказа_{order_id}.xlsx"
-        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = f'attachment; filename="{quote(filename)}"; filename*=UTF-8\'\'{quote(filename)}'
-        return response
-    else:
-        return HttpResponse("Ошибка при создании файла.", status=400)
-
-
 def download_excel_file_from_order_id(request, order_id):
     try:
         order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
         return HttpResponse("Ошибка: заказ не найден.", status=404)
 
-    session_data = request.session
-
-    wb = generate_excel_file(request, session_data=session_data, order_id=order_id)
+    wb = generate_excel_file(request, order_id=order_id)
 
     if wb:
         output = BytesIO()

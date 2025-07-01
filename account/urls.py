@@ -26,7 +26,6 @@ urlpatterns = [
     path('my_documents/<int:id>', views.my_documents, name='my_documents'),
     path('all_documents/', views.all_documents, name='all_documents'),
     path('new_order_success/', views.new_order_success_view, name='new_order_success'),
-    path('download_excel/', views.download_excel_file_from_session, name='download_excel_from_session'),
     path('download_excel/<int:order_id>/', views.download_excel_file_from_order_id, name='download_excel_from_order_id'),
     path('edit_order/<int:order_id>', views.edit_order, name='edit_order'),
     path('edit_platform', views.edit_platform, name='edit_platform'),

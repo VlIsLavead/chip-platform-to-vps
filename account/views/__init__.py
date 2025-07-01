@@ -576,7 +576,7 @@ def confirmation_receipt(request, order_id):
 
 def _dashboard_curator(request, message=''):
     profile = request.user.profile
-    orders = Order.objects.all()
+    orders = Order.objects.all().select_related('creator')
     
     platform = Profile.objects.get(id=request.user.id)
     platform_name = platform.company_name
@@ -789,7 +789,7 @@ def plates_shipped(request, order_id):
 def _dashboard_executor(request, message=''):
     profile = request.user.profile
     code_company = Platform.objects.get(platform_code=profile.company_name)
-    orders = Order.objects.filter(platform_code_id=code_company)
+    orders = Order.objects.filter(platform_code_id=code_company).select_related('creator')
     name_platform = Platform.objects.filter(platform_code=code_company).values_list('platform_name', flat=True).first()
     print(name_platform)
 

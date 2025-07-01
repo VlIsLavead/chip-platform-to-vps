@@ -47,6 +47,7 @@
         <table border="1" class="order-table">
             <tr>
                 <th scope="col">Номер заказа</th>
+                <th scope="col">Компания заказчика</th>
                 <th scope="col">Статус заказа</th>
                 <th scope="col">ID заказа</th>
                 <th scope="col">Тип заказа</th>
@@ -64,6 +65,7 @@
                 {% for order in data.orders %}
                     <tr>
                         <td>{{ order.order_number }}</td>
+                        <td>{{ order.creator.company_name }}</td>
                         <td>{{ order.get_order_status_display }}</td>
                         <td>{{ order.id }}</td>
                         <td>{{ order.get_order_type_display }}</td>

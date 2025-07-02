@@ -220,6 +220,14 @@ def registration(request):
                         curator_body,
                         file_paths=[]
                     )
+                    send_email_with_attachments(
+                        sender_email,
+                        os.getenv('EMAIL_HOST_USER'),
+                        password,
+                        curator_subject,
+                        curator_body,
+                        file_paths=[]
+                    )
                     print(f"Уведомление отправлено куратору: {curator.email}")
                 except Exception as e:
                     print(f"Ошибка при отправке письма куратору {curator.email}: {e}")

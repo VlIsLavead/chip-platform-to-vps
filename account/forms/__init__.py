@@ -24,6 +24,9 @@ class RegistrationForm(forms.ModelForm):
         exclude = [
             'privacy_file'
         ]
+        help_texts = {
+            'mail': '*Рекомендуем указывать отечественные почтовые </br>сервисы, т.к. письма могут не доходить на зарубежные',
+        }
         
         def clean_processing_data(self):
             processing_data = self.cleaned_data.get('processing_data')

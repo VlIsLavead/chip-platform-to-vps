@@ -5,7 +5,9 @@
 <div class="users-container">
     {% for profile, documents in user_documents.items %}
     <div class="user-block">
-        <div class="user-title">{{ profile.user.username }}</div>
+        <div class="user-title">
+            {{ profile.user.username }} ({{ profile.company_name }})
+        </div>
 
         <!-- Первый ряд: три таблицы -->
         <div class="table-container first-row">

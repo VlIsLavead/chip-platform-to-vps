@@ -3,6 +3,10 @@
 {% block title %}Успех{% endblock %}
 
 {% block content %}
+{% if action == 'confirmed' %}
     <h1>Подписание договора подтверждено</h1>
+{% else %}
+    <h1>Подписание договора не подтверждено</h1>
+{% endif %}
     <p><a href="{% url "dashboard" %}">Вернуться</a> в личный кабинет</p>
 {% endblock %}

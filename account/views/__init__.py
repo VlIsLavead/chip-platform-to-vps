@@ -162,8 +162,8 @@ def registration(request):
         if form.is_valid():
             form.save()
             user_email = form.cleaned_data['mail']
-            subject = "Регистрация на chip platform"
-            body = """
+            subject = 'Регистрация на chip platform'
+            body = '''
                 <html>
                 <body>
                     <h1>Регистрация на chip platform</h1>
@@ -172,7 +172,7 @@ def registration(request):
                     <p>Сканы подписанных документов необходимо отправить на электронную почту: foundry-rf@icvao.ru</p>
                 </body>
                 </html>
-            """
+            '''
             sender_email = settings.EMAIL_HOST_USER
             password = settings.EMAIL_HOST_PASSWORD
             file_paths = [
@@ -185,22 +185,22 @@ def registration(request):
             
             
             curator_users = User.objects.filter(
-                profile__role__name="Куратор",  # Фильтруем по роли через профиль
+                profile__role__name='Куратор',  # Фильтруем по роли через профиль
                 profile__deleted_at__isnull=True,  # Только активные профили
                 is_active=True  # Только активные пользователи
             ).distinct()
 
             # Проверяем, есть ли кураторы
             if not curator_users.exists():
-                print("Предупреждение: не найдено активных кураторов для уведомления")
+                print('Предупреждение: не найдено активных кураторов для уведомления')
 
             for curator in curator_users:
                 if not curator.email:  # Пропускаем если email не указан
-                    print(f"Пропуск: у куратора {curator.username} не указан email")
+                    print(f'Пропуск: у куратора {curator.username} не указан email')
                     continue
                     
-                curator_subject = "Новая заявка на регистрацию"
-                curator_body = f"""
+                curator_subject = 'Новая заявка на регистрацию'
+                curator_body = f'''
                     <html>
                     <body>
                         <h1>Новая заявка на регистрацию</h1>
@@ -210,7 +210,7 @@ def registration(request):
                         <p>Почта: {form.cleaned_data['mail']}</p>
                     </body>
                     </html>
-                """
+                '''
                 try:
                     send_email_with_attachments(
                         sender_email,
@@ -228,9 +228,9 @@ def registration(request):
                         curator_body,
                         file_paths=[]
                     )
-                    print(f"Уведомление отправлено куратору: {curator.email}")
+                    print(f'Уведомление отправлено куратору: {curator.email}')
                 except Exception as e:
-                    print(f"Ошибка при отправке письма куратору {curator.email}: {e}")
+                    print(f'Ошибка при отправке письма куратору {curator.email}: {e}')
             
             
             messages.success(request, 'Регистрация прошла успешно!')
@@ -249,9 +249,9 @@ def download_privacy_file(request):
     file_path = os.path.join(settings.MEDIA_ROOT, 'uploads/privacy_file/Политика_в_отношении_обработки_персональных_данных.pdf')
 
     if not os.path.exists(file_path):
-        raise Http404("Файл не найден")
+        raise Http404('Файл не найден')
 
-    return FileResponse(open(file_path, 'rb'), as_attachment=True, filename="Политика_в_отношении_обработки_персональных_данных.pdf")
+    return FileResponse(open(file_path, 'rb'), as_attachment=True, filename='Политика_в_отношении_обработки_персональных_данных.pdf')
 
 
 
@@ -323,17 +323,17 @@ def new_order(request):
     profile = request.user.profile.company_name
     
     
-    today = datetime.datetime.today().strftime("%Y%m%d")
+    today = datetime.datetime.today().strftime('%Y%m%d')
     today_orders_count = Order.objects.filter(
-        order_number__startswith=f"F{today}"
+        order_number__startswith=f'F{today}'
     ).count()
 
     if today_orders_count > 0:
         new_number = str(today_orders_count + 1).zfill(5)  # +1 и дополняем нулями
     else:
-        new_number = "00001"  # первый заказ за день
+        new_number = '00001'  # первый заказ за день
 
-    order_number = f"F{today}{new_number}"
+    order_number = f'F{today}{new_number}'
     
     
     technical_processes = TechnicalProcess.objects.all()
@@ -345,7 +345,7 @@ def new_order(request):
             order_form.instance.order_number = order_number
             order_form.instance.creator = request.user.profile
             order_form.save(commit=True)
-            order_in_progress = Order.objects.latest("created_at")
+            order_in_progress = Order.objects.latest('created_at')
             order_data = model_to_dict(order_in_progress)
             file_field = order_in_progress.multiplan_dicing_plan_file
             order_data['multiplan_dicing_plan_file'] = file_field.url if file_field else None
@@ -431,12 +431,13 @@ def all_documents(request):
     return render(request, 'account/all_documents.html', {'user_documents': user_documents})
 
 
+@login_required
 def changes_in_order(request, order_id):
-    order = Order.objects.get(id=order_id)
+    order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
         order_form = OrderEditForm(request.POST, request.FILES, instance=order)
         if order_form.is_valid():
-            order.order_status = "OVK"
+            order.order_status = 'OVK'
             order_form.save()
             return render(request, 'account/client/changes_in_order_success.html',
                           {'order_form': order_form,
@@ -452,17 +453,26 @@ def changes_in_order(request, order_id):
     })
 
 
+@login_required
 def signing_agreement(request, order_id):
     order = Order.objects.get(id=order_id)
-    creator_name = order.creator.user.username
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     
     if request.method == 'POST':
         form = AddContractForm(request.POST, instance=order)
         if form.is_valid():
-            order.order_status = "CSA"
+            action = None
+            if form.cleaned_data.get('contract_is_ready', False):
+                order.order_status = 'CSA'
+                action = 'confirmed'
+            else:
+                order.order_status = 'SA'
+                action = 'not_confirmed'
             form.save()
-            return render(request, 'account/client/signing_agreement_success.html', )
+            return render(
+                request, 
+                'account/client/signing_agreement_success.html',
+                {'order': order, 'action': action}
+            )
     else:
         form = AddContractForm(instance=order)
         
@@ -474,15 +484,12 @@ def signing_agreement(request, order_id):
         'account/client/signing_agreement.html',
         {
             'form': form,
-            'order': order_dict,
-            'creator_name': creator_name,
             'view_form': view_form,
             'order_items': order_items,
         }
     )
 
     
-
 def add_gds(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
@@ -492,7 +499,7 @@ def add_gds(request, order_id):
     if request.method == 'POST':
         form = AddGDSFile(request.POST, request.FILES, instance=order)
         if form.is_valid():
-            order.order_status = "CGDS"
+            order.order_status = 'CGDS'
             form.save()
             
             new_file = order.GDS_file.name
@@ -527,7 +534,7 @@ def order_paid(request, order_id):
         action = None
         if 'paid_success' in request.POST:
             order.is_paid = True
-            order.order_status = "POK"
+            order.order_status = 'POK'
             order.order_date = timezone.now()
             action = 'success'
         else:
@@ -558,11 +565,11 @@ def confirmation_receipt(request, order_id):
         action = None
         if 'receipt_success' in request.POST:
             order.is_paid = True
-            order.order_status = "EO"
+            order.order_status = 'EO'
             action = 'success'
         elif 'receipt_cancel' in request.POST:
             order.is_paid = False
-            order.order_status = "PS"
+            order.order_status = 'PS'
             action = 'cancelled'
         order.save()
 
@@ -611,10 +618,10 @@ def edit_order(request, order_id):
     if request.method == 'POST':
         action = None
         if 'success' in request.POST:
-            order.order_status = "OVC"
+            order.order_status = 'OVC'
             action = 'success'
         elif 'cancelled' in request.POST:
-            order.order_status = "NFW"
+            order.order_status = 'NFW'
             action = 'cancelled'
         order.save()
 
@@ -637,7 +644,7 @@ def edit_order(request, order_id):
         }
     )
     
-    
+
 def check_signing_curator(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
@@ -648,10 +655,10 @@ def check_signing_curator(request, order_id):
         form = AddContractFileForm(request.POST,  request.FILES, instance=order)
         action = None
         if 'success' in request.POST:
-            order.order_status = "ESA"
+            order.order_status = 'ESA'
             action = 'success'
         elif 'cancel' in request.POST:
-            order.order_status = "SA"
+            order.order_status = 'SA'
             action = 'cancelled'
         if form.is_valid():
             form.save()
@@ -692,11 +699,11 @@ def view_is_paid(request, order_id):
             action = None
             if 'paid_confirmation' in request.POST:
                 order.is_paid = True
-                order.order_status = "POC"
+                order.order_status = 'POC'
                 action = 'success'
             elif 'paid_cansel' in request.POST:
                 order.is_paid = False
-                order.order_status = "PO"
+                order.order_status = 'PO'
                 action = 'cancelled'
             order.save()
             new_file = order.invoice_file.name or ''
@@ -733,10 +740,10 @@ def shipping_is_confirm(request, order_id):
     if request.method == 'POST':
         action = None
         if 'success_shipping' in request.POST:
-            order.order_status = "PS"
+            order.order_status = 'PS'
             action = 'success'
         elif 'cancel_shipping' in request.POST:
-            order.order_status = "MPO"
+            order.order_status = 'MPO'
             action = 'cancelled'
         order.save()
 
@@ -766,10 +773,10 @@ def plates_shipped(request, order_id):
     if request.method == 'POST':
         action = None
         if 'success_shipped' in request.POST:
-            order.order_status = "CR"
+            order.order_status = 'CR'
             action = 'success'
         elif 'cancel_shipped' in request.POST:
-            order.order_status = "SO"
+            order.order_status = 'SO'
             action = 'cancelled'
         order.save()
 
@@ -817,34 +824,36 @@ def _dashboard_executor(request, message=''):
 
 @login_required
 def order_view(request, order_id):
-    order = Order.objects.get(id=order_id)
+    order = get_object_or_404(Order, id=order_id)
     creator_name = order.creator.user.username
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
 
-    if request.method == "POST":
+    if request.method == 'POST':
+        action = None
         if 'save_changes' in request.POST:
-            order.order_status = "OA"
-            order.save()
-            return redirect(reverse('order_view_success') + '?success_type=saved')
+            order.order_status = 'OA'
+            action = 'success'
         elif 'cancel_changes' in request.POST:
-            order.order_status = "OVK"
-            order.save()
-            return redirect(reverse('order_view_success') + '?success_type=canceled')
-        else:
-            raise RuntimeError('unknown order status command')
+            order.order_status = 'OVK'
+            action = 'cancelled'
+        order.save()
+
+        return render(
+            request, 'account/order_view_success.html', {'order': order, 'action': action}
+        )
 
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-    
+
     return render(
         request,
         'account/order_view.html',
         {
-            'section': dashboard,
-            'order': order_dict,
-            'creator_name': creator_name,
+            'order': order,
             'view_form': view_form,
+            'creator_name': creator_name,
             'order_items': order_items,
+            'order_number': order.id,
+            'section': dashboard,
         }
     )
 
@@ -854,11 +863,11 @@ def order_view_success(request):
     success_type = request.GET.get('success_type', '')
 
     if success_type == 'saved':
-        message = "Изменения успешно сохранены!"
+        message = 'Изменения успешно сохранены!'
     elif success_type == 'canceled':
-        message = "Изменения были отменены."
+        message = 'Изменения были отменены.'
     else:
-        message = "Нет информации о действии."
+        message = 'Нет информации о действии.'
 
     return render(
         request,
@@ -895,13 +904,13 @@ def check_signing_exec(request, order_id):
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     old_contract = order.contract_file.name
     
-    if request.method == "POST":
+    if request.method == 'POST':
         action = None
         if 'success' in request.POST:
-            order.order_status = "OGDS"
+            order.order_status = 'OGDS'
             action = 'success'
         elif 'cancel' in request.POST:
-            order.order_status = "CSA"
+            order.order_status = 'CSA'
             action = 'cancelled'
         order.save()
         
@@ -940,10 +949,10 @@ def check_gds_file_curator(request, order_id):
     if request.method == 'POST':
         action = None
         if 'success_gds' in request.POST:
-            order.order_status = "EGDS"
+            order.order_status = 'EGDS'
             action = 'confirmed'
         elif 'cancel_gds' in request.POST:
-            order.order_status = "OGDS"
+            order.order_status = 'OGDS'
             action = 'cancelled'
         order.save()
         
@@ -980,10 +989,10 @@ def check_gds_file_exec(request, order_id):
     if request.method == 'POST':
         action = None
         if 'success_gds' in request.POST:
-            order.order_status = "PO"
+            order.order_status = 'PO'
             action = 'confirmed'
         elif 'cancel_gds' in request.POST:
-            order.order_status = "CGDS"
+            order.order_status = 'CGDS'
             action = 'cancelled'
         order.save()
         new_file = order.GDS_file.name
@@ -1018,11 +1027,11 @@ def view_is_paid_exec(request, order_id):
         action = None
         if 'paid_confirmation' in request.POST:
             order.is_paid = True
-            order.order_status = "MPO"
+            order.order_status = 'MPO'
             action = 'success'
         elif 'paid_cansel' in request.POST:
             order.is_paid = False
-            order.order_status = "POK"
+            order.order_status = 'POK'
             action = 'cancelled'
         order.save()
         
@@ -1067,10 +1076,10 @@ def plates_in_stock(request, order_id):
 
         action = None
         if 'success_confirmation' in request.POST:
-            order.order_status = "SO"
+            order.order_status = 'SO'
             action = 'success'
         elif 'cancel_confirmation' in request.POST:
-            order.order_status = "POK"
+            order.order_status = 'POK'
             action = 'cancelled'
         
         order.save()
@@ -1132,7 +1141,7 @@ def get_diameters_by_platform(platform_id):
     #Хелпер для получения диаметров по платформе
     try:
         diameters = Diameter.objects.filter(platform_id=platform_id)
-        print(f"Diameters: {[d.value for d in diameters]}")
+        print(f'Diameters: {[d.value for d in diameters]}')
         return JsonResponse({
             'diameters': [{'id': d.id, 'value': d.value} for d in diameters]
         })
@@ -1175,12 +1184,12 @@ def get_technical_processes_by_platform(request):
             platform = Platform.objects.get(id=platform_id)
             technical_processes = platform.technicalprocess_set.all()
             technical_processes_data = [
-                {"id": tp.id, "name_process": tp.name_process} for tp in technical_processes
+                {'id': tp.id, 'name_process': tp.name_process} for tp in technical_processes
             ]
-            return JsonResponse({"technical_processes": technical_processes_data})
+            return JsonResponse({'technical_processes': technical_processes_data})
         except Platform.DoesNotExist:
-            return JsonResponse({"error": "Platform not found"}, status=404)
-    return JsonResponse({"technical_processes": []})
+            return JsonResponse({'error': 'Platform not found'}, status=404)
+    return JsonResponse({'technical_processes': []})
 
 
 def load_data(request):
@@ -1225,7 +1234,7 @@ def download_excel_file_from_order_id(request, order_id):
     try:
         order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
-        return HttpResponse("Ошибка: заказ не найден.", status=404)
+        return HttpResponse('Ошибка: заказ не найден.', status=404)
 
     wb = generate_excel_file(request, order_id=order_id)
 
@@ -1235,11 +1244,11 @@ def download_excel_file_from_order_id(request, order_id):
         output.seek(0)
 
         response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        filename = f"Детали_заказа_{order_id}.xlsx"
-        response['Content-Disposition'] = f'attachment; filename="{quote(filename)}"; filename*=UTF-8\'\'{quote(filename)}'
+        filename = f'Детали_заказа_{order_id}.xlsx'
+        response['Content-Disposition'] = f'attachment; filename='{quote(filename)}'; filename*=UTF-8\'\'{quote(filename)}'
         return response
     else:
-        return HttpResponse("Ошибка при создании файла.", status=400)
+        return HttpResponse('Ошибка при создании файла.', status=400)
 
 
 def help_files(request):
@@ -1303,14 +1312,14 @@ def topic_detail(request, topic_id):
         message_text = request.POST.get('text', '').strip()  # Получаем текст из формы
 
         if message_text or files:  # Разрешаем отправку только если есть текст или файлы
-            message = Message(topic=topic, user=profile, text=message_text if message_text else "")
+            message = Message(topic=topic, user=profile, text=message_text if message_text else '')
             message.save()
 
             for file in files:
                 File.objects.create(message=message, file=file)
 
             if topic.is_private:
-                topic.name = f'Чат по заказу {topic.related_order.order_number} | {localtime().strftime("%H:%M:%S")}'
+                topic.name = f'Чат по заказу {topic.related_order.order_number} | {localtime().strftime('%H:%M:%S')}'
                 topic.save(update_fields=['name'])
 
             return redirect('topic_detail', topic_id=topic.id)

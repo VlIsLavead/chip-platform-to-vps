@@ -26,6 +26,7 @@ LoginLog
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 from ..utils.generate_messages import add_file_message
+from ..decorators.restrict import restrict_by_status
 
 
 def password_recovery(request):
@@ -432,6 +433,7 @@ def all_documents(request):
 
 
 @login_required
+@restrict_by_status()
 def changes_in_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
@@ -454,6 +456,7 @@ def changes_in_order(request, order_id):
 
 
 @login_required
+@restrict_by_status()
 def signing_agreement(request, order_id):
     order = Order.objects.get(id=order_id)
     
@@ -489,7 +492,9 @@ def signing_agreement(request, order_id):
         }
     )
 
-
+    
+@login_required
+@restrict_by_status()
 def add_gds(request, order_id):
     order = Order.objects.get(id=order_id)
     old_file = order.GDS_file.name
@@ -531,6 +536,7 @@ def add_gds(request, order_id):
 
 
 @login_required
+@restrict_by_status()
 def order_paid(request, order_id):
     order = Order.objects.get(id=order_id)
 
@@ -562,6 +568,7 @@ def order_paid(request, order_id):
     
     
 @login_required
+@restrict_by_status()
 def confirmation_receipt(request, order_id):
     order = Order.objects.get(id=order_id)
 
@@ -615,6 +622,7 @@ def _dashboard_curator(request, message=''):
 
 
 @login_required
+@restrict_by_status()
 def edit_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     creator_name = order.creator.user.username
@@ -701,6 +709,7 @@ def check_signing_curator(request, order_id):
 
 
 @login_required
+@restrict_by_status()
 def view_is_paid(request, order_id):
     order = Order.objects.get(id=order_id)
     old_invoice = order.invoice_file.name or ''
@@ -746,6 +755,7 @@ def view_is_paid(request, order_id):
 
 
 @login_required
+@restrict_by_status()
 def shipping_is_confirm(request, order_id):
     order = Order.objects.get(id=order_id)
 
@@ -779,6 +789,7 @@ def shipping_is_confirm(request, order_id):
     )
 
 @login_required
+@restrict_by_status()
 def plates_shipped(request, order_id):
     order = Order.objects.get(id=order_id)
 
@@ -835,6 +846,7 @@ def _dashboard_executor(request, message=''):
 
 
 @login_required
+@restrict_by_status()
 def order_view(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     creator_name = order.creator.user.username
@@ -948,7 +960,9 @@ def check_signing_exec(request, order_id):
         }
     )
 
+
 @login_required
+@restrict_by_status()
 def check_gds_file_curator(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
@@ -989,6 +1003,7 @@ def check_gds_file_curator(request, order_id):
     
     
 @login_required
+@restrict_by_status()
 def check_gds_file_exec(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
@@ -1028,6 +1043,7 @@ def check_gds_file_exec(request, order_id):
 
 
 @login_required
+@restrict_by_status()
 def view_is_paid_exec(request, order_id):
     order = Order.objects.get(id=order_id)
     old_invoice = order.invoice_file.name
@@ -1069,6 +1085,7 @@ def view_is_paid_exec(request, order_id):
 
 
 @login_required
+@restrict_by_status()
 def plates_in_stock(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}

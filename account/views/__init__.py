@@ -648,23 +648,33 @@ def edit_order(request, order_id):
         }
     )
     
-
+    
+@login_required
 def check_signing_curator(request, order_id):
     order = Order.objects.get(id=order_id)
-    creator_name = order.creator.user.username
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     old_contract = order.contract_file.name or ''
     
     if request.method == 'POST':
-        form = AddContractFileForm(request.POST,  request.FILES, instance=order)
+        form = AddContractFileForm(request.POST, request.FILES, instance=order)
         action = None
-        if 'success' in request.POST:
-            order.order_status = 'ESA'
-            action = 'success'
-        elif 'cancel' in request.POST:
-            order.order_status = 'SA'
-            action = 'cancelled'
+        
         if form.is_valid():
+            file_provided = bool(form.cleaned_data.get('contract_file'))
+            
+            if 'success' in request.POST:
+                if file_provided:
+                    order.order_status = 'ESA'
+                    action = 'success'
+                else:
+                    order.order_status = 'CSA'
+                    action = 'no_file'
+            elif 'cancelled' in request.POST:
+                if order.contract_file:
+                    order.contract_file.delete(save=False)
+                    order.contract_file = None
+                order.order_status = 'SA'
+                action = 'cancelled'
+            
             form.save()
             
             new_file = order.contract_file.name or ''
@@ -672,7 +682,7 @@ def check_signing_curator(request, order_id):
                 add_file_message(order, 'contract_file', request.user.profile)
                 
             return render(request, 'account/check_signing_success.html', 
-                          {'order': order, 'action': action})
+                        {'order': order, 'action': action})
     else:
         form = AddContractFileForm(instance=order)
         
@@ -684,8 +694,6 @@ def check_signing_curator(request, order_id):
         'account/check_signing_curator.html',
         {
             'form': form,
-            'order': order_dict,
-            'creator_name': creator_name,
             'view_form': view_form,
             'order_items': order_items,
         }
@@ -902,10 +910,9 @@ def edit_platform_success(request):
     return render(request, 'account/edit_platform_success.html')
 
 
+@login_required
 def check_signing_exec(request, order_id):
     order = Order.objects.get(id=order_id)
-    creator_name = order.creator.user.username
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     old_contract = order.contract_file.name
     
     if request.method == 'POST':
@@ -913,7 +920,7 @@ def check_signing_exec(request, order_id):
         if 'success' in request.POST:
             order.order_status = 'OGDS'
             action = 'success'
-        elif 'cancel' in request.POST:
+        elif 'cancelled' in request.POST:
             order.order_status = 'CSA'
             action = 'cancelled'
         order.save()
@@ -936,8 +943,6 @@ def check_signing_exec(request, order_id):
         'account/check_signing_exec.html',
         {
             'section': dashboard,
-            'order': order_dict,
-            'creator_name': creator_name,
             'view_form': view_form,
             'order_items': order_items,
         }

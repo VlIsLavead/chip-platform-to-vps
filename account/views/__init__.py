@@ -1254,7 +1254,7 @@ def download_excel_file_from_order_id(request, order_id):
 
         response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         filename = f'Детали_заказа_{order_id}.xlsx'
-        response['Content-Disposition'] = f'attachment; filename='{quote(filename)}'; filename*=UTF-8\'\'{quote(filename)}'
+        response['Content-Disposition'] = f'attachment; filename="{quote(filename)}"; filename*=UTF-8\'\'{quote(filename)}'
         return response
     else:
         return HttpResponse('Ошибка при создании файла.', status=400)

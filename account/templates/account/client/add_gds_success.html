@@ -3,6 +3,10 @@
 {% block title %}Успех{% endblock %}
 
 {% block content %}
+    {% if action == 'confirmed' %}
     <h1>Файл GDS добавлен</h1>
+    {% else %}
+    <h1>Файл GDS не загружен. Попробуйте снова</h1>
+    {% endif %}
     <p><a href="{% url "dashboard" %}">Вернуться</a> в личный кабинет</p>
 {% endblock %}

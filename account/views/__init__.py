@@ -489,24 +489,30 @@ def signing_agreement(request, order_id):
         }
     )
 
-    
+
 def add_gds(request, order_id):
     order = Order.objects.get(id=order_id)
-    creator_name = order.creator.user.username
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     old_file = order.GDS_file.name
     
     if request.method == 'POST':
         form = AddGDSFile(request.POST, request.FILES, instance=order)
         if form.is_valid():
-            order.order_status = 'CGDS'
+            action = None
+            if form.cleaned_data.get('GDS_file', False):
+                order.order_status = 'CGDS'
+                action = 'confirmed'
+                new_file = order.GDS_file.name
+                if old_file != new_file:
+                    add_file_message(order, 'GDS_file', request.user.profile)
+            else:
+                order.order_status = 'OGDS'
+                action = 'not_confirmed'
             form.save()
-            
-            new_file = order.GDS_file.name
-            if old_file != new_file:
-                add_file_message(order, 'GDS_file', request.user.profile)
-                
-            return render(request, 'account/client/add_gds_success.html', )
+            return render(
+                request, 
+                'account/client/add_gds_success.html',
+                {'order': order, 'action': action}
+            )
     else:
         form = AddGDSFile(instance=order)
         
@@ -518,8 +524,6 @@ def add_gds(request, order_id):
         'account/client/add_gds.html',
         {
             'form': form,
-            'order': order_dict,
-            'creator_name': creator_name,
             'view_form': view_form,
             'order_items': order_items,
         }

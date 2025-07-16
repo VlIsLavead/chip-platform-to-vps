@@ -9,6 +9,7 @@
             <th>Пользователь</th>
             <th>Дата и время входа</th>
             <th>Роль пользователя</th>
+            <th>Компания пользователя</th>
         </tr>
     </thead>
     <tbody>
@@ -18,6 +19,7 @@
             <td>{{ log.user.username }}</td>
             <td>{{ log.login_time }}</td>
             <td>{{ log.user.profile.role.name }}</td>
+            <td>{{ log.user.profile.company_name }}</td>
         </tr>
         {% endfor %}
     </tbody>

@@ -496,7 +496,7 @@ def signing_agreement(request, order_id):
 @login_required
 @restrict_by_status()
 def add_gds(request, order_id):
-    order = Order.objects.get(id=order_id)
+    order = get_object_or_404(Order, id=order_id)
     old_file = order.GDS_file.name
     
     if request.method == 'POST':
@@ -987,6 +987,9 @@ def check_gds_file_curator(request, order_id):
         elif 'cancel_gds' in request.POST:
             order.order_status = 'OGDS'
             action = 'cancelled'
+        else:
+            order.order_status = 'CGDS'
+            action = ''
         order.save()
         
         new_file = order.GDS_file.name
@@ -1028,6 +1031,9 @@ def check_gds_file_exec(request, order_id):
         elif 'cancel_gds' in request.POST:
             order.order_status = 'CGDS'
             action = 'cancelled'
+        else:
+            order.order_status = 'EGDS'
+            action = ''
         order.save()
         new_file = order.GDS_file.name
         if old_file != new_file and 'success_gds' in request.POST:

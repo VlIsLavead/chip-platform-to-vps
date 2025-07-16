@@ -500,6 +500,15 @@ def add_gds(request, order_id):
     old_file = order.GDS_file.name
     
     if request.method == 'POST':
+        if 'cancel' in request.POST:
+            order.order_status = 'OGDS'
+            order.save()
+            return render(
+                request,
+                'account/client/add_gds_success.html',
+                {'order': order, 'action': 'not_confirmed'}
+            )
+
         form = AddGDSFile(request.POST, request.FILES, instance=order)
         if form.is_valid():
             action = None

@@ -658,6 +658,7 @@ def edit_order(request, order_id):
     
     
 @login_required
+@restrict_by_status()
 def check_signing_curator(request, order_id):
     order = Order.objects.get(id=order_id)
     old_contract = order.contract_file.name or ''
@@ -686,7 +687,7 @@ def check_signing_curator(request, order_id):
             form.save()
             
             new_file = order.contract_file.name or ''
-            if old_contract != new_file and new_file != '' and action == 'success':
+            if action == 'success' and file_provided:
                 add_file_message(order, 'contract_file', request.user.profile)
                 
             return render(request, 'account/check_signing_success.html', 

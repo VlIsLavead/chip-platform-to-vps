@@ -727,11 +727,16 @@ def view_is_paid(request, order_id):
     if request.method == 'POST':
         form = EditPaidForm(request.POST, request.FILES, instance=order)
         if form.is_valid():
+            file_provided = bool(form.cleaned_data.get('invoice_file'))
             action = None
-            if 'paid_confirmation' in request.POST:
-                order.is_paid = True
-                order.order_status = 'POC'
-                action = 'success'
+            if 'paid_confirmation' in request.POST:      
+                if file_provided:
+                    order.is_paid = True
+                    order.order_status = 'POC'
+                    action = 'success'
+                else:
+                    order.order_status = 'POK'
+                    action = 'no_file'
             elif 'paid_cansel' in request.POST:
                 order.is_paid = False
                 order.order_status = 'PO'

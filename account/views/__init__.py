@@ -186,20 +186,19 @@ def registration(request):
             
             
             curator_users = User.objects.filter(
-                profile__role__name='Куратор',  # Фильтруем по роли через профиль
-                profile__deleted_at__isnull=True,  # Только активные профили
-                is_active=True  # Только активные пользователи
+                profile__role__name='Куратор',
+                profile__deleted_at__isnull=True,
+                is_active=True
             ).distinct()
 
-            # Проверяем, есть ли кураторы
             if not curator_users.exists():
                 print('Предупреждение: не найдено активных кураторов для уведомления')
 
             for curator in curator_users:
-                if not curator.email:  # Пропускаем если email не указан
+                if not curator.email:
                     print(f'Пропуск: у куратора {curator.username} не указан email')
                     continue
-                    
+                
                 curator_subject = 'Новая заявка на регистрацию'
                 curator_body = f'''
                     <html>
@@ -221,17 +220,22 @@ def registration(request):
                         curator_body,
                         file_paths=[]
                     )
-                    send_email_with_attachments(
-                        sender_email,
-                        os.getenv('EMAIL_HOST_USER'),
-                        password,
-                        curator_subject,
-                        curator_body,
-                        file_paths=[]
-                    )
                     print(f'Уведомление отправлено куратору: {curator.email}')
                 except Exception as e:
                     print(f'Ошибка при отправке письма куратору {curator.email}: {e}')
+
+            try:            
+                send_email_with_attachments(
+                    sender_email,
+                    os.getenv('EMAIL_HOST_USER'),
+                    password,
+                    curator_subject,
+                    curator_body,
+                    file_paths=[]
+                )
+                print('Копия письма отправлена на основную почту')
+            except Exception as e:
+                print(f'Ошибка при отправке копии на основную почту: {e}')
             
             
             messages.success(request, 'Регистрация прошла успешно!')

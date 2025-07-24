@@ -1113,37 +1113,52 @@ def view_is_paid_exec(request, order_id):
 @restrict_by_status()
 def plates_in_stock(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     mask_name_empty = not order.mask_name or str(order.mask_name).strip() == ''
-    
+    action = None
+
     if request.method == 'POST':
-        if mask_name_empty:
-            form = OrderEditingForm(request.POST, request.FILES, instance=order)
-            if form.is_valid():
-                form.save()
-                mask_name_empty = False
-        else:
+        if 'cancel_confirmation' in request.POST:
+            order.order_status = 'POK'
+            order.save()
+            action = 'cancelled'
             form = None
 
-        action = None
-        if 'success_confirmation' in request.POST:
-            order.order_status = 'SO'
-            action = 'success'
-        elif 'cancel_confirmation' in request.POST:
-            order.order_status = 'POK'
-            action = 'cancelled'
-        
-        order.save()
-        
+        elif 'success_confirmation' in request.POST:
+            if mask_name_empty:
+                form = OrderEditingForm(request.POST, request.FILES, instance=order)
+                form.fields['mask_name'].required = True
+                if form.is_valid():
+                    form.save()
+                    order.order_status = 'SO'
+                    order.save()
+                    action = 'success'
+                else:
+                    order.order_status = 'MPO'
+                    order.save()
+                    action = 'missing_mask'
+            else:
+                form = None
+                order.order_status = 'SO'
+                order.save()
+                action = 'success'
+        else:
+            form = None
+            order.order_status = 'MPO'
+            order.save()
+            action='unknown'
+
         if action:
             return render(
                 request,
                 'account/plates_in_stock_success.html',
-                {'order': order, 'action': action}
+                {
+                    'order': order,
+                    'action': action,
+                }
             )
     else:
-        form = OrderEditingForm(instance=order) if not order.mask_name else None
-        
+        form = OrderEditingForm(instance=order) if mask_name_empty else None
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1153,7 +1168,6 @@ def plates_in_stock(request, order_id):
         {
             'order': order,
             'form': form,
-            'order_dict': order_dict,
             'view_form': view_form,
             'order_items': order_items,
             'mask_name_empty': mask_name_empty,

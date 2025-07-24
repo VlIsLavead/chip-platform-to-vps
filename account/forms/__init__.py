@@ -299,6 +299,11 @@ class OrderEditingForm(forms.ModelForm):
 
         fields = ['mask_name']
         
+    def __init__(self, *args, **kwargs):
+        self.context_action = kwargs.pop('context_action', None)
+        super().__init__(*args, **kwargs)
+        self.fields['mask_name'].required = False
+        
 
 class AddContractForm(forms.ModelForm):
     class Meta:

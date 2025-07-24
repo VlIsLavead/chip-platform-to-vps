@@ -42,7 +42,7 @@ body {
     --main-page-color: #e3e8e6;
     --main-text-color: #000000;
     --main-block-hover: #C0C0C0;
-    --main-block-color: #FDE7DA;
+    --main-block-color: #FFFFFF;
     --main-other-bg: #35bba3;
     --main-other-bg-copy: #7851a9;
     --main-color-for: #ff0033;
@@ -621,7 +621,7 @@ img.user-detail {
 #messages-container {
     height: 100%;
     overflow-y: auto;
-    background-color: #fff;
+    background-color: var(--main-block-color);
     border-radius: 8px;
     box-shadow: inset 0 0 5px rgba(177, 141, 141, 0.1);
     padding: 0;
@@ -632,6 +632,7 @@ img.user-detail {
     padding: 10px;
     border-bottom: 1px solid #ddd;
     font-size: 14px;
+    background-color: var(--main-block-color);
 }
 
 .message-header {

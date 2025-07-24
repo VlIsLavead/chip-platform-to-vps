@@ -30,7 +30,7 @@ class Profile(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return f'Профиль {self.user.username}'
+        return f'{self.user.username}'
     
     def is_expired(self):
         return self.expiration_date and now() > self.expiration_date

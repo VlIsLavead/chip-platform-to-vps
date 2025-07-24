@@ -8,7 +8,7 @@
     <div id="messages-container">
         {% for message in messages %}
             <div class="message" id="message-{{ message.id }}">
-                <p><strong>{{ message.user }}</strong> ({{ message.created_at }}): <br>{{ message.text }}</p>
+                <p><strong>{{ message.user.role.name }}-{{ message.user }}</strong> ({{ message.created_at }}): <br>{{ message.text }}</p>
                 {% for file in message.files.all %}
                     <a href="{{ file.file.url }}" download class="file-download-btn">{{ file.file.name|filename }}</a>
                 {% endfor %}

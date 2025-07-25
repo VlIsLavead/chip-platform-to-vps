@@ -1080,7 +1080,6 @@ def check_gds_file_exec(request, order_id):
 @restrict_by_status()
 def view_is_paid_exec(request, order_id):
     order = Order.objects.get(id=order_id)
-    old_invoice = order.invoice_file.name
     
     if request.method == 'POST':
         action = None
@@ -1093,10 +1092,6 @@ def view_is_paid_exec(request, order_id):
             order.order_status = 'POK'
             action = 'cancelled'
         order.save()
-        
-        new_file = order.invoice_file.name
-        if old_invoice != new_file and action == 'success':
-            add_file_message(order, 'invoice_file', request.user.profile)
 
         return render(
             request,

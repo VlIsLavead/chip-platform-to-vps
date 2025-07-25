@@ -954,6 +954,7 @@ def edit_platform_success(request):
 
 
 @login_required
+@restrict_by_status()
 def check_signing_exec(request, order_id):
     order = Order.objects.get(id=order_id)
     old_contract = order.contract_file.name

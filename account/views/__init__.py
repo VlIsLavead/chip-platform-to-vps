@@ -595,6 +595,9 @@ def confirmation_receipt(request, order_id):
             order.is_paid = False
             order.order_status = 'PS'
             action = 'cancelled'
+        else:
+            order.order_status = 'CR'
+            action='unknown'
         order.save()
 
         return render(
@@ -786,6 +789,9 @@ def shipping_is_confirm(request, order_id):
         elif 'cancel_shipping' in request.POST:
             order.order_status = 'MPO'
             action = 'cancelled'
+        else:
+            order.order_status='SO'
+            action='unknown'
         order.save()
 
         return render(
@@ -820,6 +826,9 @@ def plates_shipped(request, order_id):
         elif 'cancel_shipped' in request.POST:
             order.order_status = 'SO'
             action = 'cancelled'
+        else:
+            order.order_status = 'PS'
+            action='unknown'
         order.save()
 
         return render(

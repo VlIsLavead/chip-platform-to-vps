@@ -26,6 +26,14 @@ def restrict_by_status(order_kwarg='order_id'):
                 return render(request, 'account/forbidden.html', {
                     'reason': f'Заказ с номером {order_id} не найден.'
                 }, status=403)
+                
+            if (
+                order.creator.user_id != request.user.id
+                and request.user.profile.role.name not in ['Куратор', 'Исполнитель']
+            ):
+                return render(request, 'account/forbidden.html', {
+                    'reason': 'Вы не можете редактировать этот заказ.'
+                }, status=403)
 
             allowed_roles = ACCESS_RULES.get(order.order_status, [])
             if user_role not in allowed_roles:

@@ -2,6 +2,10 @@
 
 {% block content %}
     <h1>⚠️ Доступ запрещён</h1>
-    <p>{{ reason }}</p>
-    <p><a href="{% url 'dashboard' %}">Вернуться на главную</a></p>
+    <p class="forbidden_text">{{ reason }}</p>
+    <p class="forbidden_text">
+        <a class="button function-button" href="{% url 'dashboard' %}">
+        Вернуться на главную
+        </a>
+    </p>
 {% endblock %}

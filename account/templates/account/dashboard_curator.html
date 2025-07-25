@@ -71,7 +71,7 @@
                         <td>{{ order.id }}</td>
                         <td>{{ order.platform_code.platform_code }}</td>
                         <td>{{ order.get_order_type_display }}</td>
-                        <td>{{ order.order_date.date|date:"d.m.Y" }}</td>
+                        <td>{{ order.created_at.date|date:"d.m.Y" }}</td>
                         <td>{{ order.deadline_date.date|date:"d.m.Y" }}</td>
                         <td>{{ order.order_date|default:"нет" }}</td>
                         <td>

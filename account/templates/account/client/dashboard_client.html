@@ -92,7 +92,7 @@
                     </td>
 
                     <td>
-                        {% if order.order_status == "OGDS" %}
+                        {% if order.order_status == "OGDS" and order.creator.user.id == request.user.id %}
                             <a class="function-button" href="{% url 'add_gds' order.id %}">Загрузить GDS файл</a>
                         {% else %}
                             {% if order.GDS_file %}
@@ -104,8 +104,8 @@
                     </td>
 
                     <td>
-                        {% if order.order_status == "PO" %}
-                            <a class="function-button" href="{% url 'is_paid' order.id %}">Оплатить</a>    
+                        {% if order.order_status == "PO" and order.creator.user.id == request.user.id %}
+                            <a class="function-button" href="{% url 'is_paid' order.id %}">Оплатить</a>
                         {% else %}
                             {% if order.is_paid == False %}
                                 <span>Оплата недоступна</span>
@@ -116,12 +116,14 @@
                     </td>
 
                     <td>
-                        {% if order.order_status == "NFW" %}
-                            <a href="{% url 'changes_in_order' order.id %}" class="button function-button">Внести изменения в заказ</a>
-                        {% elif order.order_status == "OA" or order.order_status == "SA" %}
-                            <a href="{% url 'signing_agreement' order.id %}" class="button function-button">Подтвердить подписание договора</a>
-                        {% elif order.order_status == "CR" %}
-                            <a href="{% url 'confirmation_receipt' order.id %}" class="button function-button">Подтвердить получение пластин</a>
+                        {% if order.creator.user.id == request.user.id %}
+                            {% if order.order_status == "NFW" %}
+                                <a href="{% url 'changes_in_order' order.id %}" class="button function-button">Внести изменения в заказ</a>
+                            {% elif order.order_status == "OA" or order.order_status == "SA" %}
+                                <a href="{% url 'signing_agreement' order.id %}" class="button function-button">Подтвердить подписание договора</a>
+                            {% elif order.order_status == "CR" %}
+                                <a href="{% url 'confirmation_receipt' order.id %}" class="button function-button">Подтвердить получение пластин</a>
+                            {% endif %}
                         {% endif %}
                         <a href="{% url 'create_or_open_chat' order.id %}" class="button chat-button">
                             Перейти в чат

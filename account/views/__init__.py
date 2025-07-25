@@ -303,11 +303,13 @@ def account_expired(request):
 
 def _dashboard_client(request, message=''):
     profile = request.user.profile
-    orders = Order.objects.filter(creator_id=request.user.id)
+    company_name = profile.company_name
+    users_in_company = Profile.objects.filter(company_name=company_name) \
+                        .values_list('user', flat=True)
     
-    platform = Profile.objects.get(id=request.user.id)
-    platform_name = platform.company_name
-    # platform_name = platform.platform_name
+    orders = Order.objects.filter(creator__user__in=users_in_company) \
+                        .select_related('creator', 'platform_code') \
+                        .order_by('-created_at')
 
     return render(
         request,
@@ -315,9 +317,10 @@ def _dashboard_client(request, message=''):
         {
             'section': 'dashboard',
             'data': {
-                'platform_name': platform_name,
+                'platform_name': company_name,
                 'orders': orders,
                 'profile': profile,
+                'current_user_id': request.user.id,
             }
         },
     )

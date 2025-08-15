@@ -26,6 +26,7 @@ LoginLog
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 from ..utils.generate_messages import add_file_message
+from ..utils.unread_message_email_sender import unread_message_email_sender
 from ..decorators.restrict import restrict_by_status
 
 
@@ -1382,11 +1383,12 @@ def topic_detail(request, topic_id):
         message_form = MessageForm(request.POST)
         files = request.FILES.getlist('file')
 
-        message_text = request.POST.get('text', '').strip()  # Получаем текст из формы
+        message_text = request.POST.get('text', '').strip()
 
-        if message_text or files:  # Разрешаем отправку только если есть текст или файлы
+        if message_text or files:
             message = Message(topic=topic, user=profile, text=message_text if message_text else '')
             message.save()
+            unread_message_email_sender(message.id)
 
             for file in files:
                 File.objects.create(message=message, file=file)

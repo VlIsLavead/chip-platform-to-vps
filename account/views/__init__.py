@@ -30,13 +30,24 @@ from ..utils.email_sender import send_email_with_attachments
 from ..utils.generate_messages import add_file_message
 from ..utils.unread_message_email_sender import unread_message_email_sender
 from ..decorators.restrict import restrict_by_status
+from ..access_rules.access_rules import ROLE_CUSTOMER, ROLE_CURATOR, ROLE_EXECUTOR
 
 
 def password_recovery(request):
     return render(request, 'account/password_recovery.html')
 
-def filter_orders(orders, query):
-    filtered_orders = orders.filter(
+ORDER_STATUS_PRIORITY = [
+    'NFW', 'OVK', 'OVC', 'OA', 'CSA', 'ESA', 'SA', 'CGDS', 'EGDS', 'OGDS',
+    'POK', 'POC', 'PO', 'MPO', 'SO', 'PS', 'CR', 'EO'
+]
+
+def search_orders(queryset, query=None):
+    if not query:
+        return queryset
+
+    query_lower = query.lower()
+    
+    orm_filtered = queryset.filter(
         Q(order_number__icontains=query) |
         Q(id__icontains=query) |
         Q(platform_code__platform_code__icontains=query) |
@@ -47,115 +58,62 @@ def filter_orders(orders, query):
         Q(GDS_file__icontains=query)
     )
 
-    additional_orders = []
-    for order in orders:
-        if query.lower() in order.get_order_type_display().lower() or query.lower() in order.get_order_status_display().lower():
-            additional_orders.append(order)
-
-    return (filtered_orders | orders.filter(id__in=[o.id for o in additional_orders])).distinct()
-
-
-
-def generic_search_clients(request):
-    query = request.GET.get('q')
-    orders = Order.objects.filter(creator_id=request.user.id)
-    filtered_orders = filter_orders(orders, query)
-
-    data = {
-        'orders': filtered_orders,
-        'profile': {'company': 'Рога и Копыта'},
-    }
-    return render(request, 'account/client/dashboard_client.html', {'data': data})
-
-
-
-def generic_search_curator(request):
-    query = request.GET.get('q')
-    orders = Order.objects.all()
-    filtered_orders = filter_orders(orders, query)
-
-    data = {
-        'orders': filtered_orders,
-        'profile': {'company': 'рога и копыта'},
-    }
-    return render(request, 'account/dashboard_curator.html', {'data': data})
-
-
-
-def generic_search_executor(request):
-    query = request.GET.get('q')
-    user_p = request.user.profile
-    code_company = Platform.objects.get(platform_code=user_p.company_name)
-    orders = Order.objects.filter(platform_code_id=code_company)
-    filtered_orders = filter_orders(orders, query)
-
-    data = {
-        'profile': user_p,
-        'code_company': code_company,
-        'orders': filtered_orders,
-    }
-    return render(request, 'account/dashboard_executor.html', {'data': data})
-
-
-def filter_orders(base_queryset, request):
-    # TODO refactor: вытащить request из области видимости функции
-    query = request.GET.get('q', '')
-    filter_by = request.GET.get('filter_by', '')
-    # TODO вытащить константы в область видимости файла
-    ORDER_STATUS_PRIORITY = [
-        'NFW', 'OVK', 'OVC', 'OA', 'CSA', 'ESA', 'SA', 'CGDS', 'EGDS', 'OGDS',
-        'POK', 'POC', 'PO', 'MPO', 'SO', 'PS', 'CR', 'EO'
+    display_ids = [
+        o.id for o in queryset
+        if query_lower in o.get_order_type_display().lower()
+        or query_lower in o.get_order_status_display().lower()
     ]
 
-    if query:
-        base_queryset = base_queryset.filter(client__name__icontains=query)
+    if display_ids:
+        orm_filtered = orm_filtered | queryset.filter(id__in=display_ids)
 
+    return orm_filtered.distinct()
+
+
+def filter_orders(queryset, filter_by=None):
     if filter_by == 'order_number':
-        base_queryset = base_queryset.order_by('-order_number')
+        return queryset.order_by('-order_number')
     elif filter_by == 'created_at':
-        base_queryset = base_queryset.order_by('-created_at')
+        return queryset.order_by('-created_at')
     elif filter_by == 'status':
-        whens = [When(order_status=status, then=pos) for pos, status in enumerate(ORDER_STATUS_PRIORITY)]
-        base_queryset = base_queryset.annotate(
+        whens = [When(order_status=s, then=pos) for pos, s in enumerate(ORDER_STATUS_PRIORITY)]
+        return queryset.annotate(
             status_priority=Case(*whens, output_field=IntegerField())
         ).order_by('status_priority')
+    return queryset
 
-    return base_queryset
 
+def  search_orders_view(request, role_id):
+    query = request.GET.get('q', '')
+    filter_by = request.GET.get('filter_by', '')
 
-def client_orders_view(request):
-    base_qs = Order.objects.filter(creator_id=request.user.id)
-    orders = filter_orders(base_qs, request)
-    return render(request, 'account/client/dashboard_client.html', {
+    if role_id == ROLE_CUSTOMER:
+        base_qs = Order.objects.filter(creator_id=request.user.id)
+        template = 'account/client/dashboard_client.html'
+        extra = {}
+    elif role_id == ROLE_CURATOR:
+        base_qs = Order.objects.all()
+        template = 'account/dashboard_curator.html'
+        platform_name = get_object_or_404(Profile, id=request.user.id).company_name
+        extra = {'platform_name': platform_name}
+    elif role_id == ROLE_EXECUTOR:
+        profile = request.user.profile
+        code_company = get_object_or_404(Platform, platform_code=profile.company_name)
+        base_qs = Order.objects.filter(platform_code_id=code_company)
+        template = 'account/dashboard_executor.html'
+        name_platform = Platform.objects.filter(platform_code=code_company)\
+            .values_list('platform_name', flat=True).first()
+        extra = {'name_platform': name_platform}
+    else:
+        raise ValueError(f"Unknown role_id: {role_id}")
+
+    orders = search_orders(base_qs, query)
+    orders = filter_orders(orders, filter_by)
+
+    return render(request, template, {
         'data': {
             'orders': orders,
-        }
-    })
-
-
-def curator_orders_view(request):
-    base_qs = Order.objects.all()
-    orders = filter_orders(base_qs, request)
-    platform = Profile.objects.get(id=request.user.id)
-    platform_name = platform.company_name
-    return render(request, 'account/dashboard_curator.html', {
-        'data': {
-            'orders': orders,
-            'platform_name': platform_name,
-        }
-    })
-
-
-def executor_orders_view(request):
-    profile = request.user.profile
-    code_company = Platform.objects.get(platform_code=profile.company_name)
-    name_platform = Platform.objects.filter(platform_code=code_company).values_list('platform_name', flat=True).first()
-    base_qs = Order.objects.filter(platform_code_id=code_company)
-    orders = filter_orders(base_qs, request)
-    return render(request, 'account/dashboard_executor.html', {
-        'data': {
-            'orders': orders,
-            'name_platform': name_platform,
+            **extra
         }
     })
 

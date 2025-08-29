@@ -1,5 +1,15 @@
 from account.models import Order, Platform
 
+ROLE_CUSTOMER = 1
+ROLE_CURATOR = 2
+ROLE_EXECUTOR = 3
+
+ROLE_NAMES = {
+    ROLE_CUSTOMER: 'Заказчик',
+    ROLE_CURATOR: 'Куратор',
+    ROLE_EXECUTOR: 'Исполнитель',
+}
+
 ACCESS_RULES = {
     Order.OrderStatus.NFW: ['Заказчик'],
     Order.OrderStatus.OVK: ['Куратор'],

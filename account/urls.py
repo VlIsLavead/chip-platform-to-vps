@@ -1,6 +1,8 @@
 from django.urls import path, include
 from . import views
 
+from .access_rules.access_rules import ROLE_CUSTOMER, ROLE_CURATOR, ROLE_EXECUTOR
+
 
 # TODO normalize all URLs, use dash instead of underscore, remove trailing slashes(?)
 urlpatterns = [
@@ -14,12 +16,14 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     # TODO unify search urls, they shouldn't lead to different endpoints
     path('set-theme/', views.set_theme, name='set_theme'),
-    path('search/', views.generic_search_clients, name='generic_search_clients'),
-    path('search_c/', views.generic_search_curator, name='generic_search_curator'),
-    path('search_e/', views.generic_search_executor, name='generic_search_executor'),
-    path('client/orders/', views.client_orders_view, name='client_orders'),
-    path('curator/orders/', views.curator_orders_view, name='curator_orders'),
-    path('executor/orders/', views.executor_orders_view, name='executor_orders'),
+    
+    path('client/orders/', lambda r: views.search_orders_view(r, ROLE_CUSTOMER), name='client_orders'),
+    path('search/', lambda r: views.search_orders_view(r, ROLE_CUSTOMER), name='generic_search_clients'),
+    path('curator/orders/', lambda r: views.search_orders_view(r, ROLE_CURATOR), name='curator_orders'),
+    path('search_c/', lambda r: views.search_orders_view(r, ROLE_CURATOR), name='generic_search_curator'),
+    path('executor/orders/', lambda r: views.search_orders_view(r, ROLE_EXECUTOR), name='executor_orders'),
+    path('search_e/', lambda r: views.search_orders_view(r, ROLE_EXECUTOR), name='generic_search_executor'),
+    
     path('edit/', views.edit, name='edit'),
     path('new_order/', views.new_order, name='new_order'),
     path('technical_materials/', views.technical_materials, name='technical_materials'),

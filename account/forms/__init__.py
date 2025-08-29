@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, \
 Thickness, Diameter, Message, Topic, File, RegistrationRequest
 from captcha.fields import CaptchaField
+from ..utils.sanitizer import sanitizer
 
 
 class LoginForm(forms.Form):
@@ -342,7 +343,9 @@ class EditPaidForm(forms.ModelForm):
 
 
 class MessageForm(forms.ModelForm):
-    text = forms.CharField(widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Введите ваше сообщение...'}))
+    text = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Введите ваше сообщение...'})
+    )
 
     class Meta:
         model = Message
@@ -350,7 +353,7 @@ class MessageForm(forms.ModelForm):
         
     def clean_text(self):
         text = self.cleaned_data["text"]
-        cleaned_text = strip_tags(text, allowed_tags=["b", "i", "span", "br", "div", "p"])
+        cleaned_text = sanitizer.sanitize(text)
         return cleaned_text
 
 

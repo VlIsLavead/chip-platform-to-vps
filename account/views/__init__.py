@@ -30,7 +30,7 @@ from ..utils.email_sender import send_email_with_attachments
 from ..utils.generate_messages import add_file_message
 from ..utils.unread_message_email_sender import unread_message_email_sender
 from ..decorators.restrict import restrict_by_status
-from ..access_rules.access_rules import ROLE_CUSTOMER, ROLE_CURATOR, ROLE_EXECUTOR
+from ..utils.sanitizer import sanitizer
 
 
 def password_recovery(request):
@@ -1346,6 +1346,8 @@ def topic_detail(request, topic_id):
         message_text = request.POST.get('text', '').strip()
 
         if message_text or files:
+            cleaned_text = sanitizer.sanitize(message_text) if message_text else ''
+
             message = Message(topic=topic, user=profile, text=message_text if message_text else '')
             message.save()
             unread_message_email_sender(message.id)
@@ -1372,7 +1374,8 @@ def topic_detail(request, topic_id):
 @require_POST
 def edit_message(request, message_id):
     message = get_object_or_404(Message, id=message_id, user=request.user.profile)
-    message.text = request.POST.get('text', '')
+    raw_text = request.POST.get('text', '')
+    message.text = sanitizer.sanitize(raw_text)
     message.save()
     print(f"Редактированное сообщение: {message_id}")
     return JsonResponse({'status': 'success', 'text': message.text})

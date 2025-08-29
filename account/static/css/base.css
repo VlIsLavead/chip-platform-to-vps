@@ -629,7 +629,7 @@ img.user-detail {
 }
 
 .message {
-    padding: 10px;
+    padding: 0 50px 5px 20px;
     border-bottom: 1px solid #ddd;
     font-size: 14px;
     background-color: var(--main-block-color);
@@ -641,7 +641,7 @@ img.user-detail {
 
 .message-text {
     margin-top: 10px;
-    font-size: 1rem;
+    font-size: 12px;
     line-height: 1.5;
 }
 
@@ -664,7 +664,6 @@ img.user-detail {
     width: fit-content;
 }
 
-/* Формы */
 .message-form {
     display: flex;
     flex-direction: column;
@@ -672,18 +671,203 @@ img.user-detail {
     width: 100%;
 }
 
-/* Поле ввода сообщений */
 .message-input {
-    height: 150px;
+    height: 180px;
     padding: 10px;
-    font-size: 14px;
+    font-size: 20px;
+    font-family: var(--main-font-family);
     border: 1px solid #ddd;
     border-radius: 5px;
     resize: none;
     margin-bottom: 10px;
+    white-space: pre-wrap;
+    background-color: #FFFFFF;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    outline: none;
+    font-family: inherit;
+    overflow-y: auto;
 }
 
-/* Контейнер для загрузки файлов и кнопки */
+.message-input:empty::before {
+    content: attr(placeholder);
+    color: #999;
+}
+
+.bold {
+    font-weight: bolder !important;
+}
+
+.italic {
+    font-style: italic !important;
+}
+
+.message {
+    margin-bottom: 15px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.message_function {
+    position: relative;
+    margin-top: 10px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--main-text-color);
+}
+
+.message_function::before {
+    position: absolute;
+    content: '';
+    top: 7px;
+    right: 0;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--main-text-color); 
+}
+
+.message_function::after {
+    position: absolute;
+    content: '';
+    top: -7px;
+    right: 0;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--main-text-color); 
+}
+
+.message_button {
+    position: relative;
+    width: 25px;
+    height: 30px;
+    cursor: pointer;
+    padding-left: 12px;
+}
+
+.message_button-functions {
+    position: absolute;
+    top: 100%;
+    right: -30px;
+    display: none;
+    background: white;
+    z-index: 100;
+    width: 120px;
+    height: 15px;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.message_button:hover .message_button-functions {
+    display: block;
+}
+
+.message_button-functions_list {
+    border: 1px solid;
+    list-style: none;
+    margin-top: -15px;
+    width: 100%;
+    z-index: 10;
+    background-color: var(--main-block-color);
+    padding: 5px 5px;
+}
+
+.message_button-function-choise {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.message_button-function-choise:hover {
+    background-color: #f5f5f5; /* Эффект при наведении на пункт меню */
+}
+
+.custom-alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--main-bg-hover);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    font-size: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 9999;
+    max-width: 80%;
+    text-align: center;
+    user-select: none;
+}
+
+.custom-alert.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.custom-confirm {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+.custom-confirm-content {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    max-width: 350px;
+    width: 90%;
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+}
+.custom-confirm-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+.confirm-btn {
+    padding: 8px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+.yes-btn {
+    background-color: #d9534f;
+    color: white;
+}
+.yes-btn:hover {
+    background-color: #c9302c;
+}
+.no-btn {
+    background-color: #6c757d;
+    color: white;
+}
+.no-btn:hover {
+    background-color: #5a6268;
+}
+
+.message-text {
+    white-space: pre-wrap;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    font-family: inherit;
+}
+
 .file-upload-container {
     display: flex;
     justify-content: space-between;
@@ -1047,4 +1231,11 @@ input::-webkit-inner-spin-button {
 
 .forbidden_text{
     text-align: center;
+}
+
+.order_number {
+    padding-top: 10px;
+    margin-top: -25px;
+    color: var(--main-color-for);
+    font-size: 16px;
 }

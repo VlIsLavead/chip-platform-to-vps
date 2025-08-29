@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.html import strip_tags
 from django.db.models import Min
 from django.contrib.auth.models import User
 from ..models import Profile, Order, Platform, TechnicalProcess, Substrate, \
@@ -346,6 +347,11 @@ class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
         fields = ['text']
+        
+    def clean_text(self):
+        text = self.cleaned_data["text"]
+        cleaned_text = strip_tags(text, allowed_tags=["b", "i", "span", "br", "div", "p"])
+        return cleaned_text
 
 
 class FileForm(forms.ModelForm):

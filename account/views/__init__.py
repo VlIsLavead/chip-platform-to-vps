@@ -16,6 +16,8 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import localtime
+from django.views.decorators.http import require_POST
+
 
 from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, \
 OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, \
@@ -1407,6 +1409,23 @@ def topic_detail(request, topic_id):
         'messages': messages,
         'message_form': message_form,
     })
+    
+
+@require_POST
+def edit_message(request, message_id):
+    message = get_object_or_404(Message, id=message_id, user=request.user.profile)
+    message.text = request.POST.get('text', '')
+    message.save()
+    print(f"Редактированное сообщение: {message_id}")
+    return JsonResponse({'status': 'success', 'text': message.text})
+
+
+@require_POST
+def delete_message(request, message_id):
+    message = get_object_or_404(Message, id=message_id, user=request.user.profile)
+    message.delete()
+    print(f"Удаление сообщения: {message_id}")
+    return JsonResponse({'status': 'success'})
     
 
 def create_or_open_chat(request, order_id):

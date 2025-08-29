@@ -4,21 +4,51 @@
 
 {% block content %}
 
+<p class="order_number">
+    {{ topic.related_order.order_number }} 
+    ({{ topic.related_order.creator.company_name }})
+</p>
+
 <div class="chat-container">
     <div id="messages-container">
         {% for message in messages %}
-            <div class="message" id="message-{{ message.id }}">
-                <p><strong>{{ message.user.role.name }}-{{ message.user }}</strong> ({{ message.created_at }}): <br>{{ message.text }}</p>
-                {% for file in message.files.all %}
-                    <a href="{{ file.file.url }}" download class="file-download-btn">{{ file.file.name|filename }}</a>
-                {% endfor %}
+            <div class="message" data-message-id="{{ message.id }}">
+                <p>
+                    <strong>{{ message.user.role.name }}-{{ message.user }}</strong> 
+                    ({{ message.created_at }}): 
+                    <br><span class="message-text">{{ message.text|safe }}</span>
+                    {% for file in message.files.all %}
+                        <br><a href="{{ file.file.url }}" download class="file-download-btn">{{ file.file.name|filename }}</a>
+                    {% endfor %}
+                </p>
+                {% if message.user.id == request.user.id %}
+                <div class="message_button">
+                    <div class="message_function"></div>
+                    <div class="message_button-functions">
+                        <ul class="message_button-functions_list">
+                            <li class="message_button-function-choise"
+                                data-action="edit" 
+                                data-url="{% url 'edit_message' message.id %}">
+                                <p>Редактировать</p>
+                            </li>
+                            <li class="message_button-function-choise"
+                                data-action="delete" 
+                                data-url="{% url 'delete_message' message.id %}">
+                                <p>Удалить</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
     <form method="post" enctype="multipart/form-data" class="message-form" id="message-form">
         {% csrf_token %}
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
         
-        <textarea name="text" class="message-input" id="message-input" placeholder="Введите ваше сообщение..."></textarea>
+        <div id="editable-message" contenteditable="true" class="message-input" placeholder="Введите ваше сообщение..."></div>
+        <input type="hidden" name="text" id="hidden-message-input">
 
         <div class="file-upload-container">
             <input type="file" name="file" multiple class="file-input" />
@@ -26,22 +56,216 @@
         </div>
     </form>
 </div>
+
+<div id="custom-alert" class="custom-alert"></div>
+
+<div id="custom-confirm" class="custom-confirm" style="display:none;">
+    <div class="custom-confirm-content">
+        <p>Вы уверены, что хотите удалить это сообщение?</p>
+        <div class="custom-confirm-buttons">
+            <button id="confirm-yes" class="confirm-btn yes-btn">Да</button>
+            <button id="confirm-no" class="confirm-btn no-btn">Отмена</button>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var messagesContainer = document.getElementById("messages-container");
+        const editableDiv = document.getElementById("editable-message");
+        const hiddenInput = document.getElementById("hidden-message-input");
+        const messageForm = document.getElementById("message-form");
+        const messagesContainer = document.getElementById("messages-container");
+        const submitBtn = messageForm.querySelector('button[type="submit"]');
+        const customAlert = document.getElementById("custom-alert");
+
+        const customConfirm = document.getElementById("custom-confirm");
+        const confirmYesBtn = document.getElementById("confirm-yes");
+        const confirmNoBtn = document.getElementById("confirm-no");
+
+        editableDiv.focus();
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Добавляем обработчик нажатия клавиш в текстовое поле
-        var messageInput = document.getElementById("message-input");
-        var messageForm = document.getElementById("message-form");
-        
-        messageInput.addEventListener("keydown", function(e) {
-            // Проверяем, что нажата клавиша Enter без Shift
+
+        let editingMessageId = null;
+        let editingUrl = null;
+
+        let deleteUrl = null;
+        let deleteMessageElement = null;
+
+        editableDiv.addEventListener("paste", function(e) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+            document.execCommand("insertText", false, text);
+        });
+    
+        editableDiv.addEventListener("keydown", function(e) {
+            if (e.key === "Tab") {
+                e.preventDefault();
+                
+                const tabText = document.createTextNode("    ");
+                
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents();
+                    range.insertNode(tabText);
+                    
+                    range.setStartAfter(tabText);
+                    range.setEndAfter(tabText);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+                return;
+            }
+    
+            if (e.ctrlKey && !e.altKey && !e.metaKey) {
+                if (e.key === "b") {
+                    e.preventDefault();
+                    document.execCommand("bold", false);
+                    return;
+                } else if (e.key === "i") {
+                    e.preventDefault();
+                    document.execCommand("italic", false);
+                    return;
+                }
+            }
+    
             if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault(); // Предотвращаем перенос строки
-                messageForm.submit(); // Отправляем форму
+                e.preventDefault();
+                prepareAndSubmit();
+                return;
+            }
+    
+            if (e.key === "Enter" && e.shiftKey) {
+                e.preventDefault();
+                document.execCommand("insertLineBreak");
+                return;
             }
         });
+
+        messagesContainer.addEventListener('click', function (e) {
+            const editBtn = e.target.closest('[data-action="edit"]');
+            const deleteBtn = e.target.closest('[data-action="delete"]');
+        
+            if (editBtn) {
+                startEditMessage(editBtn.dataset.url);
+            }
+            if (deleteBtn) {
+                startDeleteMessage(deleteBtn.dataset.url);
+            }
+        });
+
+        function startEditMessage(url) {
+            const messageElement = document.querySelector(`[data-action="edit"][data-url="${url}"]`)?.closest('.message');
+            if (!messageElement) return;
+        
+            editableDiv.innerHTML = messageElement.querySelector('.message-text').innerHTML;
+            editingMessageId = messageElement.dataset.messageId;
+            editingUrl = url;
+            editableDiv.focus();
+            submitBtn.textContent = "Сохранить";
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function submitEditMessage() {
+            if (!editingUrl) return;
+        
+            let content = editableDiv.innerHTML.trim();
+            if (!content) return alert("Сообщение не может быть пустым.");
+        
+            try {
+                const response = await fetch(editingUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCSRFToken(),
+                    },
+                    body: `text=${encodeURIComponent(content)}&csrfmiddlewaretoken=${getCSRFToken()}`
+                });
+        
+                const data = await response.json();
+                if (data.status === 'success') {
+                    const messageElement = document.querySelector(`.message[data-message-id="${editingMessageId}"]`);
+                    if (messageElement) messageElement.querySelector('.message-text').innerHTML = data.text;
+        
+                    editingMessageId = null;
+                    editingUrl = null;
+                    editableDiv.innerHTML = '';
+                    submitBtn.textContent = "Отправить";
+        
+                    showCustomAlert("Сообщение успешно изменено");
+                } else {
+                    alert(data.error || 'Ошибка сервера');
+                }
+            } catch {
+                alert('Ошибка при редактировании сообщения');
+            }
+        }
+        
+        function prepareAndSubmit() {
+            if (editingUrl) submitEditMessage();
+            else {
+                hiddenInput.value = editableDiv.innerHTML.replace(/\t/g, '    ').replace(/  /g, ' &nbsp;');
+                messageForm.submit();
+                setTimeout(() => editableDiv.innerHTML = '', 50);
+            }
+        }
+        
+        messageForm.addEventListener("submit", e => {
+            e.preventDefault();
+            prepareAndSubmit();
+        });
+        
+        function startDeleteMessage(url) {
+            deleteUrl = url;
+            deleteMessageElement = document.querySelector(`[data-url="${url}"]`)?.closest('.message');
+            if (!deleteMessageElement) return;
+            customConfirm.style.display = "flex";
+        }
+        
+        confirmYesBtn.addEventListener("click", async () => {
+            if (!deleteUrl || !deleteMessageElement) return closeCustomConfirm();
+        
+            try {
+                const response = await fetch(deleteUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCSRFToken(),
+                    },
+                    body: `csrfmiddlewaretoken=${getCSRFToken()}`
+                });
+        
+                const data = await response.json();
+                if (data.status === 'success') {
+                    deleteMessageElement.remove();
+                    showCustomAlert("Сообщение успешно удалено");
+                } else {
+                    alert(data.error || 'Ошибка сервера');
+                }
+            } catch {
+                alert('Ошибка при удалении сообщения');
+            } finally {
+                closeCustomConfirm();
+            }
+        });
+        
+        confirmNoBtn.addEventListener("click", closeCustomConfirm);
+        
+        function closeCustomConfirm() {
+            customConfirm.style.display = "none";
+            deleteUrl = null;
+            deleteMessageElement = null;
+        }
+        
+        function showCustomAlert(message) {
+            customAlert.textContent = message;
+            customAlert.classList.add("show");
+            setTimeout(() => customAlert.classList.remove("show"), 3000);
+        }
+
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+        }
     });
 </script>
 

@@ -1239,3 +1239,31 @@ input::-webkit-inner-spin-button {
     color: var(--main-color-for);
     font-size: 16px;
 }
+
+.help-list{
+    width: 600px;
+    height: 200px;
+    margin: 50px auto;
+    background-color: var(--main-bg-color);
+    padding: 0 20px 5px 20px;
+    border: 1px solid;
+}
+
+.help-list_item {
+    padding: 5px 0;
+}
+
+.help-list_container{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.help-list_symbol{
+    background-color: var(--main-block-color);
+    padding: 2px 3px;
+    border-radius: 5px;
+    box-shadow: 
+    2px 2px 0 rgba(73, 50, 87, 0.8), 
+    inset -2px -2px 5px #131313;
+}

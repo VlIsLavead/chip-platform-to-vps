@@ -655,6 +655,7 @@ img.user-detail {
 .file-download-btn {
     display: inline-block;
     padding: 10px 20px;
+    margin: 0px 0px 5px 0px;
     font-size: 0.9rem;
     text-align: center;
     background-color: var(--main-bg-button);
@@ -703,51 +704,62 @@ img.user-detail {
 }
 
 .message {
-    margin-bottom: 15px;
-    margin-right: 20px;
+    position: relative;
+    padding: 8px 50px 8px 20px;
+    border-bottom: 1px solid #ddd;
+    background-color: var(--main-block-color);
+    font-size: 14px;
+    line-height: 1.4;
+    font-family: Arial, sans-serif;
+    color: var(--main-text-color);
+}
+
+.message .MsoNormal {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+    font-family: inherit !important;
+    line-height: inherit !important;
+}
+
+.message > p {
+    margin: 0;
+}
+
+.message_button {
+    position: absolute;
+    top: 8px;
+    right: 42px;
+    width: 28px;
+    height: 28px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
 }
 
 .message_function {
     position: relative;
-    margin-top: 10px;
+    margin: 10px 10px 0 0;
     width: 4px;
     height: 4px;
     border-radius: 50%;
     background-color: var(--main-text-color);
 }
 
-.message_function::before {
-    position: absolute;
-    content: '';
-    top: 7px;
-    right: 0;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: var(--main-text-color); 
-}
-
+.message_function::before,
 .message_function::after {
-    position: absolute;
     content: '';
-    top: -7px;
-    right: 0;
+    position: absolute;
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background-color: var(--main-text-color); 
+    background-color: var(--main-text-color);
 }
+.message_function::before { top: -8px; }
+.message_function::after  { top:  8px; }
 
-.message_button {
-    position: relative;
-    width: 25px;
-    height: 30px;
-    cursor: pointer;
-    padding-left: 12px;
-}
 
 .message_button-functions {
     position: absolute;
@@ -862,10 +874,19 @@ img.user-detail {
 }
 
 .message-text {
-    white-space: pre-wrap;
-    tab-size: 4;
-    -moz-tab-size: 4;
-    font-family: inherit;
+    font-size: 14px !important;
+    font-family: Arial, sans-serif !important;
+    line-height: 1.4 !important;
+    color: #000 !important;
+}
+
+.message-text * {
+    font-size: inherit !important;
+    font-family: inherit !important;
+    line-height: inherit !important;
+    color: inherit !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .file-upload-container {

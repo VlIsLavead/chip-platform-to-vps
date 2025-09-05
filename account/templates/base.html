@@ -25,12 +25,24 @@
                             <li {% if section == "dashboard" %}class="selected"{% endif %}>
                                 <a href="{% url "dashboard" %}">Заказы</a>
                             </li>
+                            <li {% if section == "technical_materials" %}class="selected"{% endif %}>
+                                <a href="{% url "technical_materials" %}">КИП (PDK)</a>
+                            </li>
                             <li {% if section == "all_documents" %}class="selected"{% endif %}>
                                 <a href="{% url "all_documents" %}">Личные документы</a>
+                            </li>
+                            <li {% if section == "help_files" %}class="selected"{% endif %}>
+                                <a href="{% url "help_files" %}">Полезные материалы</a>
                             </li>
                         {% elif user_role == "Исполнитель" %}
                             <li {% if section == "dashboard" %}class="selected"{% endif %}>
                                 <a href="{% url "dashboard" %}">Заказы</a>
+                            </li>
+                            <li {% if section == "technical_materials" %}class="selected"{% endif %}>
+                                <a href="{% url "technical_materials" %}">КИП (PDK)</a>
+                            </li>
+                            <li {% if section == "help_files" %}class="selected"{% endif %}>
+                                <a href="{% url "help_files" %}">Полезные материалы</a>
                             </li>
                             {% comment %} <li {% if section == "edit_platform" %}class="selected"{% endif %}>
                                 <a href="{% url "edit_platform" %}">Работа с техпроцессами</a>

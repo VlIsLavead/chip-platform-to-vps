@@ -238,4 +238,18 @@ class Migration(migrations.Migration):
                 'unique_together': {('user', 'topic')},
             },
         ),
+        migrations.AddField(
+            model_name='topicfilemodel',
+            name='description',
+            field=models.TextField(blank=True, help_text='Описание файла', null=True),
+        ),
+        migrations.CreateModel(
+            name='PDKHelpFileModel',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=255)),
+                ('file', models.FileField(upload_to='uploads/pdk/pdk_help_files/')),
+                ('description', models.TextField(blank=True, help_text='Описание файла', null=True)),
+            ],
+        ),
     ]

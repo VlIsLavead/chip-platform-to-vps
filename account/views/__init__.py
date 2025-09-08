@@ -24,7 +24,7 @@ OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, \
 ViewOrderForm, RegistrationForm, AddContractForm, AddContractFileForm
 from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, \
 Thickness, Diameter, Topic, UserTopic, Message, File, Document, TopicFileModel, \
-LoginLog
+LoginLog, PDKHelpFileModel
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 from ..utils.generate_messages import add_file_message
@@ -346,6 +346,7 @@ def new_order(request):
 
 
 def technical_materials(request):
+    files = PDKHelpFileModel.objects.all()
     techprocess = TechnicalProcess.objects.values('name_process').distinct()
     selected_process_name = request.GET.get('technical_process')
     selected_process = None
@@ -354,6 +355,7 @@ def technical_materials(request):
         selected_process = TechnicalProcess.objects.filter(name_process=selected_process_name).first()
 
     return render(request, 'account/client/technical_materials.html', {
+        'files': files,
         'techprocess': techprocess,
         'selected_process': selected_process,
         'section': 'technical_materials',

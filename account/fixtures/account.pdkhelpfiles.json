@@ -1,0 +1,20 @@
+[
+    {
+      "model": "account.pdkhelpfilemodel",
+      "pk": 1,
+      "fields": {
+        "name": "File 1",
+        "file": "uploads/pdk/pdk_help_files/Рек_01_v0.pdf",
+        "description": "Рекомендации по размерам кристаллов, расположению транзисторов и использованию рамки"
+      }
+    },
+    {
+      "model": "account.pdkhelpfilemodel",
+      "pk": 2,
+      "fields": {
+        "name": "File 2",
+        "file": "uploads/pdk/pdk_help_files/Рек_02_v0.pdf",
+        "description": "Рекомендации по настройкам ЭМ анализа в ADS"
+      }
+    }
+]

@@ -859,11 +859,11 @@ img.user-detail {
     transition: background-color 0.2s ease;
 }
 .yes-btn {
-    background-color: #d9534f;
+    background-color: var(--main-bg-button);
     color: white;
 }
 .yes-btn:hover {
-    background-color: #c9302c;
+    background-color: var(--main-block-hover);
 }
 .no-btn {
     background-color: #6c757d;
@@ -1260,6 +1260,9 @@ input::-webkit-inner-spin-button {
     color: var(--main-color-for);
     font-size: 16px;
 }
+
+.mt50 {
+    margin-top: 50px;
 
 .help-list{
     width: 600px;

@@ -6,8 +6,6 @@
 {% block content %}
 <h1>Комплексный инструмент проектирования</h1>
 <br>
-<h2 class="text-red">Временно недоступно</h2>
-<h2 class="text-red">Ожидаемая дата появления - 14 июля</h2>
 <form method="GET" action="">
     <div>
         <label for="technical_process">Название техпроцесса:</label>
@@ -32,4 +30,22 @@
         <span>Файл КИП отсутствует для {{ selected_process.name_process }}</span>
     {% endif %}
 {% endif %}
+
+<table border="1" class="no-center mt50" style="border-collapse: inherit; text-align: left;">
+    <thead>
+        <tr>
+            <th>Документ</th>
+            <th>Описание</th>
+    </thead>
+    <tbody>
+        {% for file in files %}
+            <tr>
+                <td><a href="{{ file.file.url }}" download>{{ file.file.name|filename }}</a></td>
+                <td>{{ file.description }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br>
+
 {% endblock %}

@@ -4,7 +4,17 @@
       "pk": 1,
       "fields": {
         "name": "File 1",
-        "file": "help_files/Инструкция_пользователя_Платформы_Исполнитель.pdf"
+        "file": "help_files/Инструкция_ЛК_v0.pdf",
+        "description": "Инструкция к ЛК заказчика"
+      }
+    },
+    {
+      "model": "account.topicfilemodel",
+      "pk": 2,
+      "fields": {
+        "name": "File 2",
+        "file": "help_files/Маршрут_Платф_v0.pdf",
+        "description": "Схема взаимодействия с платформой"
       }
     }
 ]

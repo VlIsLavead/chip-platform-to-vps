@@ -354,6 +354,16 @@ class Topic(models.Model):
 class TopicFileModel(models.Model):
     name = models.CharField(max_length=255)
     file = models.FileField(upload_to='help_files/')
+    description = models.TextField(blank=True, null=True, help_text="Описание файла")
+
+    def __str__(self):
+        return self.name
+    
+    
+class PDKHelpFileModel(models.Model):
+    name = models.CharField(max_length=255)
+    file = models.FileField(upload_to='uploads/pdk/pdk_help_files/')
+    description = models.TextField(blank=True, null=True, help_text="Описание файла")
 
     def __str__(self):
         return self.name

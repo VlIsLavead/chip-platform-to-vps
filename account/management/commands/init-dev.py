@@ -15,6 +15,7 @@ fixtures = [
     # 'account.order.json',
     'account.topic.json',
     'account.topicfilemodel.json',
+    'account.pdkhelpfiles.json',
     'account.document.json',
 ]
 

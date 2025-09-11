@@ -9,6 +9,7 @@ urlpatterns = [
     path('', lambda _: redirect('account/')),
     # path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
+    path('api/', include('api.urls')),
     path('captcha/', include('captcha.urls')),
 ]
 

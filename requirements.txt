@@ -3,3 +3,5 @@ Pillow
 openpyxl
 python-dotenv
 django-simple-captcha
+html-sanitizer
+djangorestframework

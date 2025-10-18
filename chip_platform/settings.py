@@ -22,15 +22,21 @@ print("Parsed ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
 
 INSTALLED_APPS = [
-    'account.apps.AccountConfig',
+    # django
     # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # third-party
     'captcha',
     'rest_framework',
+
+    # local
+    'api',
+    'account.apps.AccountConfig',
 ]
 
 MIDDLEWARE = [

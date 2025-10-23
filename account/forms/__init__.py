@@ -258,37 +258,37 @@ class ViewOrderForm(forms.ModelForm):
     def get_order_data(self, order):
         order_data = {
             'Имя запуска': order.customer_product_name,
-            'Номер шаблона': order.mask_name if order.mask_name else "Не указан",
-            'Техпроцесс': order.technical_process.name_process if order.technical_process else "Не указано",
-            'Производственная площадка': order.platform_code.platform_code if order.platform_code else "Не указана",
+            'Номер шаблона': order.mask_name if order.mask_name else 'Не указан',
+            'Техпроцесс': order.technical_process.name_process if order.technical_process else 'Не указано',
+            'Производственная площадка': order.platform_code.platform_code if order.platform_code else 'Не указана',
             'Тип запуска': order.get_order_type_display(),
             'Число проектов в кадре': order.product_count,
-            'Формирование кадра заказчиком': "Да" if order.formation_frame_by_customer else "Нет",
+            'Формирование кадра заказчиком': 'Да' if order.formation_frame_by_customer else 'Нет',
             'Тип толщины подложки': order.get_substrate_type_display(),
-            'Толщина': str(order.selected_thickness) if order.selected_thickness else "Не указана",
-            'Диаметр': str(order.selected_diameter) if order.selected_diameter else "Не указан",
-            'Экспериментальная структура': "Да" if order.experimental_structure else "Нет",
+            'Толщина': str(order.selected_thickness) if order.selected_thickness else 'Не указана',
+            'Диаметр': str(order.selected_diameter) if order.selected_diameter else 'Не указан',
+            'Экспериментальная структура': 'Да' if order.experimental_structure else 'Нет',
             'Контроль электрических параметров на пластине': order.get_dc_rf_probing_e_map_display(),
-            'Маркировка брака по электрическим параметрам': "Да" if order.dc_rf_probing_inking else "Нет",
-            'Визуальный контроль и маркировка брака': "Да" if order.visual_inspection_inking else "Нет",
-            'Предоставление данных контроля параметрического монитора': "Да" if order.parametric_monitor_control else "Нет",
+            'Маркировка брака по электрическим параметрам': 'Да' if order.dc_rf_probing_inking else 'Нет',
+            'Визуальный контроль и маркировка брака': 'Да' if order.visual_inspection_inking else 'Нет',
+            'Предоставление данных контроля параметрического монитора': 'Да' if order.parametric_monitor_control else 'Нет',
             'Способ разделения пластины на кристаллы': order.get_dicing_method_display(),
-            'УФ засветка полимерного носителя': "Да" if order.tape_uv_support else "Нет",
+            'УФ засветка полимерного носителя': 'Да' if order.tape_uv_support else 'Нет',
             'Вид поставки пластин': order.get_wafer_deliver_format_display(),
             'Вид тары для кристаллов': order.get_container_for_crystals_display(),
-            'Разделение пластины на кристаллы по схеме заказчика': "Да" if order.multiplan_dicing_plan else "Нет",
-            'Разделение пластины на кристаллы по схеме заказчика(Файл)': order.multiplan_dicing_plan_file.url if order.multiplan_dicing_plan_file else "Нет файла",
-            'Корпусирование силами производителя': "Да" if order.package_servce else "Нет",
-            'Ускоренный запуск производства фотошаблонов': "Да" if order.delivery_premium_template else "Нет",
-            'Ускоренный запуск производства пластин': "Да" if order.delivery_premium_plate else "Нет",
-            'Заметка': order.special_note if order.special_note else "Нет заметки",
+            'Разделение пластины на кристаллы по схеме заказчика': 'Да' if order.multiplan_dicing_plan else 'Нет',
+            'Разделение пластины на кристаллы по схеме заказчика(Файл)': order.multiplan_dicing_plan_file.url if order.multiplan_dicing_plan_file else 'Нет файла',
+            'Корпусирование силами производителя': 'Да' if order.package_servce else 'Нет',
+            'Ускоренный запуск производства фотошаблонов': 'Да' if order.delivery_premium_template else 'Нет',
+            'Ускоренный запуск производства пластин': 'Да' if order.delivery_premium_plate else 'Нет',
+            'Заметка': order.special_note if order.special_note else 'Нет заметки',
             # 'Дата оплаты': order.order_date.strftime('%Y-%m-%d %H:%M:%S') if order.order_date else "Не указана",
             # 'Срок выполнения по договору': order.deadline_date.strftime('%Y-%m-%d %H:%M:%S') if order.deadline_date else "Не указана",
             # 'Заказ оплачен?': "Да" if order.is_paid else "Нет",
             # 'Статус заказа': order.get_order_status_display(),
             # 'Файл договора': order.contract_file.url if order.contract_file else "Нет файла",
             # 'Файл счета': order.invoice_file.url if order.invoice_file else "Нет файла",
-            'Файл GDS': order.GDS_file.url if order.GDS_file else "Нет файла",
+            'Файл GDS': order.GDS_file.url if order.GDS_file else 'Нет файла',
         }
         
         order_items = [(field, value) for field, value in order_data.items()]
@@ -352,7 +352,7 @@ class MessageForm(forms.ModelForm):
         fields = ['text']
         
     def clean_text(self):
-        text = self.cleaned_data["text"]
+        text = self.cleaned_data['text']
         cleaned_text = sanitizer.sanitize(text)
         return cleaned_text
 

@@ -8,21 +8,19 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q, Max, Case, When, IntegerField
-from django.db.models.functions import Lower
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import localtime
 from django.views.decorators.http import require_POST
 
-
+from ..access_rules.access_rules import ROLE_CURATOR, ROLE_CUSTOMER, ROLE_EXECUTOR
 from ..forms import LoginForm, UserEditForm, ProfileEditForm, OrderEditForm, \
 OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, \
 ViewOrderForm, RegistrationForm, AddContractForm, AddContractFileForm
-from ..models import Profile, Order, TechnicalProcess, Platform, Substrate, \
+from ..models import Profile, Order, TechnicalProcess, Platform, \
 Thickness, Diameter, Topic, UserTopic, Message, File, Document, TopicFileModel, \
 LoginLog, PDKHelpFileModel
 from ..export_excel import generate_excel_file
@@ -105,7 +103,7 @@ def  search_orders_view(request, role_id):
             .values_list('platform_name', flat=True).first()
         extra = {'name_platform': name_platform}
     else:
-        raise ValueError(f"Unknown role_id: {role_id}")
+        raise ValueError(f'Unknown role_id: {role_id}')
 
     orders = search_orders(base_qs, query)
     orders = filter_orders(orders, filter_by)
@@ -1358,7 +1356,7 @@ def topic_detail(request, topic_id):
                 File.objects.create(message=message, file=file)
 
             if topic.is_private:
-                topic.name = f'Чат по заказу {topic.related_order.order_number} | {localtime().strftime('%H:%M:%S')}'
+                topic.name = f"Чат по заказу {topic.related_order.order_number} | {localtime().strftime('%H:%M:%S')}"
                 topic.save(update_fields=['name'])
 
             return redirect('topic_detail', topic_id=topic.id)
@@ -1379,7 +1377,7 @@ def edit_message(request, message_id):
     raw_text = request.POST.get('text', '')
     message.text = sanitizer.sanitize(raw_text)
     message.save()
-    print(f"Редактированное сообщение: {message_id}")
+    print(f'Редактированное сообщение: {message_id}')
     return JsonResponse({'status': 'success', 'text': message.text})
 
 
@@ -1387,7 +1385,7 @@ def edit_message(request, message_id):
 def delete_message(request, message_id):
     message = get_object_or_404(Message, id=message_id, user=request.user.profile)
     message.delete()
-    print(f"Удаление сообщения: {message_id}")
+    print(f'Удаление сообщения: {message_id}')
     return JsonResponse({'status': 'success'})
     
 

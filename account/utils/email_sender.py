@@ -28,6 +28,6 @@ def send_email_with_attachments(sender_email, receiver_email, password, subject,
             server.login(sender_email, password)
             text = msg.as_string()
             server.sendmail(sender_email, receiver_email, text)
-            print("Сообщение с вложениями отправлено успешно!")
+            print('Сообщение с вложениями отправлено успешно!')
     except Exception as e:
-        print(f"Ошибка при отправке письма: {e}")
+        print(f'Ошибка при отправке письма: {e}')

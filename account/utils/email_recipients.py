@@ -3,8 +3,7 @@ from account.models import UserTopic
 
 User = get_user_model()
 
-""" Вынесенные ID кураторов для отправки сообщения """
-TARGET_CURATOR_IDS = [5, 16]
+TARGET_CURATOR_IDS = [5, 16]  # Специальные ID кураторов для отправки сообщения
 
 def get_message_recipients(message):
     """

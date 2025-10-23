@@ -5,3 +5,8 @@ python-dotenv
 django-simple-captcha
 html-sanitizer
 djangorestframework
+djangorestframework-simplejwt
+pytest
+pytest-django
+pytest-freezegun
+freezegun

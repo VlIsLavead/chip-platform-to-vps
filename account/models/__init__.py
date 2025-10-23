@@ -31,7 +31,7 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'{self.user.username}'
-    
+
     def is_expired(self):
         return self.expiration_date and now() > self.expiration_date
     
@@ -354,7 +354,7 @@ class Topic(models.Model):
 class TopicFileModel(models.Model):
     name = models.CharField(max_length=255)
     file = models.FileField(upload_to='help_files/')
-    description = models.TextField(blank=True, null=True, help_text="Описание файла")
+    description = models.TextField(blank=True, null=True, help_text='Описание файла')
 
     def __str__(self):
         return self.name
@@ -363,7 +363,7 @@ class TopicFileModel(models.Model):
 class PDKHelpFileModel(models.Model):
     name = models.CharField(max_length=255)
     file = models.FileField(upload_to='uploads/pdk/pdk_help_files/')
-    description = models.TextField(blank=True, null=True, help_text="Описание файла")
+    description = models.TextField(blank=True, null=True, help_text='Описание файла')
 
     def __str__(self):
         return self.name
@@ -376,7 +376,7 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Message by {self.user.username} in {self.topic.name}'
+        return f'Message by {self.user.user.username} in {self.topic.name}'
 
 
 class File(models.Model):

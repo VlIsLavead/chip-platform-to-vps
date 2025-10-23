@@ -1,0 +1,239 @@
+[
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$jEgJO6hHyMudl1XQldpc3a$UekPThf7hG4OPPDtuqZ2ETuDspunUudBT8Tr4rS68P0=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "tester",
+            "first_name": "",
+            "last_name": "",
+            "email": "example@mail.ru",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-26T08:01:45.736Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$jEgJO6hHyMudl1XQldpc3a$UekPThf7hG4OPPDtuqZ2ETuDspunUudBT8Tr4rS68P0=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "Курчатовский",
+            "first_name": "",
+            "last_name": "",
+            "email": "example@mail.ru",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-26T08:01:45.736Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 3,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$jEgJO6hHyMudl1XQldpc3a$UekPThf7hG4OPPDtuqZ2ETuDspunUudBT8Tr4rS68P0=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "tester_two",
+            "first_name": "",
+            "last_name": "",
+            "email": "example@mail.ru",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-26T08:01:45.736Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 4,
+        "fields": {
+            "password": "pbkdf2_sha256$1000000$jEgJO6hHyMudl1XQldpc3a$UekPThf7hG4OPPDtuqZ2ETuDspunUudBT8Tr4rS68P0=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "executor",
+            "first_name": "",
+            "last_name": "",
+            "email": "example@mail.ru",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-26T08:01:45.736Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "account.role",
+        "pk": 1,
+        "fields": {
+            "name": "Куратор",
+            "created_at": "2024-07-18T11:44:38.788Z",
+            "deleted_at": null
+        }
+    },
+    {
+        "model": "account.role",
+        "pk": 2,
+        "fields": {
+            "name": "Исполнитель",
+            "created_at": "2024-07-18T11:44:38.788Z",
+            "deleted_at": null
+        }
+    },
+    {
+        "model": "account.role",
+        "pk": 3,
+        "fields": {
+            "name": "Заказчик",
+            "created_at": "2024-07-18T11:44:38.788Z",
+            "deleted_at": null
+        }
+    },
+    {
+        "model": "account.profile",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "photo": "",
+            "role": 1,
+            "company_name": "ICV",
+            "is_nda_signed": true,
+            "expiration_date": null,
+            "created_at": "2024-07-18T11:44:39.863Z",
+            "deleted_at": null
+        }
+    },
+    {
+        "model": "account.profile",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "photo": "",
+            "role": 2,
+            "company_name": "KI",
+            "is_nda_signed": true,
+            "expiration_date": null,
+            "created_at": "2024-07-18T11:44:39.863Z",
+            "deleted_at": null
+        }
+    },
+    {
+        "model": "account.profile",
+        "pk": 3,
+        "fields": {
+            "user": 3,
+            "photo": "",
+            "role": 1,
+            "company_name": "KI",
+            "is_nda_signed": true,
+            "expiration_date": null,
+            "created_at": "2024-07-18T11:44:39.863Z",
+            "deleted_at": null
+        }
+    },
+    {
+        "model": "account.profile",
+        "pk": 4,
+        "fields": {
+            "user": 4,
+            "photo": "",
+            "role": 3,
+            "company_name": "KI",
+            "is_nda_signed": true,
+            "expiration_date": null,
+            "created_at": "2024-07-18T11:44:39.863Z",
+            "deleted_at": null
+        }
+    },
+    {
+        "model": "account.platform",
+        "pk": 1,
+        "fields": {
+            "platform_name": "НИЦ 'Курчатовский институт'",
+            "platform_code": "KI"
+        }
+    },
+    {
+        "model": "account.technicalprocess",
+        "pk": 1,
+        "fields": {
+            "name_process": "GSi025",
+            "PDK_file": "uploads/pdk/GSi025_KIP_rev_1.4.0.0.0.zip",
+            "platform": 1
+        }
+    },
+    {
+        "model": "account.substrate",
+        "pk": 1,
+        "fields": {
+            "material": "Si(Кремний)"
+        }
+    },
+    {
+        "model": "account.thickness",
+        "pk": 1,
+        "fields": {
+            "value": "75 мкм(опц)"
+        }
+    },
+    {
+        "model": "account.diameter",
+        "pk": 1,
+        "fields": {
+            "platform": 1,
+            "value": 100
+        }
+    },
+    {
+        "model": "account.order",
+        "pk": 1,
+        "fields": {
+            "order_number": "F2025060300001",
+            "creator": 1,
+            "customer_product_name": "KIGSi025",
+            "mask_name": null,
+            "technical_process": 1,
+            "platform_code": 1,
+            "order_type": "ENG",
+            "product_count": 1,
+            "formation_frame_by_customer": false,
+            "substrate_type": "Si",
+            "selected_thickness": 1,
+            "selected_diameter": 1,
+            "dc_rf_probing_e_map": "NO",
+            "dc_rf_probing_inking": false,
+            "visual_inspection_inking": false,
+            "parametric_monitor_control": false,
+            "experimental_structure": false,
+            "dicing_method": "DC",
+            "tape_uv_support": true,
+            "wafer_deliver_format": "Пластины неразделенные",
+            "container_for_crystals": "Gel-Pak",
+            "multiplan_dicing_plan": false,
+            "multiplan_dicing_plan_file": "",
+            "package_servce": false,
+            "delivery_premium_template": false,
+            "delivery_premium_plate": false,
+            "special_note": "Тестовый заказ для автоматического теста",
+            "order_date": "2025-06-01T00:00:00Z",
+            "deadline_date": "2025-09-01T00:00:00Z",
+            "is_paid": true,
+            "contract_is_ready": true,
+            "order_status": "OVK",
+            "invoice_file": "",
+            "contract_file": "",
+            "GDS_file": "",
+            "created_at": "2025-06-01T10:00:00Z",
+            "deleted_at": null
+        }
+    }
+]

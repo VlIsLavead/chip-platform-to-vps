@@ -1,30 +1,19 @@
-from dotenv import load_dotenv
+# settings/test.py
 from pathlib import Path
 import os
 from datetime import timedelta
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(dotenv_path=BASE_DIR / '.env', override=True)
 
-# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-test-key-for-pytest-only'
 
-SECRET_KEY = 'django-insecure-p+j4&4wmo2yl1s#2y@%lykfay%lfq=7&3r+==ves%7vwsi&l&w'
-# SECRET_KEY = os.getenv('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-raw = os.getenv('ALLOWED_HOSTS', '')
-ALLOWED_HOSTS = [h.strip() for h in raw.split(',') if h.strip()]
-print("Parsed ALLOWED_HOSTS:", ALLOWED_HOSTS)
-
-
-
+ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     # django
-    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -53,6 +42,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'chip_platform.urls'
+WSGI_APPLICATION = 'chip_platform.wsgi.application'
 
 TEMPLATES = [
     {
@@ -73,22 +63,12 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'chip_platform.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': ':memory:',  # Быстрая тестовая база
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -119,46 +99,31 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
-
 LANGUAGE_CODE = 'ru-ru'
-
 TIME_ZONE = 'Europe/Moscow'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
 STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'test@example.com'
+EMAIL_HOST_PASSWORD = ''
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SERVER_EMAIL = EMAIL_HOST_USER
-EMAIL_ADMIN = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = 'test@example.com'
+SERVER_EMAIL = 'test@example.com'
+EMAIL_ADMIN = 'test@example.com'
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media')  # Отдельная папка для тестов
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -169,5 +134,8 @@ CAPTCHA_LENGTH = 6
 CAPTCHA_FONT_SIZE = 30
 CAPTCHA_IMAGE_SIZE = (150, 50)
 CAPTCHA_TIMEOUT = 5
+CAPTCHA_TEST_MODE = True
 
-
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.MD5PasswordHasher',  # Быстрые хеши для тестов
+]

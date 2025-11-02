@@ -227,18 +227,20 @@ def user_login(request):
     form = LoginForm(request.POST)
     if form.is_valid():
         cd = form.cleaned_data
+        
+        try:
+            user = User.objects.get(username=cd['username'])
+            if not user.is_active:
+                return HttpResponse('<div class="error-message">Disabled account</div>')
+        except User.DoesNotExist:
+            pass
+        
         user = authenticate(request, username=cd['username'], password=cd['password'])
-
-        if user is None:
-            # TODO redirect to the login page with errors
-            return HttpResponse('Invalid login')
-
-        if not user.is_active:
-            # TODO redirect to the login page with errors
-            return HttpResponse('Disabled account')
-
-        login(request, user)
-        return redirect('/')
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            return HttpResponse('<div class="error-message">Invalid login</div>')
 
 
 def user_logout(request):

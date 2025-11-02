@@ -11,6 +11,26 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+
+    - name: Create TEST environment file
+      run: |
+        cat > .env << EOF
+        SECRET_KEY=${{ secrets.SECRET_KEY }}
+        EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
+        EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
+        ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
+        EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+        EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+        EMAIL_USE_SSL=${{ secrets.EMAIL_USE_SSL }}
+        EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}
+        EOF
+
+    - name: Debug - check environment
+      run: |
+        echo "=== Checking .env file ==="
+        ls -la .env
+        echo "=== File content (without values) ==="
+        sed 's/=.*/=***/' .env
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -41,27 +61,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Deploy to VPS
+      - name: Test SSH connection to VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /home/django/app/repo
-            git fetch origin
-            git reset --hard origin/master
+            echo "✅ SSH connection successful!"
             
-            # Активируем venv и устанавливаем зависимости
-            source /home/django/app/venv/bin/activate
-            pip install -r requirements.txt
-            
-            # Применяем миграции
-            python manage.py migrate --noinput
-            
-            # Собираем статику
-            python manage.py collectstatic --noinput
-            
-            # Перезапускаем сервисы
-            sudo systemctl restart gunicorn
-            sudo systemctl reload nginx
+            # git fetch origin
+            # git reset --hard origin/master
+            # source /home/django/app/venv/bin/activate
+            # pip install -r requirements.txt
+            # python manage.py migrate --noinput
+            # python manage.py collectstatic --noinput
+            # sudo systemctl restart gunicorn
+            # sudo systemctl reload nginx

@@ -29,6 +29,7 @@ from ..utils.generate_messages import add_file_message
 from ..utils.unread_message_email_sender import unread_message_email_sender
 from ..decorators.restrict import restrict_by_status
 from ..utils.sanitizer import sanitizer
+from ..utils.list_productions_statuses import STATUS_CONFIG
 
 
 def password_recovery(request):
@@ -753,7 +754,7 @@ def shipping_is_confirm(request, order_id):
             order.order_status = 'PS'
             action = 'success'
         elif 'cancel_shipping' in request.POST:
-            order.order_status = 'MPO'
+            order.order_status = 'MPOP'
             action = 'cancelled'
         else:
             order.order_status='SO'
@@ -1100,7 +1101,7 @@ def plates_in_stock(request, order_id):
                 form.fields['mask_name'].required = True
                 if form.is_valid():
                     form.save()
-                    order.order_status = 'SO'
+                    order.order_status = 'MTP'
                     order.save()
                     action = 'success'
                 else:
@@ -1109,7 +1110,7 @@ def plates_in_stock(request, order_id):
                     action = 'missing_mask'
             else:
                 form = None
-                order.order_status = 'SO'
+                order.order_status = 'MTP'
                 order.save()
                 action = 'success'
         else:
@@ -1145,6 +1146,48 @@ def plates_in_stock(request, order_id):
         }
     )
 
+
+@login_required
+@restrict_by_status()
+def production_status_view(request, order_id, current_status):
+    order = get_object_or_404(Order, id=order_id)
+    config = STATUS_CONFIG[current_status]
+    
+    if request.method == 'POST':
+        action = None
+        if 'next_status' in request.POST:
+            order.order_status = config['next_status']
+            action = 'next'
+        elif 'prev_status' in request.POST:
+            order.order_status = config['prev_status'] 
+            action = 'prev'
+        
+        order.save()
+        
+        return render(
+            request,
+            'account/production_status_success.html',
+            {
+                'order': order, 
+                'action': action,
+                'config': config
+            }
+        )
+    
+    view_form = ViewOrderForm(instance=order)
+    order_items = view_form.get_order_data(order)
+
+    return render(
+        request,
+        'account/production_status.html',
+        {
+            'view_form': view_form,
+            'order_items': order_items,
+            'order': order,
+            'config': config,
+            'current_status': current_status,
+        }
+    )
 
 @login_required
 def edit(request):

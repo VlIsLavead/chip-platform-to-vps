@@ -46,6 +46,7 @@ urlpatterns = [
     path('order_paid/<int:order_id>/', views.order_paid, name='is_paid'),
     path('view_is_paid/<int:order_id>/', views.view_is_paid, name='view_is_paid'),
     path('view_is_paid_exec/<int:order_id>/', views.view_is_paid_exec, name='view_is_paid_exec'),
+    path('order/<int:order_id>/status/<str:current_status>/', views.production_status_view, name='production_status_view'),
     path('plates_in_stock/<int:order_id>/', views.plates_in_stock, name='plates_in_stock'),
     path('shipping_is_confirm/<int:order_id>/', views.shipping_is_confirm, name='shipping_is_confirm'),
     path('plates_shipped/<int:order_id>/', views.plates_shipped, name='plates_shipped'),

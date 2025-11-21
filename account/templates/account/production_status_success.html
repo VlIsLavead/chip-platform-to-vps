@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Статус изменен</h1>
+    
+    <div class="success-message">
+        {% if action == 'next' %}
+            <p>Заказ перешел на следующий этап!</p>
+        {% elif action == 'prev' %}
+            <p>Заказ возвращен на предыдущий этап!</p>
+        {% endif %}
+    </div>
+    
+    <p><a href="{% url 'dashboard' %}">Вернуться к заказу</a></p>
+    
+{% endblock %}

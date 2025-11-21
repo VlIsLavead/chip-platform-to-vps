@@ -96,7 +96,19 @@
                             {% elif order.order_status == "POC" %}
                                 <a href="{% url 'view_is_paid_exec' order.id %}" class="button function-button">Проверка оплаты заказа</a>
                             {% elif order.order_status == "MPO" %}
-                                <a href="{% url 'plates_in_stock' order.id %}" class="button function-button">Передать заказ на производство</a>
+                                <a href="{% url 'plates_in_stock' order.id %}" class="button function-button">Передать заказ на этап производства шаблонов</a>
+                            <!-- Этапы статусов производства -->
+                            {% elif order.order_status == "MTP" %}
+                                <a href="{% url 'production_status_view' order.id 'MTP' %}" class="button function-button">Передать заказ на этап производство пластин</a>
+                            {% elif order.order_status == "MPP" %}
+                                <a href="{% url 'production_status_view' order.id 'MPP' %}" class="button function-button">Передать заказ на этап измерений ПМ</a>
+                            {% elif order.order_status == "MPM" %}
+                                <a href="{% url 'production_status_view' order.id 'MPM' %}" class="button function-button">Передать заказ на этап резки пластин</a>
+                            {% elif order.order_status == "MCP" %}
+                                <a href="{% url 'production_status_view' order.id 'MCP' %}" class="button function-button">Передать заказ на этап упаковки</a>
+                            {% elif order.order_status == "MPOP" %}
+                                <a href="{% url 'production_status_view' order.id 'MPOP' %}" class="button function-button">Завершить производство заказа</a>
+                                <!-- Окончание производства, отгрузка -->
                             {% elif order.order_status == "SO" %}
                                 <a href="{% url 'shipping_is_confirm' order.id %}" class="button function-button">Начать отгрузку пластин</a>
                             {% endif %}

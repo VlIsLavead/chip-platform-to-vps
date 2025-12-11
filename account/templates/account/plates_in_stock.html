@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Подтверждение окончания производства заказа</h1>
-    <h2>При подтверждении окончания производства, заказ перейдет в стадию отгрузки</h2>
+    <h1>Переход на этап производства шаблонов</h1>
 
     {% if mask_name_empty %}
         <form method="post" action="{% url 'plates_in_stock' order.id %}" enctype="multipart/form-data">

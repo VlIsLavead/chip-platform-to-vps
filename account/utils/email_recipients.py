@@ -3,28 +3,28 @@ from account.models import UserTopic
 
 User = get_user_model()
 
-TARGET_CURATOR_IDS = [5, 16]  # Специальные ID кураторов для отправки сообщения
-
 def get_message_recipients(message):
-    """
-    Возвращает email-адреса кураторов из TARGET_CURATOR_IDS,
-    если они не прочитали сообщение.
-    """
     topic = message.topic
 
     user_topics = UserTopic.objects.filter(
         topic=topic,
-        user__id__in=TARGET_CURATOR_IDS,
-        user__role='Куратор'
     )
 
     recipient_emails = []
     for user_topic in user_topics:
         user = user_topic.user
-        last_read = user_topic.last_read_message
-
-        if not last_read or last_read.id < message.id:
-            if user.email:
-                recipient_emails.append(user.email)
-
+        
+        try:
+            django_user = User.objects.get(id=user.id)
+            # 3 ID - выбранные кураторы для тестирования отправления сообщений
+            # на почту, в дальнейшем сообщения будут рассылаться всем пользователям
+            if django_user.id not in [5, 29, 16]:
+                continue
+            if django_user.email:
+                last_read = user_topic.last_read_message
+                if not last_read or last_read.id < message.id:
+                    recipient_emails.append(django_user.email)
+        except User.DoesNotExist:
+            continue
+        
     return recipient_emails

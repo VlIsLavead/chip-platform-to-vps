@@ -1444,17 +1444,18 @@ def create_or_open_chat(request, order_id):
             'is_private': True
         }
     )
-
+    
     if request.user.is_authenticated:
-        UserTopic.objects.get_or_create(user=request.user.profile, topic=topic)
-
-    curator = Profile.objects.filter(role__name='Куратор', company_name=order.platform_code).first()
-    if curator:
-        UserTopic.objects.get_or_create(user=curator, topic=topic)
-
+        ut, created = UserTopic.objects.get_or_create(user=request.user.profile, topic=topic)
+    
+    curators = Profile.objects.filter(role__name='Куратор')
+    
+    for curator in curators:
+        ut, created = UserTopic.objects.get_or_create(user=curator, topic=topic)
+    
     executor = Profile.objects.filter(role__name='Исполнитель').first()
     if executor:
-        UserTopic.objects.get_or_create(user=executor, topic=topic)
+        ut, created = UserTopic.objects.get_or_create(user=executor, topic=topic)
 
     return redirect('topic_detail', topic_id=topic.id)
 

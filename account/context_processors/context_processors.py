@@ -11,7 +11,7 @@ def user_role(request):
 def unread_messages(request):
     if not request.user.is_authenticated:
         return {'has_unread_messages_by_order_id': {}}
-    
+
     profile = request.user.profile
     unread_by_order = {}
 
@@ -26,13 +26,15 @@ def unread_messages(request):
             continue
 
         user_topic = UserTopic.objects.filter(user=profile, topic=topic).first()
+        last_message = Message.objects.filter(topic=topic).order_by('-id').first()
+
+        if not last_message:
+            continue
+
         if user_topic and user_topic.last_read_message:
-            has_unread = Message.objects.filter(
-                topic=topic,
-                id__gt=user_topic.last_read_message.id
-            ).exists()
+            has_unread = last_message.id > user_topic.last_read_message.id
         else:
-            has_unread = Message.objects.filter(topic=topic).exists()
+            has_unread = True
 
         if has_unread:
             unread_by_order[order_id] = True
@@ -42,13 +44,13 @@ def unread_messages(request):
 
 def theme(request):
     theme = request.session.get('theme', 'light')
-    
+
     if 'theme' not in request.session:
         if request.META.get('HTTP_USER_AGENT', '').lower() != 'djdt':
             if request.headers.get('Sec-CH-Prefers-Color-Scheme') == 'dark':
                 theme = 'dark'
                 request.session['theme'] = 'dark'
-    
+
     return {
         'current_theme': theme,
         'theme_stylesheet': f'css/{theme}_theme.css'

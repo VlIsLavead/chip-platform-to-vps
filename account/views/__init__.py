@@ -1,5 +1,6 @@
 import datetime
 import os
+import urllib.parse
 from io import BytesIO
 
 from urllib.parse import quote
@@ -45,7 +46,7 @@ def search_orders(queryset, query=None):
         return queryset
 
     query_lower = query.lower()
-    
+
     orm_filtered = queryset.filter(
         Q(order_number__icontains=query) |
         Q(id__icontains=query) |
@@ -143,8 +144,7 @@ def registration(request):
             ]
 
             send_email_with_attachments(sender_email, user_email, password, subject, body, file_paths)
-            
-            
+
             curator_users = User.objects.filter(
                 profile__role__name='Куратор',
                 profile__deleted_at__isnull=True,
@@ -158,7 +158,7 @@ def registration(request):
                 if not curator.email:
                     print(f'Пропуск: у куратора {curator.username} не указан email')
                     continue
-                
+
                 curator_subject = 'Новая заявка на регистрацию'
                 curator_body = f'''
                     <html>
@@ -184,7 +184,7 @@ def registration(request):
                 except Exception as e:
                     print(f'Ошибка при отправке письма куратору {curator.email}: {e}')
 
-            try:            
+            try:
                 send_email_with_attachments(
                     sender_email,
                     os.getenv('EMAIL_HOST_USER'),
@@ -196,8 +196,7 @@ def registration(request):
                 print('Копия письма отправлена на основную почту')
             except Exception as e:
                 print(f'Ошибка при отправке копии на основную почту: {e}')
-            
-            
+
             messages.success(request, 'Регистрация прошла успешно!')
             return render(request, 'account/registration_done.html')
         else:
@@ -235,7 +234,7 @@ def user_login(request):
                 return HttpResponse('<div class="error-message">Disabled account</div>')
         except User.DoesNotExist:
             pass
-        
+
         user = authenticate(request, username=cd['username'], password=cd['password'])
         if user is not None:
             login(request, user)
@@ -257,7 +256,7 @@ def dashboard(request, message=''):
         2: _dashboard_curator,
         3: _dashboard_executor,
     }[profile.role_id](request, message)
-    
+
 
 def account_expired(request):
     return render(request, 'account/expired.html')
@@ -268,7 +267,7 @@ def _dashboard_client(request, message=''):
     company_name = profile.company_name
     users_in_company = Profile.objects.filter(company_name=company_name) \
                         .values_list('user', flat=True)
-    
+
     orders = Order.objects.filter(creator__user__in=users_in_company) \
                         .select_related('creator', 'platform_code') \
                         .order_by('-created_at')
@@ -291,8 +290,7 @@ def _dashboard_client(request, message=''):
 @login_required
 def new_order(request):
     profile = request.user.profile.company_name
-    
-    
+
     today = datetime.datetime.today().strftime('%Y%m%d')
     today_orders_count = Order.objects.filter(
         order_number__startswith=f'F{today}'
@@ -304,8 +302,7 @@ def new_order(request):
         new_number = '00001'  # первый заказ за день
 
     order_number = f'F{today}{new_number}'
-    
-    
+
     technical_processes = TechnicalProcess.objects.all()
 
     if request.method == 'POST':
@@ -361,12 +358,13 @@ def technical_materials(request):
         'selected_process': selected_process,
         'section': 'technical_materials',
     })
-    
+
+
 def my_documents(request, id):
     nda_documents = Document.objects.filter(document_type='NDA', owner=id)
     consumer_request_documents = Document.objects.filter(document_type='consumer_request', owner=id)
     consumer_form_documents = Document.objects.filter(document_type='consumer_form', owner=id)
-    
+
     profile_id = Profile.objects.get(user_id = id)
     contract_documents = Order.objects.filter(contract_file__isnull=False, creator = profile_id)  # Фильтруем заказы с наличием файла contract_file
     invoice_documents = Order.objects.filter(invoice_file__isnull=False, creator = profile_id)
@@ -379,13 +377,32 @@ def my_documents(request, id):
         'invoice_documents': invoice_documents,
     }
     return render(request, 'account/client/my_documents.html', context)
-    
+
 def all_documents(request):
-    profiles = Profile.objects.filter(role__name__in=['Заказчик', 'Исполнитель'])
+    profiles = Profile.objects.filter(role__name__in=['Заказчик'])
+
+    all_company_names = profiles.filter(
+        role__name='Заказчик'
+    ).exclude(
+        company_name__in=['', None]
+    ).values_list('company_name', flat=True).distinct()
+
+    return render(request, 'account/all_documents.html', {
+        'all_company_names': all_company_names,
+    })
+
+
+def company_documents(request, company_name):
+    company_name = urllib.parse.unquote(company_name)
+
+    customer_profiles = Profile.objects.filter(
+        role__name='Заказчик',
+        company_name=company_name
+    )
 
     user_documents = {}
 
-    for profile in profiles:
+    for profile in customer_profiles:
         nda_documents = Document.objects.filter(owner=profile.user, document_type='NDA')
         consumer_request_documents = Document.objects.filter(owner=profile.user, document_type='consumer_request')
         consumer_form_documents = Document.objects.filter(owner=profile.user, document_type='consumer_form')
@@ -400,7 +417,15 @@ def all_documents(request):
             'contract_documents': contract_documents,
             'invoice_documents': invoice_documents,
         }
-    return render(request, 'account/all_documents.html', {'user_documents': user_documents})
+
+    company_orders = Order.objects.filter(creator__company_name=company_name)
+
+    return render(request, 'account/company_documents.html', {
+        'user_documents': user_documents,
+        'company_name': company_name,
+        'customer_profiles': customer_profiles,
+        'company_orders': company_orders,
+    })
 
 
 @login_required
@@ -430,7 +455,7 @@ def changes_in_order(request, order_id):
 @restrict_by_status()
 def signing_agreement(request, order_id):
     order = Order.objects.get(id=order_id)
-    
+
     if request.method == 'POST':
         form = AddContractForm(request.POST, instance=order)
         if form.is_valid():
@@ -449,10 +474,10 @@ def signing_agreement(request, order_id):
             )
     else:
         form = AddContractForm(instance=order)
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-    
+
     return render(
         request,
         'account/client/signing_agreement.html',
@@ -463,13 +488,13 @@ def signing_agreement(request, order_id):
         }
     )
 
-    
+
 @login_required
 @restrict_by_status()
 def add_gds(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     old_file = order.GDS_file.name
-    
+
     if request.method == 'POST':
         if 'cancel' in request.POST:
             order.order_status = 'OGDS'
@@ -500,7 +525,7 @@ def add_gds(request, order_id):
             )
     else:
         form = AddGDSFile(instance=order)
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -536,7 +561,7 @@ def order_paid(request, order_id):
             'account/client/order_paid_success.html',
             {'order': order, 'action': action}
         )
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -545,8 +570,8 @@ def order_paid(request, order_id):
         'view_form': view_form,
         'order_items': order_items,
     })
-    
-    
+
+
 @login_required
 @restrict_by_status()
 def confirmation_receipt(request, order_id):
@@ -572,7 +597,7 @@ def confirmation_receipt(request, order_id):
             'account/client/confirmation_receipt_success.html',
             {'order': order, 'action': action}
         )
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -586,7 +611,7 @@ def confirmation_receipt(request, order_id):
 def _dashboard_curator(request, message=''):
     profile = request.user.profile
     orders = Order.objects.all().select_related('creator')
-    
+
     platform = Profile.objects.get(id=request.user.id)
     platform_name = platform.company_name
 
@@ -626,7 +651,7 @@ def edit_order(request, order_id):
 
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-    
+
     return render(
         request,
         'account/edit_order.html',
@@ -638,21 +663,21 @@ def edit_order(request, order_id):
             'order_number': order.id,
         }
     )
-    
-    
+
+
 @login_required
 @restrict_by_status()
 def check_signing_curator(request, order_id):
     order = Order.objects.get(id=order_id)
     old_contract = order.contract_file.name or ''
-    
+
     if request.method == 'POST':
         form = AddContractFileForm(request.POST, request.FILES, instance=order)
         action = None
-        
+
         if form.is_valid():
             file_provided = bool(form.cleaned_data.get('contract_file'))
-            
+
             if 'success' in request.POST:
                 if file_provided:
                     order.order_status = 'ESA'
@@ -666,21 +691,21 @@ def check_signing_curator(request, order_id):
                     order.contract_file = None
                 order.order_status = 'SA'
                 action = 'cancelled'
-            
+
             form.save()
-            
+
             new_file = order.contract_file.name or ''
             if action == 'success' and file_provided:
                 add_file_message(order, 'contract_file', request.user.profile)
-                
+
             return render(request, 'account/check_signing_success.html', 
                         {'order': order, 'action': action})
     else:
         form = AddContractFileForm(instance=order)
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-    
+
     return render(
         request,
         'account/check_signing_curator.html',
@@ -697,7 +722,7 @@ def check_signing_curator(request, order_id):
 def view_is_paid(request, order_id):
     order = Order.objects.get(id=order_id)
     old_invoice = order.invoice_file.name or ''
-    
+
     if request.method == 'POST':
         form = EditPaidForm(request.POST, request.FILES, instance=order)
         if form.is_valid():
@@ -719,7 +744,7 @@ def view_is_paid(request, order_id):
             new_file = order.invoice_file.name or ''
             if old_invoice != new_file and new_file != '' and action == 'success':
                 add_file_message(order, 'invoice_file', request.user.profile)
-        
+
             return render(
                 request,
                 'account/view_is_paid_success.html',
@@ -727,10 +752,10 @@ def view_is_paid(request, order_id):
             )
     else:
         form = EditPaidForm(instance=order)
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-            
+
     return render(
         request,
         'account/view_is_paid.html',
@@ -769,7 +794,7 @@ def shipping_is_confirm(request, order_id):
 
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-    
+
     return render(
         request,
         'account/shipping_is_confirm.html',
@@ -806,7 +831,7 @@ def plates_shipped(request, order_id):
 
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-    
+
     return render(
         request,
         'account/plates_shipped.html',
@@ -816,7 +841,7 @@ def plates_shipped(request, order_id):
             'order_items': order_items,
         }
     )
-    
+
 
 @login_required
 def _dashboard_executor(request, message=''):
@@ -922,7 +947,7 @@ def edit_platform_success(request):
 def check_signing_exec(request, order_id):
     order = Order.objects.get(id=order_id)
     old_contract = order.contract_file.name
-    
+
     if request.method == 'POST':
         action = None
         if 'success' in request.POST:
@@ -932,11 +957,11 @@ def check_signing_exec(request, order_id):
             order.order_status = 'CSA'
             action = 'cancelled'
         order.save()
-        
+
         new_file = order.contract_file.name
         if old_contract != new_file and action == 'success':
             add_file_message(order, 'contract_file', request.user.profile)
-                    
+
         return render(
             request,
             'account/check_signing_success.html',
@@ -945,7 +970,7 @@ def check_signing_exec(request, order_id):
 
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-    
+
     return render(
         request,
         'account/check_signing_exec.html',
@@ -964,7 +989,7 @@ def check_gds_file_curator(request, order_id):
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     old_file = order.GDS_file.name
-    
+
     if request.method == 'POST':
         action = None
         if 'success_gds' in request.POST:
@@ -977,7 +1002,7 @@ def check_gds_file_curator(request, order_id):
             order.order_status = 'CGDS'
             action = ''
         order.save()
-        
+
         new_file = order.GDS_file.name
         if old_file != new_file and 'success_gds' in request.POST:
             add_file_message(order, 'GDS_file', request.user.profile)
@@ -987,7 +1012,7 @@ def check_gds_file_curator(request, order_id):
             'account/check_gds_file_success.html',
             {'order': order, 'action': action}
         )
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -999,8 +1024,8 @@ def check_gds_file_curator(request, order_id):
         'order_items': order_items,
     }
 )
-    
-    
+
+
 @login_required
 @restrict_by_status()
 def check_gds_file_exec(request, order_id):
@@ -1008,7 +1033,7 @@ def check_gds_file_exec(request, order_id):
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     old_file = order.GDS_file.name
-    
+
     if request.method == 'POST':
         action = None
         if 'success_gds' in request.POST:
@@ -1030,7 +1055,7 @@ def check_gds_file_exec(request, order_id):
             'account/check_gds_file_success.html',
             {'order': order, 'action': action}
         )
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1048,7 +1073,7 @@ def check_gds_file_exec(request, order_id):
 @restrict_by_status()
 def view_is_paid_exec(request, order_id):
     order = Order.objects.get(id=order_id)
-    
+
     if request.method == 'POST':
         action = None
         if 'paid_confirmation' in request.POST:
@@ -1066,7 +1091,7 @@ def view_is_paid_exec(request, order_id):
             'account/view_is_paid_exec_success.html',
             {'order': order, 'action': action}
         )
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1152,7 +1177,7 @@ def plates_in_stock(request, order_id):
 def production_status_view(request, order_id, current_status):
     order = get_object_or_404(Order, id=order_id)
     config = STATUS_CONFIG[current_status]
-    
+
     if request.method == 'POST':
         action = None
         if 'next_status' in request.POST:
@@ -1161,9 +1186,9 @@ def production_status_view(request, order_id, current_status):
         elif 'prev_status' in request.POST:
             order.order_status = config['prev_status'] 
             action = 'prev'
-        
+
         order.save()
-        
+
         return render(
             request,
             'account/production_status_success.html',
@@ -1173,7 +1198,7 @@ def production_status_view(request, order_id, current_status):
                 'config': config
             }
         )
-    
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1251,7 +1276,7 @@ def get_containers_by_format(wafer_deliver_format):
         ]
     else:
         choices = []
-    
+
     return JsonResponse({'container_for_crystals': choices})
 
 
@@ -1290,7 +1315,7 @@ def load_data(request):
             'diameters': diameters,
             'technical_processes': technical_processes
         })
-        
+
     #TODO В будущем разобраться с двойным вызовом
 
     substrate_type = request.GET.get('substrate_type')
@@ -1302,7 +1327,6 @@ def load_data(request):
         return get_containers_by_format(wafer_deliver_format)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
-
 
 
 def new_order_success_view(request):
@@ -1348,7 +1372,7 @@ def feedback(request):
     ).annotate(
         last_message_time=Max('messages__created_at')
     ).order_by('-last_message_time')
-    
+
     for topic in private_topics:    
         last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()
         if last_read_message and last_read_message.last_read_message:
@@ -1358,10 +1382,10 @@ def feedback(request):
             ).count()
         else:
             topic.unread_count = 0 
-        
+
         last_message = Message.objects.filter(topic=topic).order_by('-created_at').first()
         topic.last_message_time = last_message.created_at if last_message else None
-    
+
     tab = request.GET.get('tab', 'general')
 
     return render(request, 'account/feedback.html', {
@@ -1414,7 +1438,7 @@ def topic_detail(request, topic_id):
         'messages': messages,
         'message_form': message_form,
     })
-    
+
 
 @require_POST
 def edit_message(request, message_id):
@@ -1432,7 +1456,7 @@ def delete_message(request, message_id):
     message.delete()
     print(f'Удаление сообщения: {message_id}')
     return JsonResponse({'status': 'success'})
-    
+
 
 def create_or_open_chat(request, order_id):
     order = Order.objects.get(id=order_id)
@@ -1444,15 +1468,15 @@ def create_or_open_chat(request, order_id):
             'is_private': True
         }
     )
-    
+
     if request.user.is_authenticated:
         ut, created = UserTopic.objects.get_or_create(user=request.user.profile, topic=topic)
-    
+
     curators = Profile.objects.filter(role__name='Куратор')
-    
+
     for curator in curators:
         ut, created = UserTopic.objects.get_or_create(user=curator, topic=topic)
-    
+
     executor = Profile.objects.filter(role__name='Исполнитель').first()
     if executor:
         ut, created = UserTopic.objects.get_or_create(user=executor, topic=topic)
@@ -1492,7 +1516,7 @@ def check_the_order(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-        
+
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1506,14 +1530,15 @@ def check_the_order(request, order_id):
             'order_items': order_items,
         }
     )
-    
+
+
 def set_theme(request):
     theme = request.POST.get('theme', 'light')
-    
+
     if theme in ['light', 'dark']:
         request.session['theme'] = theme
         return JsonResponse({'status': 'success', 'theme': theme})
-    
+
     return JsonResponse({'status': 'error'}, status=400)
 
 

@@ -976,12 +976,11 @@ form #id_special_note {
     flex-direction: column;
 }
 
-.order-table-file {
+.card-body {
+    margin: 0 auto;
 }
 
-.file-table{
-    margin-left: 50px;
-    margin-top: 50px;
+.order-table-file {
 }
 
 .file-table tr td a{
@@ -1040,6 +1039,14 @@ form #id_special_note {
 .file-table {
     flex: 1 1 300px; /* Минимальная ширина таблицы */
     max-width: 200px;
+    border-collapse: collapse;
+    text-align: center;
+    background: white;
+    color: black;
+}
+
+.file-table-document {
+    min-width: 200px;
     border-collapse: collapse;
     text-align: center;
     background: white;

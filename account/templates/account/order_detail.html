@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+{% block content %}
+<div class="page-flex">
+    <table class="order_detail-table">
+        <thead>
+            <tr>
+                <th colspan="2">История статусов заказа</th>
+            </tr>
+            <tr>
+                <th>Статус</th>
+                <th>Дата изменения</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for status, status_label in order.OrderStatus.choices %}
+                <tr>
+                    <td>{{ status_label }}</td>
+                    <td>
+                        {% with status_dates|dict_get:status as date %}
+                            {% if date %}
+                                {{ date|date:"d.m.Y H:i" }}
+                            {% else %}
+
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="order_detail-table_file">
+        <thead>
+            <tr>
+                <th colspan="2">Документы</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Договор</td>
+                <td>
+                    {% if order.contract_file %}
+                        <a class="function-button" href="{{ order.contract_file.url }}" download>Скачать</a>
+                    {% else %}
+                        <span>Отсутствует</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Конечный GDS</td>
+                <td>
+                    {% if order.order_status == "OGDS" and order.creator.user.id == request.user.id %}
+                        <a class="function-button" href="{% url 'add_gds' order.id %}">Загрузить GDS файл</a>
+                    {% else %}
+                        {% if order.GDS_file %}
+                            <a class="function-button" href="{{ order.GDS_file.url }}" download>Скачать</a>
+                        {% else %}
+                            <span>GDS не загружен</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Счет</td>
+                <td>
+                    {% if order.invoice_file %}
+                        <a class="function-button" href="{{ order.invoice_file.url }}" download>Скачать</a>
+                    {% else %}
+                        <span>Отсутствует</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

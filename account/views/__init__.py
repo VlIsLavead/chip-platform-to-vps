@@ -428,6 +428,7 @@ def company_documents(request, company_name):
     })
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def changes_in_order(request, order_id):
@@ -451,6 +452,7 @@ def changes_in_order(request, order_id):
     })
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def signing_agreement(request, order_id):
@@ -489,6 +491,7 @@ def signing_agreement(request, order_id):
     )
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def add_gds(request, order_id):
@@ -540,6 +543,7 @@ def add_gds(request, order_id):
     )
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def order_paid(request, order_id):
@@ -570,8 +574,9 @@ def order_paid(request, order_id):
         'view_form': view_form,
         'order_items': order_items,
     })
+    
 
-
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def confirmation_receipt(request, order_id):
@@ -629,6 +634,7 @@ def _dashboard_curator(request, message=''):
     )
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def edit_order(request, order_id):
@@ -663,8 +669,9 @@ def edit_order(request, order_id):
             'order_number': order.id,
         }
     )
-
-
+    
+    
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def check_signing_curator(request, order_id):
@@ -717,6 +724,7 @@ def check_signing_curator(request, order_id):
     )
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def view_is_paid(request, order_id):
@@ -768,6 +776,7 @@ def view_is_paid(request, order_id):
     )
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def shipping_is_confirm(request, order_id):
@@ -805,6 +814,8 @@ def shipping_is_confirm(request, order_id):
         }
     )
 
+
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def plates_shipped(request, order_id):
@@ -831,7 +842,7 @@ def plates_shipped(request, order_id):
 
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-
+    
     return render(
         request,
         'account/plates_shipped.html',
@@ -865,6 +876,7 @@ def _dashboard_executor(request, message=''):
         })
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def order_view(request, order_id):
@@ -942,12 +954,13 @@ def edit_platform_success(request):
     return render(request, 'account/edit_platform_success.html')
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def check_signing_exec(request, order_id):
     order = Order.objects.get(id=order_id)
     old_contract = order.contract_file.name
-
+    
     if request.method == 'POST':
         action = None
         if 'success' in request.POST:
@@ -957,11 +970,11 @@ def check_signing_exec(request, order_id):
             order.order_status = 'CSA'
             action = 'cancelled'
         order.save()
-
+        
         new_file = order.contract_file.name
         if old_contract != new_file and action == 'success':
             add_file_message(order, 'contract_file', request.user.profile)
-
+                    
         return render(
             request,
             'account/check_signing_success.html',
@@ -970,7 +983,7 @@ def check_signing_exec(request, order_id):
 
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
-
+    
     return render(
         request,
         'account/check_signing_exec.html',
@@ -982,6 +995,7 @@ def check_signing_exec(request, order_id):
     )
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def check_gds_file_curator(request, order_id):
@@ -989,7 +1003,7 @@ def check_gds_file_curator(request, order_id):
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     old_file = order.GDS_file.name
-
+    
     if request.method == 'POST':
         action = None
         if 'success_gds' in request.POST:
@@ -1002,7 +1016,7 @@ def check_gds_file_curator(request, order_id):
             order.order_status = 'CGDS'
             action = ''
         order.save()
-
+        
         new_file = order.GDS_file.name
         if old_file != new_file and 'success_gds' in request.POST:
             add_file_message(order, 'GDS_file', request.user.profile)
@@ -1012,7 +1026,7 @@ def check_gds_file_curator(request, order_id):
             'account/check_gds_file_success.html',
             {'order': order, 'action': action}
         )
-
+        
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1024,8 +1038,9 @@ def check_gds_file_curator(request, order_id):
         'order_items': order_items,
     }
 )
-
-
+    
+    
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def check_gds_file_exec(request, order_id):
@@ -1033,7 +1048,7 @@ def check_gds_file_exec(request, order_id):
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
     old_file = order.GDS_file.name
-
+    
     if request.method == 'POST':
         action = None
         if 'success_gds' in request.POST:
@@ -1055,7 +1070,7 @@ def check_gds_file_exec(request, order_id):
             'account/check_gds_file_success.html',
             {'order': order, 'action': action}
         )
-
+        
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1069,11 +1084,12 @@ def check_gds_file_exec(request, order_id):
 )
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def view_is_paid_exec(request, order_id):
     order = Order.objects.get(id=order_id)
-
+    
     if request.method == 'POST':
         action = None
         if 'paid_confirmation' in request.POST:
@@ -1091,7 +1107,7 @@ def view_is_paid_exec(request, order_id):
             'account/view_is_paid_exec_success.html',
             {'order': order, 'action': action}
         )
-
+        
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1106,6 +1122,7 @@ def view_is_paid_exec(request, order_id):
     )
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def plates_in_stock(request, order_id):
@@ -1172,12 +1189,13 @@ def plates_in_stock(request, order_id):
     )
 
 
+@log_order_status_change
 @login_required
 @restrict_by_status()
 def production_status_view(request, order_id, current_status):
     order = get_object_or_404(Order, id=order_id)
     config = STATUS_CONFIG[current_status]
-
+    
     if request.method == 'POST':
         action = None
         if 'next_status' in request.POST:
@@ -1186,9 +1204,9 @@ def production_status_view(request, order_id, current_status):
         elif 'prev_status' in request.POST:
             order.order_status = config['prev_status'] 
             action = 'prev'
-
+        
         order.save()
-
+        
         return render(
             request,
             'account/production_status_success.html',
@@ -1198,7 +1216,7 @@ def production_status_view(request, order_id, current_status):
                 'config': config
             }
         )
-
+    
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1276,7 +1294,7 @@ def get_containers_by_format(wafer_deliver_format):
         ]
     else:
         choices = []
-
+    
     return JsonResponse({'container_for_crystals': choices})
 
 
@@ -1315,7 +1333,7 @@ def load_data(request):
             'diameters': diameters,
             'technical_processes': technical_processes
         })
-
+        
     #TODO В будущем разобраться с двойным вызовом
 
     substrate_type = request.GET.get('substrate_type')
@@ -1327,6 +1345,7 @@ def load_data(request):
         return get_containers_by_format(wafer_deliver_format)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 
 def new_order_success_view(request):
@@ -1372,7 +1391,7 @@ def feedback(request):
     ).annotate(
         last_message_time=Max('messages__created_at')
     ).order_by('-last_message_time')
-
+    
     for topic in private_topics:    
         last_read_message = UserTopic.objects.filter(user=profile, topic=topic).first()
         if last_read_message and last_read_message.last_read_message:
@@ -1382,10 +1401,10 @@ def feedback(request):
             ).count()
         else:
             topic.unread_count = 0 
-
+        
         last_message = Message.objects.filter(topic=topic).order_by('-created_at').first()
         topic.last_message_time = last_message.created_at if last_message else None
-
+    
     tab = request.GET.get('tab', 'general')
 
     return render(request, 'account/feedback.html', {
@@ -1438,7 +1457,7 @@ def topic_detail(request, topic_id):
         'messages': messages,
         'message_form': message_form,
     })
-
+    
 
 @require_POST
 def edit_message(request, message_id):
@@ -1456,7 +1475,7 @@ def delete_message(request, message_id):
     message.delete()
     print(f'Удаление сообщения: {message_id}')
     return JsonResponse({'status': 'success'})
-
+    
 
 def create_or_open_chat(request, order_id):
     order = Order.objects.get(id=order_id)
@@ -1468,15 +1487,15 @@ def create_or_open_chat(request, order_id):
             'is_private': True
         }
     )
-
+    
     if request.user.is_authenticated:
         ut, created = UserTopic.objects.get_or_create(user=request.user.profile, topic=topic)
-
+    
     curators = Profile.objects.filter(role__name='Куратор')
-
+    
     for curator in curators:
         ut, created = UserTopic.objects.get_or_create(user=curator, topic=topic)
-
+    
     executor = Profile.objects.filter(role__name='Исполнитель').first()
     if executor:
         ut, created = UserTopic.objects.get_or_create(user=executor, topic=topic)
@@ -1516,7 +1535,7 @@ def check_the_order(request, order_id):
     order = Order.objects.get(id=order_id)
     creator_name = order.creator.user.username
     order_dict = {key: value for key, value in order.__dict__.items() if not key.startswith('_')}
-
+        
     view_form = ViewOrderForm(instance=order)
     order_items = view_form.get_order_data(order)
 
@@ -1530,15 +1549,14 @@ def check_the_order(request, order_id):
             'order_items': order_items,
         }
     )
-
-
+    
 def set_theme(request):
     theme = request.POST.get('theme', 'light')
-
+    
     if theme in ['light', 'dark']:
         request.session['theme'] = theme
         return JsonResponse({'status': 'success', 'theme': theme})
-
+    
     return JsonResponse({'status': 'error'}, status=400)
 
 

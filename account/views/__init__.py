@@ -27,8 +27,8 @@ LoginLog, PDKHelpFileModel
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 from ..utils.generate_messages import add_file_message
-from ..utils.unread_message_email_sender import unread_message_email_sender
 from ..decorators.restrict import restrict_by_status
+from ..decorators.log_status_change import log_order_status_change
 from ..utils.sanitizer import sanitizer
 from ..utils.list_productions_statuses import STATUS_CONFIG
 
@@ -920,6 +920,23 @@ def order_view_success(request):
             'message': message
         }
     )
+    
+
+@login_required
+def order_detail(request, order_id):
+    order = Order.objects.get(id=order_id)
+    
+    status_dates = {
+        h.new_status: h.changed_at
+        for h in order.status_history.all().order_by('changed_at')
+    }
+
+    context = {
+        'order': order,
+        'status_dates': status_dates,
+    }
+    
+    return render(request, 'account/order_detail.html', context)
 
 
 @login_required

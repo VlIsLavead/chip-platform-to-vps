@@ -68,8 +68,12 @@
         {% else %}
             {% for order in data.orders %}
                 <tr class="order-row">
-                    <td>{{ order.order_number }}</td>
-                    <td>{{ order.get_order_status_display }}</td>
+                    <td>
+                        <a href="{% url 'check_the_order' order.id %}" class="button chat-button">
+                            {{ order.order_number }}
+                        </a>
+                    </td>
+                    <td><a href="{% url 'order_detail' order.id %}" class="function-button">{{ order.get_order_status_display }}</td>
                     <td>{{ order.platform_code.platform_code }}</td>
                     <td>{{ order.get_order_type_display }}</td>
                     <td>{{ order.created_at.date|date:"d.m.Y" }}</td>
@@ -130,9 +134,6 @@
                             {% if has_unread_messages_by_order_id|dict_get:order.id %}
                                 <span class="unread-icon">✉️</span>
                             {% endif %}
-                        </a>
-                        <a href="{% url 'check_the_order' order.id %}" class="button chat-button">
-                            Просмотр заказа
                         </a>
                     </td>
                 </tr>

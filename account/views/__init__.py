@@ -1438,7 +1438,6 @@ def topic_detail(request, topic_id):
 
             message = Message(topic=topic, user=profile, text=message_text if message_text else '')
             message.save()
-            unread_message_email_sender(message.id)
 
             for file in files:
                 File.objects.create(message=message, file=file)

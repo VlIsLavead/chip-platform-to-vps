@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 from django.utils import timezone
 from django.contrib.auth.models import User
+from datetime import timedelta
 
 
 class Role(models.Model):
@@ -345,6 +346,41 @@ class Order(models.Model):
 
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
+    
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_status = Order.objects.filter(pk=self.pk)\
+                .values_list('order_status', flat=True)\
+                .first()
+        else:
+            old_status = None
+
+        super().save(*args, **kwargs)
+
+        if old_status != self.order_status:
+            OrderStatusHistory.objects.create(
+                order=self,
+                old_status=old_status,
+                new_status=self.order_status
+            )
+    
+
+class OrderStatusHistory(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+                              related_name='status_history', verbose_name='Заказ')
+    old_status = models.CharField('Предыдущий статус', max_length=200, 
+                                  choices=Order.OrderStatus.choices, blank=True, null=True)
+    new_status = models.CharField('Новый статус', max_length=200, choices=Order.OrderStatus.choices)
+    changed_at = models.DateTimeField('Дата изменения', auto_now_add=True)
+    changed_by = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, 
+                                   blank=True, verbose_name='Кто изменил')
+    class Meta:
+        verbose_name = 'История статуса заказа'
+        verbose_name_plural = 'История статусов заказов'
+        ordering = ['-changed_at']
+
+    def __str__(self):
+        return f'{self.order.order_number}: {self.old_status} → {self.new_status}'
 
 
 class Topic(models.Model):
@@ -379,6 +415,7 @@ class Message(models.Model):
     topic = models.ForeignKey(Topic, related_name='messages', on_delete=models.CASCADE)
     text = models.TextField(blank=True, null=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
+    email_sent = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Message by {self.user.user.username} in {self.topic.name}'

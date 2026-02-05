@@ -19,6 +19,14 @@ body {
     justify-content: space-between;
 }
 
+.page-flex{
+    max-width: 1500px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0 auto;
+}
+
 /* :root {
     --main-search-color: #007bff;
     --main-bg-color: #5680E9;
@@ -1298,4 +1306,44 @@ input::-webkit-inner-spin-button {
     box-shadow: 
     2px 2px 0 rgba(73, 50, 87, 0.8), 
     inset -2px -2px 5px #131313;
+}
+
+
+.order_detail-table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    border: 1px solid var(--main-bg-button)
+}
+
+.order_detail-table_file {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 500px;
+    max-height: 200px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    border: 1px solid var(--main-bg-button)
+}
+
+.order_detail-table th,
+.order_detail-tabl_file th {
+    text-align: left;
+    padding: 12px;
+    font-size: 18px;
+}
+
+.order_detail-table td,
+.order_detail-tabl_file td{
+    padding: 12px;
+}
+
+.order_detail-table th, 
+.order_detail-table td,
+.order_detail-table_file th, 
+.order_detail-table_file td  {
+    border: 1px solid var(--main-bg-button);
+    padding: 12px;
 }

@@ -59,6 +59,7 @@ urlpatterns = [
     path('message/<int:message_id>/delete/', views.delete_message, name='delete_message'),
     path('create_or_open_chat/<int:order_id>/', views.create_or_open_chat, name='create_or_open_chat'),
     path('check_the_order/<int:order_id>/', views.check_the_order, name='check_the_order'),
+    path('order_detail/<int:order_id>/', views.order_detail, name='order_detail'),
     path('login-logs/', views.login_log_view, name='login_logs'),
     path('upload/', views.upload_files, name='upload_files'),
 

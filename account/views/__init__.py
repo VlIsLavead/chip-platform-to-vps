@@ -348,14 +348,18 @@ def technical_materials(request):
     techprocess = TechnicalProcess.objects.values('name_process').distinct()
     selected_process_name = request.GET.get('technical_process')
     selected_process = None
+    selected_process_date = None
 
     if selected_process_name:
         selected_process = TechnicalProcess.objects.filter(name_process=selected_process_name).first()
+        if selected_process:
+            selected_process_date = selected_process.created_at
 
     return render(request, 'account/client/technical_materials.html', {
         'files': files,
         'techprocess': techprocess,
         'selected_process': selected_process,
+        'selected_process_date': selected_process_date,
         'section': 'technical_materials',
     })
 

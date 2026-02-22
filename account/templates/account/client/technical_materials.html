@@ -23,9 +23,12 @@
 
 {% if selected_process %}
     {% if selected_process.PDK_file %}
+    <div class="technical-process-block">
         <a href="{{ selected_process.PDK_file.url }}" download class="button">
             Скачать {{ selected_process.PDK_file.name|filename }}
         </a>
+        <p class="technicall-process-text">Последнее обновление - {{ selected_process_date|date:"d.m.Y" }}</p>
+    </div>
     {% else %}
         <span>Файл КИП отсутствует для {{ selected_process.name_process }}</span>
     {% endif %}

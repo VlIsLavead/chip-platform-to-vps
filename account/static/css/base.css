@@ -1347,3 +1347,13 @@ input::-webkit-inner-spin-button {
     border: 1px solid var(--main-bg-button);
     padding: 12px;
 }
+ 
+.technical-process-block {
+    margin-top: -60px;
+    display: flex;
+}
+
+.technicall-process-text{
+    padding: 0;
+    margin: 55px 0 0 10px;
+} 

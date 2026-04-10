@@ -5,12 +5,20 @@
     
     <form method="post" action="{% url 'production_status_view' order.id current_status %}">
         {% csrf_token %}
+        
+        <div class="comment-section">
+            <label class="form_comment-text" for="comment">Комментарий к этапу (необязательно):</label>
+            <textarea class="form comment-form" id="comment" name="comment" rows="3" cols="50" 
+                      placeholder="Добавьте комментарий..."></textarea>
+        </div>
+        
         <div>
             <input class="chat-button" type="submit" name="next_status" value="{{ config.next_button }}">
             <input class="chat-button" type="submit" name="prev_status" value="{{ config.prev_button }}">
         </div>
     </form>
     
+    <!-- Информация о заказе -->
     <p>Подробная информация о заказе:</p>
     <div class="order-table-wrapper">
         <table border="1">
@@ -22,18 +30,18 @@
             </thead>
             <tbody>
                 {% for field, value in order_items %}
-                    <tr>
-                        <td><strong>{{ field }}</strong></td>
-                        <td>
-                            {% if value %}
-                                {% if value|length > 20 and value|slice:":6" == "/media" %}
-                                    <a class="function-button" href="{{ value }}" download target="_blank">Скачать</a>
-                                {% else %}
-                                    {{ value }}
-                                {% endif %}
+                <tr>
+                    <td><strong>{{ field }}</strong></td>
+                    <td>
+                        {% if value %}
+                            {% if value|length > 20 and value|slice:":6" == "/media" %}
+                                <a class="function-button" href="{{ value }}" download target="_blank">Скачать</a>
+                            {% else %}
+                                {{ value }}
                             {% endif %}
-                        </td>
-                    </tr>
+                        {% endif %}
+                    </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>

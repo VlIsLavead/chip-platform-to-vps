@@ -27,7 +27,18 @@ def log_order_status_change(view_func):
                 except Profile.DoesNotExist:
                     profile = order.creator
                 
-                _create_status_message(order, old_status, new_status, profile)
+                # Пытаемся получить комментарий из POST запроса или из истории
+                comment = None
+                if request.method == 'POST':
+                    comment = request.POST.get('comment', '').strip()
+                
+                # Если комментарий не нашли в POST, пробуем найти в последней записи истории
+                if not comment:
+                    last_history = order.status_history.filter(new_status=new_status).first()
+                    if last_history and last_history.comment:
+                        comment = last_history.comment
+                
+                _create_status_message(order, old_status, new_status, profile, comment)
                 
         except Order.DoesNotExist:
             pass
@@ -37,7 +48,7 @@ def log_order_status_change(view_func):
     return wrapped_view
 
 
-def _create_status_message(order, old_status, new_status, profile):
+def _create_status_message(order, old_status, new_status, profile, comment=None):
     topic, created = Topic.objects.get_or_create(
         related_order=order,
         defaults={
@@ -45,17 +56,15 @@ def _create_status_message(order, old_status, new_status, profile):
         }
     )
     
-    user_display = "Система"
-    if profile and profile.user:
-        user_display = profile.user.get_full_name() or profile.user.username
-    
     status_choices = dict(Order.OrderStatus.choices)
     old_status_name = status_choices.get(old_status, old_status)
     new_status_name = status_choices.get(new_status, new_status)
     
-    message_text = (
-        f"Статус заказа был изменен на: {new_status_name}"
-    )
+    # Формируем сообщение с комментарием, если он есть
+    if comment:
+        message_text = f"Статус заказа изменен: {old_status_name} → {new_status_name}<br>Комментарий: {comment}"
+    else:
+        message_text = f"Статус заказа изменен: {old_status_name} → {new_status_name}"
     
     Message.objects.create(
         topic=topic,

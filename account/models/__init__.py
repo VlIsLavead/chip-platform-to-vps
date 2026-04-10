@@ -227,12 +227,20 @@ class Order(models.Model):
         PO = 'PO', 'Оплата',
         POK = 'POK', 'Подтверждение оплаты куратором', #Подтверждение оплаты куратором
         POC = 'POC', 'Подтверждение оплаты исполнителем', #Подтверждение оплаты исполнителем
-        MPO = 'MPO', 'Запущен в производство', #Этап ввода номера шаблона
-        MTP = 'MTP', 'Производство шаблонов', #Производство шаблонов
-        MPP = 'MPP', 'Производство пластин', #Производство пластин
-        MPM = 'MPM', 'Измерения параметрического монитора', #Измерения параметрического монитора
+
+        #Производственные процессы
+        MPO = 'MPO', 'Запуск в производство', #Этап ввода номера шаблона
+        MTP = 'MTP', 'Изготовление шаблонов', #Производство шаблонов
+        MTPF = 'MTPF', 'Производство: формирование лицевой стороны' 
+        MPT = 'MPT', 'Предварительный тест ПМ',
+        MTPB = 'MTPB', 'Производство: формирование обратной стороны',
+        MFT = 'MFT', 'Финальный тест ПМ',
+        MCS = 'MCS', 'Разбраковка кристаллов', #Опционально ???
+        # MPP = 'MPP', 'Производство пластин', #Производство пластин
+        # MPM = 'MPM', 'Измерения параметрического монитора', #Измерения параметрического монитора
         MCP = 'MCP', 'Резка пластин', #Резка пластин
         MPOP = 'MPOP', 'Упаковка пластин', #Упаковка пластин
+
         SO = 'SO', 'Отгрузка',
         PS = 'PS', 'Пластины отправлены',
         CR = 'CR', 'Подтверждение получения пластин',
@@ -373,16 +381,16 @@ class OrderStatusHistory(models.Model):
     old_status = models.CharField('Предыдущий статус', max_length=200, 
                                   choices=Order.OrderStatus.choices, blank=True, null=True)
     new_status = models.CharField('Новый статус', max_length=200, choices=Order.OrderStatus.choices)
+    comment = models.TextField('Комментарий', blank=True, null=True, 
+                               help_text='Комментарий к изменению статуса (опционально)')
     changed_at = models.DateTimeField('Дата изменения', auto_now_add=True)
     changed_by = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, 
                                    blank=True, verbose_name='Кто изменил')
+    
     class Meta:
         verbose_name = 'История статуса заказа'
         verbose_name_plural = 'История статусов заказов'
         ordering = ['-changed_at']
-
-    def __str__(self):
-        return f'{self.order.order_number}: {self.old_status} → {self.new_status}'
 
 
 class Topic(models.Model):

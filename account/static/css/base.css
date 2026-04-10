@@ -228,6 +228,10 @@ form p {
     overflow:auto;
 }
 
+.comment-form {
+    width: 500px;
+}
+
 label {
     clear:both;
     color: var(--main-text-color);
@@ -1357,3 +1361,8 @@ input::-webkit-inner-spin-button {
     padding: 0;
     margin: 55px 0 0 10px;
 } 
+
+.comment-section {
+    display: flex;
+    flex-direction: column;
+}

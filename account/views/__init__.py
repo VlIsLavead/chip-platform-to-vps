@@ -23,13 +23,14 @@ OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, \
 ViewOrderForm, RegistrationForm, AddContractForm, AddContractFileForm
 from ..models import Profile, Order, TechnicalProcess, Platform, \
 Thickness, Diameter, Topic, UserTopic, Message, File, Document, TopicFileModel, \
-LoginLog, PDKHelpFileModel
+LoginLog, PDKHelpFileModel, OrderStatusHistory
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 from ..utils.generate_messages import add_file_message
 from ..decorators.restrict import restrict_by_status
 from ..decorators.log_status_change import log_order_status_change
 from ..utils.sanitizer import sanitizer
+from ..utils.generate_messages import create_status_notification
 from ..utils.list_productions_statuses import STATUS_CONFIG
 
 
@@ -1219,22 +1220,40 @@ def production_status_view(request, order_id, current_status):
     
     if request.method == 'POST':
         action = None
+        comment = request.POST.get('comment', '').strip()
+        
         if 'next_status' in request.POST:
-            order.order_status = config['next_status']
+            new_status = config['next_status']
             action = 'next'
         elif 'prev_status' in request.POST:
-            order.order_status = config['prev_status'] 
+            new_status = config['prev_status']
             action = 'prev'
+        else:
+            new_status = None
         
-        order.save()
-        
+        if new_status:
+            old_status = order.order_status  # сохраняем старый статус до изменения
+            
+            # Создаем запись в истории
+            OrderStatusHistory.objects.create(
+                order=order,
+                old_status=old_status,
+                new_status=new_status,
+                comment=comment if comment else None,
+                changed_by=request.user.profile
+            )
+            
+            # Обновляем статус заказа
+            order.order_status = new_status
+            order.save()
+
         return render(
             request,
             'account/production_status_success.html',
             {
                 'order': order, 
                 'action': action,
-                'config': config
+                'config': config,
             }
         )
     
@@ -1252,6 +1271,7 @@ def production_status_view(request, order_id, current_status):
             'current_status': current_status,
         }
     )
+
 
 @login_required
 def edit(request):
@@ -1373,6 +1393,7 @@ def new_order_success_view(request):
     return render(request, 'new_order_success.html')
 
 
+@login_required
 def download_excel_file_from_order_id(request, order_id):
     try:
         order = Order.objects.get(id=order_id)

@@ -1,30 +1,66 @@
-from django.contrib.auth import get_user_model
-from account.models import UserTopic
+import threading
+from django.core.mail import send_mail
+from django.conf import settings
+from account.models import Message, UserTopic
 
-User = get_user_model()
 
-def get_message_recipients(message):
+def send_email_about_unread_message(message):
+    """Возвращает список email-ов получателей (не отправляет письма)"""
+    """Используется для unread_message_email_sender(cron)"""
     topic = message.topic
-
-    user_topics = UserTopic.objects.filter(
-        topic=topic,
-    )
-
-    recipient_emails = []
-    for user_topic in user_topics:
-        user = user_topic.user
-        
-        try:
-            django_user = User.objects.get(id=user.id)
-            # 3 ID - выбранные кураторы для тестирования отправления сообщений
-            # на почту, в дальнейшем сообщения будут рассылаться всем пользователям
-            if django_user.id not in [5, 29, 16]:
-                continue
-            if django_user.email:
-                last_read = user_topic.last_read_message
-                if not last_read or last_read.id < message.id:
-                    recipient_emails.append(django_user.email)
-        except User.DoesNotExist:
+    
+    user_topics = UserTopic.objects.filter(topic=topic).select_related('user__user')
+    
+    recipients = []
+    for ut in user_topics:
+        if ut.user.id == message.user.id:
             continue
         
-    return recipient_emails
+        last_read = ut.last_read_message
+        if not last_read or last_read.id < message.id:
+            email = ut.user.user.email
+            if email and email not in recipients:
+                recipients.append(email)
+    
+    return recipients
+
+
+# def send_email_about_unread_message(message_id):
+#     """Отправляет email всем участникам чата при создании нового сообщения"""
+    
+#     def send():
+#         try:
+#             message = Message.objects.select_related('topic', 'user__user').get(id=message_id)
+#             topic = message.topic
+            
+#             user_topics = UserTopic.objects.filter(topic=topic).select_related('user__user')
+            
+#             recipients = []
+#             for ut in user_topics:
+#                 if ut.user.id == message.user.id:
+#                     continue
+                
+#                 last_read = ut.last_read_message
+#                 if not last_read or last_read.id < message.id:
+#                     email = ut.user.user.email
+#                     if email and email not in recipients:
+#                         recipients.append(email)
+            
+#             if not recipients:
+#                 return
+            
+#             for email in recipients:
+#                 send_mail(
+#                     subject=f'Новое сообщение в чате {topic.name}',
+#                     message=f'У вас есть новое сообщение в чате: {topic.name}\n\nОтправитель: {message.user.user.username}\n\nТекст:\n{message.text}',
+#                     from_email=settings.DEFAULT_FROM_EMAIL,
+#                     recipient_list=[email],
+#                     fail_silently=False,
+#                 )
+                
+#         except Exception:
+#             pass
+    
+#     timer = threading.Timer(1, send)
+#     timer.daemon = True
+#     timer.start()

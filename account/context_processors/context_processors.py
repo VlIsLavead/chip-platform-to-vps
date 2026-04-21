@@ -1,4 +1,5 @@
 from ..models import Topic, UserTopic, Message
+from ..utils.email_recipients import send_email_about_unread_message
 
 
 def user_role(request):
@@ -9,6 +10,8 @@ def user_role(request):
 
 
 def unread_messages(request):
+    """Выявляет непрочитанные сообщения"""
+    """Не связано с отправкой на почту!!!"""
     if not request.user.is_authenticated:
         return {'has_unread_messages_by_order_id': {}}
 

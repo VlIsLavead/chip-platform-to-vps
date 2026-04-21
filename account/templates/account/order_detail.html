@@ -19,7 +19,7 @@
                     <td>
                         {% with status_dates|dict_get:status as date %}
                             {% if date %}
-                                {{ date|date:"d.m.Y H:i" }}
+                                {{ date|date:"d.m.Y" }}
                             {% else %}
 
                             {% endif %}

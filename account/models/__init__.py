@@ -379,7 +379,7 @@ class OrderStatusHistory(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               related_name='status_history', verbose_name='Заказ')
     old_status = models.CharField('Предыдущий статус', max_length=200, 
-                                  choices=Order.OrderStatus.choices, blank=True, null=True)
+                                  choices=Order.OrderStatus.choices, blank=True, null=True, default='NFW')
     new_status = models.CharField('Новый статус', max_length=200, choices=Order.OrderStatus.choices)
     comment = models.TextField('Комментарий', blank=True, null=True, 
                                help_text='Комментарий к изменению статуса (опционально)')

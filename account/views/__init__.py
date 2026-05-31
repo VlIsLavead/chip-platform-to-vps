@@ -1,6 +1,7 @@
 import datetime
 import os
 import urllib.parse
+import ipinfo
 from io import BytesIO
 
 from urllib.parse import quote
@@ -23,7 +24,7 @@ OrderEditingForm, EditPlatform, AddGDSFile, MessageForm, EditPaidForm, \
 ViewOrderForm, RegistrationForm, AddContractForm, AddContractFileForm
 from ..models import Profile, Order, TechnicalProcess, Platform, \
 Thickness, Diameter, Topic, UserTopic, Message, File, Document, TopicFileModel, \
-LoginLog, PDKHelpFileModel, OrderStatusHistory
+LoginLog, PDKHelpFileModel, OrderStatusHistory, RegistrationRequest
 from ..export_excel import generate_excel_file
 from ..utils.email_sender import send_email_with_attachments
 from ..utils.generate_messages import add_file_message
@@ -32,6 +33,7 @@ from ..decorators.log_status_change import log_order_status_change
 from ..utils.sanitizer import sanitizer
 from ..utils.generate_messages import create_status_notification
 from ..utils.list_productions_statuses import STATUS_CONFIG
+from ..utils.loging_for_registration import *
 
 
 def password_recovery(request):
@@ -123,7 +125,27 @@ def registration(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            registration = form.save(commit=False)
+            
+            # Получаем IP пользователя
+            ip = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0] or request.META.get('REMOTE_ADDR')
+            registration.ip_address = ip
+            
+            # Определяем страну через IPinfo (используя ваш токен)
+            try:
+                details = ipinfo_handler.getDetails(ip)
+                registration.country = details.country_name  # Например: "Russia"
+            except Exception as e:
+                registration.country = 'Не удалось определить'
+                print(f'Ошибка IPinfo: {e}')
+            
+            # Получаем язык браузера
+            accept_language = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
+            registration.browser_language = accept_language.split(',')[0].split(';')[0] if accept_language else 'Не определен'
+            
+            registration.save()
+
+
             user_email = form.cleaned_data['mail']
             subject = 'Регистрация на chip platform'
             body = '''

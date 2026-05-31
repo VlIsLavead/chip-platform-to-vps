@@ -6,6 +6,7 @@ from django.utils.timezone import now
 from django.utils import timezone
 from django.contrib.auth.models import User
 from datetime import timedelta
+import json
 
 
 class Role(models.Model):
@@ -460,6 +461,16 @@ class RegistrationRequest(models.Model):
     company = models.CharField('Наименование организации', blank=False, null=False, max_length=50)
     privacy_file = models.FileField('Файл конфиденциальности', upload_to='uploads/privacy_file/', blank=True, null=True,)
     processing_data = models.BooleanField('Я согласен на обработку персональных данных', blank=False, null=False)
+
+    # Для логов
+
+    ip_address = models.GenericIPAddressField('IP адрес', blank=True, null=True)
+    country = models.CharField('Страна', max_length=100, blank=True, null=True)
+    browser_language = models.CharField('Язык браузера', max_length=10, blank=True, null=True)
+    created_at = models.DateTimeField('Дата и время заявки', auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.name} - {self.mail}"
     
     
 class LoginLog(models.Model):

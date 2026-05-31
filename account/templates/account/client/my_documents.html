@@ -5,12 +5,8 @@
 <h1>Мои документы</h1>
 
 <div class="users-container">
-    <!-- Блок пользователя с классом user-block -->
     <div class="user-block">
-
-        <!-- Первый ряд: три таблицы -->
         <div class="table-container first-row">
-            <!-- Таблица для NDA -->
             {% comment %} <table border="1" class="file-table">
                 <tr><th>NDA</th></tr>
                 {% for document in nda_documents %}
@@ -27,8 +23,6 @@
                 <tr><td><span>Нет файлов</span></td></tr>
                 {% endfor %}
             </table> {% endcomment %}
-
-            <!-- Таблица для consumer_request -->
             <table border="1" class="file-table">
                 <tr><th>Запрос на доступ</th></tr>
                 {% for document in consumer_request_documents %}
@@ -45,8 +39,6 @@
                 <tr><td><span>Нет файлов</span></td></tr>
                 {% endfor %}
             </table>
-
-            <!-- Таблица для consumer_form -->
             <table border="1" class="file-table">
                 <tr><th>Анкета потребителя</th></tr>
                 {% for document in consumer_form_documents %}
@@ -64,14 +56,13 @@
                 {% endfor %}
             </table>
         </div>
-
-        <!-- Второй ряд: объединенная таблица -->
         <div class="table-container second-row">
             <table border="1" class="file-table wide-table">
                 <tr>
                     <th>Номер заказа</th>
                     <th>Файл договора</th>
                     <th>Файл счета</th>
+                    <th>GDS файл</th>
                 </tr>
                 {% for order in contract_documents %}
                 <tr>
@@ -86,6 +77,13 @@
                     <td>
                         {% if order.invoice_file %}
                             <a href="{{ order.invoice_file.url }}" download>{{ order.invoice_file.name|filename }}</a>
+                        {% else %}
+                            <span>Нет файла</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.GDS_file %}
+                            <a href="{{ order.GDS_file.url }}" download>{{ order.GDS_file.name|filename }}</a>
                         {% else %}
                             <span>Нет файла</span>
                         {% endif %}

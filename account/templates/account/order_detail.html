@@ -41,7 +41,7 @@
                 <td>Договор</td>
                 <td>
                     {% if order.contract_file %}
-                        <a class="function-button" href="{{ order.contract_file.url }}" download>Скачать</a>
+                        <a class="function-button" href="{% url 'protected_download' file_path=order.contract_file.name %}" download>Скачать</a>
                     {% else %}
                         <span>Отсутствует</span>
                     {% endif %}
@@ -54,7 +54,7 @@
                         <a class="function-button" href="{% url 'add_gds' order.id %}">Загрузить GDS файл</a>
                     {% else %}
                         {% if order.GDS_file %}
-                            <a class="function-button" href="{{ order.GDS_file.url }}" download>Скачать</a>
+                            <a class="function-button" href="{% url 'protected_download' file_path=order.GDS_file.name %}" download>Скачать</a>
                         {% else %}
                             <span>GDS не загружен</span>
                         {% endif %}
@@ -65,7 +65,7 @@
                 <td>Счет</td>
                 <td>
                     {% if order.invoice_file %}
-                        <a class="function-button" href="{{ order.invoice_file.url }}" download>Скачать</a>
+                        <a class="function-button" href="{% url 'protected_download' file_path=order.invoice_file.name %}" download>Скачать</a>
                     {% else %}
                         <span>Отсутствует</span>
                     {% endif %}

@@ -13,7 +13,9 @@
         <tbody>
             {% for file in files %}
                 <tr>
-                    <td><a href="{{ file.file.url }}" download>{{ file.file.name|filename }}</a></td>
+                    <td>
+                      <a href="{% url 'protected_download' file_path=file.file.name %}" download>{{ file.file.name|filename }}</a>
+                    </td>
                     <td>{{ file.description }}</td>
                 </tr>
             {% endfor %}

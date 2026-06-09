@@ -63,5 +63,7 @@ urlpatterns = [
     path('login-logs/', views.login_log_view, name='login_logs'),
     path('upload/', views.upload_files, name='upload_files'),
 
+    path('download/<path:file_path>/', views.protected_download, name='protected_download'),
+
     path('load-data/', views.load_data, name='load_data')  # AJAX
 ]

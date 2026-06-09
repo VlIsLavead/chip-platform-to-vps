@@ -18,7 +18,8 @@
                     ({{ message.created_at }}): 
                     <br><span class="message-text">{{ message.text|safe }}</span>
                     {% for file in message.files.all %}
-                        <br><a href="{{ file.file.url }}" download class="file-download-btn">{{ file.file.name|filename }}</a>
+                        <br>
+                            <a href="{% url 'protected_download' file_path=file.file.name %}" download class="file-download-btn">{{ file.file.name|clean_filename }}</a>
                     {% endfor %}
                 </p>
                 {% if message.user.id == request.user.id %}

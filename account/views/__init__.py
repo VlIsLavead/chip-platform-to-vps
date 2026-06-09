@@ -1629,3 +1629,13 @@ def set_theme(request):
 def login_log_view(request):
     logs = LoginLog.objects.all().order_by('-login_time')
     return render(request, 'account/login_logs.html', {'logs': logs})
+
+
+@login_required
+def protected_download(request, file_path):
+    full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+    
+    if not os.path.exists(full_path):
+        raise Http404("Файл не найден")
+    
+    return FileResponse(open(full_path, 'rb'), as_attachment=True)

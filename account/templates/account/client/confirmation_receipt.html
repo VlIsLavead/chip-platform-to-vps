@@ -29,7 +29,9 @@
                             <td>
                                 {% if value %}
                                     {% if value|length > 20 and value|slice:":6" == "/media" %}
-                                        <a class="function-button" href="{{ value }}" download target="_blank">Скачать</a>
+                                        {% with file_path=value|slice:"7:" %}
+                                            <a class="function-button" href="{% url 'protected_download' file_path=file_path %}" download target="_blank">Скачать</a>
+                                        {% endwith %}
                                     {% else %}
                                         {{ value }}
                                     {% endif %}

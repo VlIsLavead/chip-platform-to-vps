@@ -81,7 +81,9 @@
 
                     <td>
                         {% if order.contract_file %}
-                            <a class="function-button" href="{{ order.contract_file.url }}" download>Скачать</a>
+                            <a class="function-button" href="{% url 'protected_download' file_path=order.contract_file.name %}" download>
+                                Скачать
+                            </a>
                         {% else %}
                             <span>Отсутствует</span>
                         {% endif %}
@@ -89,7 +91,9 @@
 
                     <td>
                         {% if order.invoice_file %}
-                            <a class="function-button" href="{{ order.invoice_file.url }}" download>Скачать</a>
+                            <a class="function-button" href="{% url 'protected_download' file_path=order.invoice_file.name %}" download>
+                                Скачать
+                            </a>
                         {% else %}
                             <span>Отсутствует</span>
                         {% endif %}
@@ -100,7 +104,9 @@
                             <a class="function-button" href="{% url 'add_gds' order.id %}">Загрузить GDS файл</a>
                         {% else %}
                             {% if order.GDS_file %}
-                                <a class="function-button" href="{{ order.GDS_file.url }}" download>Скачать</a>
+                                <a class="function-button" href="{% url 'protected_download' file_path=order.GDS_file.name %}" download>
+                                    Скачать
+                                </a>
                             {% else %}
                                 <span>GDS не загружен</span>
                             {% endif %}
@@ -147,4 +153,65 @@
     <a href="{% url "new_order" %}" class="button">Новый заказ</a>
 </div>
 
+<div id="migrationModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="modal-close">&times;</span>
+            <h2>🔧 Обновление системы файлов</h2>
+        </div>
+        <div class="modal-body">
+            <p>Уважаемые пользователи!</p>
+            <p>Мы обновляем систему безопасности и выдачи файлов.</p>
+            <p><strong>Что изменилось?</strong></p>
+            <ul>
+                <li>🔒 Файлы теперь защищены от прямого доступа</li>
+                <li>📁 Улучшена система контроля доступа к документам</li>
+                <li>⚡ Оптимизирована скорость скачивания файлов</li>
+            </ul>
+            <p><strong>⚠️ Временные неудобства:</strong><br>
+            В ближайшее время некоторые ссылки на файлы могут работать некорректно.<br></p>
+            <p>Приносим извинения за временные неудобства и благодарим за понимание!</p>
+        </div>
+        <div class="modal-footer">
+            <button id="modalOkBtn" class="modal-button">Понятно, спасибо</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Показываем модальное окно при каждой загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        // Показываем окно через небольшую задержку
+        setTimeout(function() {
+            document.getElementById('migrationModal').style.display = 'block';
+        }, 500);
+        
+        // Закрытие по кнопке "Понятно"
+        const okBtn = document.getElementById('modalOkBtn');
+        if (okBtn) {
+            okBtn.onclick = function() {
+                document.getElementById('migrationModal').style.display = 'none';
+            }
+        }
+        
+        // Закрытие по крестику
+        const closeBtn = document.querySelector('.modal-close');
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                document.getElementById('migrationModal').style.display = 'none';
+            }
+        }
+        
+        // Закрытие при клике вне окна
+        window.onclick = function(event) {
+            const modal = document.getElementById('migrationModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    });
+</script>
+
 {% endblock %}
+
+

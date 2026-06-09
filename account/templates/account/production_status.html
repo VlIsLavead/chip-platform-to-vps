@@ -18,7 +18,6 @@
         </div>
     </form>
     
-    <!-- Информация о заказе -->
     <p>Подробная информация о заказе:</p>
     <div class="order-table-wrapper">
         <table border="1">
@@ -35,7 +34,7 @@
                     <td>
                         {% if value %}
                             {% if value|length > 20 and value|slice:":6" == "/media" %}
-                                <a class="function-button" href="{{ value }}" download target="_blank">Скачать</a>
+                                <a class="function-button" href="{% url 'protected_download' file_path=value %}" download target="_blank">Скачать {{ value|clean_filename }}</a>
                             {% else %}
                                 {{ value }}
                             {% endif %}

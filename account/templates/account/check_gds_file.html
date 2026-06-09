@@ -5,7 +5,7 @@
 
     <form method="post" enctype="multipart/form-data" id="orderForm" data-url="{% url 'load_data' %}">
         {% csrf_token %}
-        <a href="{{ data.order.GDS_file.url }}" class="button" download>Скачать GDS файл</a> 
+        <a href="{% url 'protected_download' file_path=data.order.GDS_file.name %}" class="button" download>Скачать GDS файл</a> 
         <p>
             <input type="submit" name="success_gds" value="Сохранить изменения">
             <input type="submit" name="cansel_gds" value="Отправить на доработку">

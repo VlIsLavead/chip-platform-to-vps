@@ -27,7 +27,7 @@
                 <tr>
                     <td>
                         {% if document.file_path %}
-                            <a href="{{ document.file_path.url }}" download>{{ document.file_path.name|filename }}</a>
+                            <a href="{% url 'protected_download' file_path=document.file_path.name %}" download>{{ document.file_path.name|filename }}</a>
                         {% else %}
                             <span>Нет файла</span>
                         {% endif %}
@@ -44,7 +44,7 @@
                 <tr>
                     <td>
                         {% if document.file_path %}
-                            <a href="{{ document.file_path.url }}" download>{{ document.file_path.name|filename }}</a>
+                            <a href="{% url 'protected_download' file_path=document.file_path.name %}" download>{{ document.file_path.name|filename }}</a>
                         {% else %}
                             <span>Нет файла</span>
                         {% endif %}
@@ -68,14 +68,14 @@
                     <td>{{ order.order_number }}</td>
                     <td>
                         {% if order.contract_file %}
-                            <a href="{{ order.contract_file.url }}" download>{{ order.contract_file.name|filename }}</a>
+                            <a href="{% url 'protected_download' file_path=order.contract_file.name %}" download>{{ order.contract_file.name|filename }}</a>
                         {% else %}
                             <span>Нет файла</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if order.invoice_file %}
-                            <a href="{{ order.invoice_file.url }}" download>{{ order.invoice_file.name|filename }}</a>
+                            <a href="{% url 'protected_download' file_path=order.invoice_file.name %}" download>{{ order.invoice_file.name|filename }}</a>
                         {% else %}
                             <span>Нет файла</span>
                         {% endif %}
